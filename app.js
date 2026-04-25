@@ -909,6 +909,169 @@ function updateRateInfo() {
   }
 }
 
+
+function getBudgetStateForUi(leftInBudget, totalBudget, remainingMoney) {
+  if (remainingMoney < 0 || leftInBudget < 0) {
+    return { key: "danger", label: "危険" };
+  }
+
+  if (totalBudget > 0 && leftInBudget <= totalBudget * 0.2) {
+    return { key: "caution", label: "注意" };
+  }
+
+  if (totalBudget > 0) {
+    return { key: "safe", label: "安定" };
+  }
+
+  return { key: "neutral", label: "未設定" };
+}
+
+function updateStickyBudgetBar(leftInBudget, totalBudget, remainingMoney) {
+  const bar = getElement("stickyBudgetBar");
+
+  if (!bar) {
+    return;
+  }
+
+  const state = getBudgetStateForUi(leftInBudget, totalBudget, remainingMoney);
+  bar.textContent = `今月あと使えるお金：${formatYen(leftInBudget)}円 ｜ ${state.label}`;
+  bar.className = `sticky-budget-bar ${state.key}`;
+}
+
+function setupStickyBudgetBar() {
+  const bar = getElement("stickyBudgetBar");
+  const summary = document.querySelector(".summary");
+
+  if (!bar || !summary || !("IntersectionObserver" in window)) {
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[0];
+    bar.classList.toggle("show", !entry.isIntersecting);
+    bar.setAttribute("aria-hidden", entry.isIntersecting ? "true" : "false");
+  }, {
+    threshold: 0,
+    rootMargin: "-56px 0px 0px 0px",
+  });
+
+  observer.observe(summary);
+}
+
+
+
+const MONEY_SLIDER_STEP = 100;
+
+function roundUpToStep(amount, step = MONEY_SLIDER_STEP) {
+  return Math.ceil(Math.max(0, Number(amount) || 0) / step) * step;
+}
+
+function getMoneySliderMax(id) {
+  const current = getNumber(id);
+
+  if (budgetIds.includes(id)) {
+    const totalIncome = incomeIds.reduce((total, itemId) => total + getNumber(itemId), 0);
+    const totalFixed = fixedIds.reduce((total, itemId) => total + getNumber(itemId), 0);
+    const freeMoney = Math.max(0, totalIncome - totalFixed);
+    return Math.max(10000, roundUpToStep(Math.max(current, freeMoney) * 1.1, 1000));
+  }
+
+  if (spentIds.includes(id)) {
+    const category = categories.find((item) => item.spentId === id);
+    const budget = category ? getNumber(category.budgetId) : 0;
+    return Math.max(10000, roundUpToStep(Math.max(current, budget) * 1.15, 1000));
+  }
+
+  if (incomeIds.includes(id)) {
+    const totalIncome = incomeIds.reduce((total, itemId) => total + getNumber(itemId), 0);
+    return Math.max(30000, roundUpToStep(Math.max(current, totalIncome) * 1.2, 1000));
+  }
+
+  if (fixedIds.includes(id)) {
+    const totalFixed = fixedIds.reduce((total, itemId) => total + getNumber(itemId), 0);
+    return Math.max(10000, roundUpToStep(Math.max(current, totalFixed) * 1.2, 1000));
+  }
+
+  return Math.max(10000, roundUpToStep(current * 2, 1000));
+}
+
+function getMoneySliderIds() {
+  return [...incomeIds, ...fixedIds, ...budgetIds, ...spentIds];
+}
+
+function createMoneySliderForInput(input) {
+  const id = input.id;
+
+  if (!id || getElement(`${id}Slider`)) {
+    return;
+  }
+
+  input.step = String(MONEY_SLIDER_STEP);
+  input.inputMode = "numeric";
+
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.id = `${id}Slider`;
+  slider.className = "money-slider";
+  slider.min = "0";
+  slider.step = String(MONEY_SLIDER_STEP);
+  slider.dataset.moneySliderFor = id;
+
+  const moneyControl = input.closest(".money-control");
+
+  if (moneyControl) {
+    moneyControl.classList.add("slider-enhanced");
+    moneyControl.appendChild(slider);
+  } else {
+    const wrapper = document.createElement("span");
+    wrapper.className = "money-slider-wrap";
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(slider);
+    wrapper.appendChild(input);
+  }
+
+  slider.addEventListener("input", () => {
+    input.value = slider.value;
+    updateScreen();
+    scheduleAutosave();
+  });
+
+  input.addEventListener("change", () => {
+    const rounded = roundUpToStep(input.value);
+    input.value = rounded === 0 ? "" : rounded;
+    updateMoneySliders();
+  });
+}
+
+function setupMoneySliders() {
+  getMoneySliderIds().forEach((id) => {
+    const input = getElement(id);
+
+    if (input) {
+      createMoneySliderForInput(input);
+    }
+  });
+
+  updateMoneySliders();
+}
+
+function updateMoneySliders() {
+  getMoneySliderIds().forEach((id) => {
+    const input = getElement(id);
+    const slider = getElement(`${id}Slider`);
+
+    if (!input || !slider) {
+      return;
+    }
+
+    const value = Math.max(0, getNumber(id));
+    const max = Math.max(MONEY_SLIDER_STEP, getMoneySliderMax(id));
+
+    slider.max = String(max);
+    slider.value = String(Math.min(value, max));
+  });
+}
+
 function updateScreen() {
   const totalIncome = incomeIds.reduce((total, id) => total + getNumber(id), 0);
   const totalFixed = fixedIds.reduce((total, id) => total + getNumber(id), 0);
@@ -919,6 +1082,8 @@ function updateScreen() {
 
   const remainingMoney = freeMoney - totalBudget;
   const leftInBudget = totalBudget - totalSpent;
+
+  updateStickyBudgetBar(leftInBudget, totalBudget, remainingMoney);
 
   getElement("totalIncome").textContent = formatYen(totalIncome);
   getElement("totalFixed").textContent = formatYen(totalFixed);
@@ -983,6 +1148,7 @@ function updateScreen() {
   updatePolicyRateSummary();
   updateRateInfo();
   renderPeriodHistorySelect();
+  updateMoneySliders();
 }
 
 function getLockedCategories() {
@@ -1484,9 +1650,11 @@ function handlePeriodStartDayChange() {
   loadCurrentPeriodData();
 }
 
+setupStickyBudgetBar();
 setupStatusMessage();
 setupTutorial();
 setupCategoryEnhancements();
+setupMoneySliders();
 loadSettings();
 loadCategorySettings();
 setupCategoryEditor();

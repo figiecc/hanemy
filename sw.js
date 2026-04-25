@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanemy-share-v1-3";
+const CACHE_NAME = "hanemy-compact-sliders-v1-6";
 
 const FILES_TO_CACHE = [
   "./",

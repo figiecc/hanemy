@@ -999,3 +999,374 @@ label {
     justify-self: start;
   }
 }
+
+/* v1.4 情報設計の整理：結果を主役にし、月初設定と共有は補助へ */
+.summary-decision-grid {
+  grid-template-columns: 1.35fr 0.85fr;
+  align-items: stretch;
+}
+
+.summary-primary {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.summary-primary p {
+  color: #fff1d8;
+  font-size: 16px;
+}
+
+.summary-primary strong {
+  font-size: clamp(42px, 6vw, 64px);
+  letter-spacing: -0.03em;
+}
+
+.summary-secondary {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.summary-secondary strong {
+  font-size: clamp(26px, 4vw, 38px);
+  opacity: 0.92;
+}
+
+.compact-guide {
+  background: rgba(255, 253, 248, 0.78);
+  box-shadow: 0 6px 18px rgba(80, 60, 30, 0.05);
+}
+
+.compact-guide .guide-steps {
+  margin-top: 4px;
+}
+
+.main-budget-card {
+  border-width: 1px;
+}
+
+.main-budget-card > summary span::after {
+  content: " — 普段使うのはここ";
+  color: #8a6b3d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.share-card {
+  margin-top: 16px;
+}
+
+@media (max-width: 860px) {
+  .summary {
+    top: 8px;
+    padding: 18px;
+  }
+
+  .summary-primary,
+  .summary-secondary {
+    padding: 14px;
+  }
+
+  .summary-primary strong {
+    font-size: 42px;
+  }
+
+  .main-budget-card > summary span::after {
+    content: "";
+  }
+}
+
+
+/* v1.5 UI簡素化：折りたたみを減らし、結果を邪魔せず固定 */
+.sticky-budget-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 10px 16px;
+  background: rgba(47, 42, 36, 0.96);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px rgba(40, 30, 20, 0.2);
+  transform: translateY(-110%);
+  transition: transform 0.18s ease;
+  pointer-events: none;
+}
+
+.sticky-budget-bar.show {
+  transform: translateY(0);
+}
+
+.sticky-budget-bar.safe { color: #dff4e5; }
+.sticky-budget-bar.caution { color: #ffe6a8; }
+.sticky-budget-bar.danger { color: #ffd6d2; }
+.sticky-budget-bar.neutral { color: #e8dcca; }
+
+.section-title-row,
+.settings-block-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-title-row h2,
+.settings-block-header h3 {
+  margin: 0;
+}
+
+.section-title-row small,
+.settings-block-header small {
+  color: #8a6b3d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.monthly-settings-card,
+.detail-settings-card {
+  border-style: dashed;
+}
+
+.monthly-settings-lead {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff8ec;
+  border: 1px solid #ecd8aa;
+}
+
+.settings-block {
+  padding: 16px 0;
+  border-top: 1px solid #eee2d2;
+}
+
+.settings-block:first-of-type {
+  border-top: 0;
+}
+
+.compact-settings-block {
+  padding: 16px 0;
+}
+
+.detail-settings-body {
+  display: grid;
+  gap: 4px;
+}
+
+.inner-panel {
+  padding: 0;
+}
+
+.inner-panel h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+}
+
+.category-editor {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.top-action-buttons {
+  align-items: center;
+}
+
+@media (max-width: 860px) {
+  .sticky-budget-bar {
+    justify-content: flex-start;
+    font-size: 14px;
+  }
+
+  .section-title-row,
+  .settings-block-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .category-editor {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* v1.6 compact + slider input */
+.compact-help {
+  margin-bottom: 10px;
+  line-height: 1.65;
+}
+
+.main-budget-card {
+  padding: 16px;
+}
+
+.main-budget-card .section-title-row {
+  margin-bottom: 8px;
+}
+
+.budget-row {
+  grid-template-columns: 88px minmax(160px, 1fr) minmax(160px, 1fr) 150px;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.budget-row > span {
+  padding-bottom: 6px;
+  font-size: 15px;
+}
+
+.budget-row label {
+  gap: 4px;
+  font-size: 12px;
+}
+
+.budget-row strong {
+  padding-bottom: 6px;
+  font-size: 13px;
+}
+
+.money-slider-wrap {
+  display: grid;
+  grid-template-columns: 1fr 84px;
+  gap: 8px;
+  align-items: center;
+}
+
+.money-slider-wrap input[type="number"] {
+  min-width: 0;
+  padding: 8px 9px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.money-slider {
+  width: 100%;
+  accent-color: var(--gold);
+}
+
+.money-control.slider-enhanced {
+  grid-template-columns: 1fr auto;
+}
+
+.money-control.slider-enhanced .money-slider {
+  grid-column: 1 / -1;
+}
+
+.budget-extra {
+  grid-template-columns: 190px 1fr 74px;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.quick-spend-box {
+  display: none;
+}
+
+.budget-progress {
+  height: 8px;
+}
+
+.budget-progress-label {
+  font-size: 11px;
+}
+
+.period-simple-grid {
+  gap: 8px;
+}
+
+.period-box,
+.period-history-box {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 14px;
+}
+
+.period-box p {
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.period-box strong {
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.period-box small,
+.period-help {
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.period-history-box h3 {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.period-actions {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.period-actions button {
+  padding: 9px 8px;
+  font-size: 12px;
+}
+
+.settings-block {
+  padding: 12px 0;
+}
+
+.settings-block-header {
+  margin-bottom: 8px;
+}
+
+.monthly-settings-lead {
+  margin-bottom: 8px;
+}
+
+.money-field {
+  padding: 9px 0;
+}
+
+.money-total {
+  margin-top: 10px;
+  padding: 10px 12px;
+}
+
+.money-total strong {
+  font-size: 22px;
+}
+
+@media (max-width: 860px) {
+  .budget-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 12px;
+  }
+
+  .budget-row > span,
+  .budget-row strong {
+    padding-bottom: 0;
+  }
+
+  .budget-row strong {
+    text-align: left;
+  }
+
+  .money-slider-wrap {
+    grid-template-columns: 1fr 92px;
+  }
+
+  .budget-extra {
+    grid-template-columns: 1fr;
+  }
+
+  .period-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
