@@ -62,6 +62,29 @@
       <span id="dailyBudget" hidden>0</span>
     </section>
 
+
+    <section class="card share-card">
+      <div class="share-card-header">
+        <div>
+          <h2>今月の状況を画像で共有</h2>
+          <p class="section-help">金額を見せる相手に合わせて、共有カードを作れます。画像は1080×1080 PNGです。</p>
+        </div>
+        <span class="share-badge">PNG</span>
+      </div>
+
+      <div class="share-actions">
+        <button id="shareFullButton" type="button">しっかり共有</button>
+        <button id="shareSimpleButton" type="button" class="secondary">かんたん共有</button>
+        <button id="shareDarkButton" type="button" class="secondary">ダーク共有</button>
+        <button id="shareHistoryButton" type="button" class="secondary">月次履歴カード</button>
+      </div>
+
+      <p class="share-note">
+        「しっかり共有」は具体的な金額あり。「かんたん共有」は収入・固定費の詳細なし。
+        「ダーク共有」はSNSで目立つ濃色版、「月次履歴カード」は前回期間とのざっくり比較です。
+      </p>
+    </section>
+
     <details class="card collapsible-card" open>
       <summary>
         <span>1. 管理する1か月を決める</span>
@@ -392,6 +415,7 @@
 
 
   <script src="app.js"></script>
+  <script src="share.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

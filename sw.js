@@ -1,10 +1,11 @@
-const CACHE_NAME = "hanemy-ui-polish-v1";
+const CACHE_NAME = "hanemy-share-v1-3";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
+  "./share.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",

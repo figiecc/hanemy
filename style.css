@@ -935,3 +935,67 @@ label {
   font-size: 12px;
   text-align: center;
 }
+
+
+/* 共有カード */
+.share-card {
+  background: linear-gradient(180deg, #fffdf8, #fff8ec);
+  border: 1px solid #e3d8c8;
+}
+
+.share-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.share-card-header h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.share-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f3e5c8;
+  color: #8a5a00;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.share-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.share-actions button {
+  width: 100%;
+}
+
+.share-note {
+  margin: 12px 0 0;
+  color: #6d6254;
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .share-card-header {
+    display: grid;
+  }
+
+  .share-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .share-badge {
+    justify-self: start;
+  }
+}
