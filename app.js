@@ -30,6 +30,68 @@ let autosaveTimer = null;
 let hasUnsavedChanges = false;
 let categorySettings = {};
 
+
+const TUTORIAL_STORAGE_KEY = "hanemy-tutorial-seen-v1";
+const tutorialSteps = [
+  { title: "まずは今月の準備", text: "管理する1か月、収入、固定費、予算の配分を入れると、自由に使えるお金が見えてきます。" },
+  { title: "ハネミーは家計簿ではありません", text: "毎日細かく入力しなくても大丈夫です。大きめに使ったときだけ、使った額をざっくり更新してください。" },
+  { title: "見るべき数字は2つ", text: "普段は「自由に使えるお金」と「今月あと使えるお金」を見れば、使いすぎの前に気づけます。" },
+];
+let tutorialStepIndex = 0;
+
+function updateTutorial() {
+  const overlay = getElement("tutorialOverlay");
+  if (!overlay) return;
+
+  const step = tutorialSteps[tutorialStepIndex];
+  getElement("tutorialStepLabel").textContent = (tutorialStepIndex + 1) + " / " + tutorialSteps.length;
+  getElement("tutorialTitle").textContent = step.title;
+  getElement("tutorialText").textContent = step.text;
+
+  document.querySelectorAll(".tutorial-dots span").forEach((dot, index) => {
+    dot.classList.toggle("active", index === tutorialStepIndex);
+  });
+
+  getElement("tutorialNextButton").textContent = tutorialStepIndex === tutorialSteps.length - 1 ? "はじめる" : "次へ";
+}
+
+function closeTutorial() {
+  const overlay = getElement("tutorialOverlay");
+  if (!overlay) return;
+
+  overlay.hidden = true;
+  localStorage.setItem(TUTORIAL_STORAGE_KEY, "true");
+}
+
+function openTutorial(force = false) {
+  const overlay = getElement("tutorialOverlay");
+  if (!overlay) return;
+
+  if (!force && localStorage.getItem(TUTORIAL_STORAGE_KEY) === "true") return;
+
+  tutorialStepIndex = 0;
+  updateTutorial();
+  overlay.hidden = false;
+}
+
+function setupTutorial() {
+  const overlay = getElement("tutorialOverlay");
+  if (!overlay) return;
+
+  getElement("tutorialNextButton").addEventListener("click", () => {
+    if (tutorialStepIndex >= tutorialSteps.length - 1) {
+      closeTutorial();
+      return;
+    }
+    tutorialStepIndex += 1;
+    updateTutorial();
+  });
+
+  getElement("tutorialSkipButton").addEventListener("click", closeTutorial);
+  openTutorial(false);
+}
+
+
 const incomeIds = ["incomeJob", "incomeAllowance", "incomeOther"];
 
 const fixedIds = [
@@ -1423,6 +1485,7 @@ function handlePeriodStartDayChange() {
 }
 
 setupStatusMessage();
+setupTutorial();
 setupCategoryEnhancements();
 loadSettings();
 loadCategorySettings();
