@@ -903,7 +903,7 @@ function updateRateInfo() {
   if (totalRate > 100) {
     rateWarning.textContent = `${totalRate - 100}% オーバーしています。合計が100%以内になるように調整してください。`;
   } else if (totalRate < 100 && totalRate > 0) {
-    rateWarning.textContent = `${100 - totalRate}% は未配分として残ります。`;
+    rateWarning.textContent = `${100 - totalRate}% はまだ配分していないお金として残ります。`;
   } else {
     rateWarning.textContent = "";
   }
@@ -963,7 +963,7 @@ function updateScreen() {
     warning.textContent = "";
 
     if (budgetStatus) {
-      budgetStatus.textContent = "このまま使っても大丈夫そうです";
+      budgetStatus.textContent = "今月はこのままのペースで大丈夫そうです";
       budgetStatus.className = "budget-status safe";
     }
   } else {

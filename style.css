@@ -926,3 +926,12 @@ label {
   .tutorial-card { padding: 20px; }
   .tutorial-actions { grid-template-columns: 1fr; }
 }
+
+
+/* フッター */
+.app-footer {
+  margin: 18px 0 0;
+  color: #9a8d7b;
+  font-size: 12px;
+  text-align: center;
+}
