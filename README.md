@@ -24,3 +24,9 @@
 ## 公開URL
 
 https://figiecc.github.io/hanemy/
+
+This project is open-source under MIT License.
+
+However, the Hanemy name, subtitle, logo,
+and generated share card designs are not permitted
+for reuse in redistributed versions.
