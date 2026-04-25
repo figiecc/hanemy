@@ -376,8 +376,8 @@ function setupCategoryEnhancements() {
         <details class="help-tip">
           <summary>？</summary>
           <p>
-            自動で予算を分け直しても、この金額は変わりません。
-            交通費など、毎月ほぼ決まっている項目に使います。
+            自動配分を使っても、このカテゴリの予算を変更しません。
+            交通費など、金額を決め打ちしたい項目に使います。
           </p>
         </details>
       </div>
@@ -877,14 +877,14 @@ function updateScreen() {
   const budgetStatus = getElement("budgetStatus");
 
   if (remainingMoney < 0) {
-    warning.textContent = `${formatYen(Math.abs(remainingMoney))}円オーバーしています。配分した予算が自由に使える金額を超えています。`;
+    warning.textContent = `${formatYen(Math.abs(remainingMoney))}円オーバーしています。表示中の管理期間の予算時点で使える金額を超えています。`;
 
     if (budgetStatus) {
       budgetStatus.textContent = "配分した予算が自由に使える金額を超えています";
       budgetStatus.className = "budget-status danger";
     }
   } else if (leftInBudget < 0) {
-    warning.textContent = `${formatYen(Math.abs(leftInBudget))}円使いすぎています。使った額や予算を見直してください。`;
+    warning.textContent = `${formatYen(Math.abs(leftInBudget))}円使いすぎています。どこかのカテゴリを再調整する必要があります。`;
 
     if (budgetStatus) {
       budgetStatus.textContent = "どこかのカテゴリで使いすぎています";
@@ -973,7 +973,7 @@ function applyRatesToBudgets(rates) {
     });
 
     updateScreen();
-    showStatus("固定した予算だけで配分できる金額を超えています。固定額を見直してください。", "warning");
+    showStatus("固定予算だけで配分目標を超えています。固定額を見直してください。", "warning");
     return;
   }
 
@@ -1026,7 +1026,7 @@ function applyCustomRate() {
   }
 
   if (totalRate > 100) {
-    alert("割合の合計が100%を超えています。調整してください。");
+    alert("割合の合計が100%を超えています。少し調整してください。");
     return;
   }
 
@@ -1197,7 +1197,7 @@ function saveData() {
   renderPeriodHistorySelect();
 
   setSaveState("saved");
-  showStatus("表示中の期間を保存しました。");
+  showStatus("表示中の期間のデータを保存しました。");
 }
 
 function loadDataByPeriodKey(periodKey) {
@@ -1234,7 +1234,7 @@ function loadDataByPeriodKey(periodKey) {
 
 function loadCurrentPeriodData() {
   loadDataByPeriodKey(getCurrentPeriodKey());
-  showStatus("今の期間を表示しました。");
+  showStatus("現在の期間を表示しました。");
 }
 
 function loadSelectedPeriod() {
@@ -1246,7 +1246,7 @@ function loadSelectedPeriod() {
   }
 
   loadDataByPeriodKey(selectedKey);
-  showStatus("選んだ期間を表示しました。");
+  showStatus("選択した期間を表示しました。");
 }
 
 function getPreviousPeriodKey() {
@@ -1392,7 +1392,7 @@ function resetData() {
     activePeriodKey = getCurrentPeriodKey();
   }
 
-  const result = confirm("表示中の期間の入力内容をすべてリセットします。収入・固定費・予算・使った額も消えます。よろしいですか？");
+  const result = confirm("表示中の期間の入力内容をリセットします。収入・固定費・予算・使った額も消えます。よろしいですか？");
 
   if (!result) {
     return;
