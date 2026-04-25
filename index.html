@@ -45,261 +45,174 @@
       </div>
 
       <div id="budgetStatus" class="budget-status neutral">まだ予算が作られていません</div>
+
+      <div class="category-overview-box" aria-labelledby="categoryOverviewTitle">
+        <div class="category-overview-head">
+          <h2 id="categoryOverviewTitle">カテゴリ状況</h2>
+          <small>どこで使っているかを一瞬で確認</small>
+        </div>
+        <div id="categoryOverview" class="category-overview"></div>
+      </div>
       <span id="dailyBudget" hidden>0</span>
     </section>
 
 
-    <section class="card main-budget-card">
-      <div class="section-title-row">
-        <h2>予算の残りを確認する</h2>
-        <small>普段使うのはここです</small>
-      </div>
 
 
-      <p class="section-help">
-        予算と使った額はスライダーでざっくり調整できます。100円単位で動きます。細かく直したいときは数字を直接入力してください。
-      </p>
 
-
-      <div class="budget-row">
-        <span>食費</span>
-        <label>予算<input type="number" id="budgetFood" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentFood" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftFood">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>交通費</span>
-        <label>予算<input type="number" id="budgetTransport" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentTransport" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftTransport">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>交際費</span>
-        <label>予算<input type="number" id="budgetSocial" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentSocial" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftSocial">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>デート代</span>
-        <label>予算<input type="number" id="budgetDate" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentDate" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftDate">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>趣味</span>
-        <label>予算<input type="number" id="budgetHobby" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentHobby" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftHobby">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>服・美容</span>
-        <label>予算<input type="number" id="budgetFashion" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentFashion" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftFashion">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>勉強</span>
-        <label>予算<input type="number" id="budgetStudy" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentStudy" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftStudy">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>予備費</span>
-        <label>予算<input type="number" id="budgetReserve" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentReserve" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftReserve">0</span>円</strong>
-      </div>
-      <div class="budget-row">
-        <span>貯金</span>
-        <label>予算<input type="number" id="budgetSaving" min="0" placeholder="0" /></label>
-        <label>使った額<input type="number" id="spentSaving" min="0" placeholder="0" /></label>
-        <strong>あと使える：<span id="leftSaving">0</span>円</strong>
+    <section class="card atm-input-card" aria-labelledby="atmInputTitle">
+      <div class="section-title-row atm-title-row">
+        <div>
+          <h2 id="atmInputTitle">ざっくり支出入力</h2>
+          <small>複数カテゴリをまとめて足す</small>
+        </div>
       </div>
 
-      <p id="warning" class="warning"></p>
+      <div class="atm-unit-box" id="quickUnitBox">
+        <p class="atm-label">単位を選ぶ</p>
+        <div class="atm-unit-actions" role="group" aria-label="支出入力の金額単位">
+          <button type="button" class="atm-unit-button" data-quick-unit="100">100円</button>
+          <button type="button" class="atm-unit-button" data-quick-unit="500">500円</button>
+          <button type="button" class="atm-unit-button active" data-quick-unit="1000">1000円</button>
+          <button type="button" class="atm-unit-button" data-quick-unit="3000">3000円</button>
+        </div>
+      </div>
+
+      <div class="atm-category-box">
+        <div class="atm-category-head">
+          <p class="atm-label">カテゴリと回数</p>
+          <button id="clearQuickCountsButton" type="button" class="secondary mini-button">回数をリセット</button>
+        </div>
+        <div id="quickCategoryList" class="atm-category-list"></div>
+      </div>
+
+      <div class="atm-total-box">
+        <div>
+          <p>追加予定</p>
+          <strong><span id="quickInputTotal">0</span>円</strong>
+        </div>
+        <button id="applyQuickInputButton" type="button">まとめて追加</button>
+      </div>
+
+      <p class="atm-note">例：1000円を選んで、勉強×2・交通費×1にすると、勉強に2000円、交通費に1000円を追加します。</p>
     </section>
+
     <details class="card collapsible-card monthly-settings-card">
       <summary>
         <span>月初設定</span>
-        <small>この設定は月初だけ触ります</small>
+        <small>月初だけ触る</small>
       </summary>
       <div class="collapsible-body monthly-settings-body">
-        <p class="section-help monthly-settings-lead">月初に「期間 → 収入 → 固定費 → 配分」の順で整えます。普段は閉じておいて大丈夫です。</p>
-        <section class="settings-block">
-          <div class="settings-block-header"><h3>管理期間</h3><small>給料日・仕送り日に合わせる</small></div>
-
-        <p class="section-help">
-          給料日・仕送り日に合わせて、管理期間の開始日だけ決めます。
-        </p>
-
-        <label>
-          毎月の開始日
-          <select id="periodStartDay">
-            <option value="1">1日</option><option value="2">2日</option><option value="3">3日</option><option value="4">4日</option><option value="5">5日</option><option value="6">6日</option><option value="7">7日</option><option value="8">8日</option><option value="9">9日</option><option value="10">10日</option><option value="11">11日</option><option value="12">12日</option><option value="13">13日</option><option value="14">14日</option><option value="15">15日</option><option value="16">16日</option><option value="17">17日</option><option value="18">18日</option><option value="19">19日</option><option value="20">20日</option><option value="21">21日</option><option value="22">22日</option><option value="23">23日</option><option value="24">24日</option><option value="25">25日</option><option value="26">26日</option><option value="27">27日</option><option value="28">28日</option>
-          </select>
-        </label>
-
-        <div class="period-simple-grid">
-          <div class="period-box">
-            <p>今の期間</p>
-            <strong id="currentPeriodText">-</strong>
-            <small>今日が入っている期間です。</small>
+        <section class="settings-block compact-period-block">
+          <div class="period-compact-head">
+            <div>
+              <p>管理期間</p>
+              <strong id="activePeriodText">-</strong>
+              <small id="activePeriodNote">現在の管理期間を表示しています。</small>
+            </div>
+            <details class="inline-details">
+              <summary>開始日変更</summary>
+              <label class="compact-select-label">
+                毎月の開始日
+                <select id="periodStartDay">
+                  <option value="1">1日</option><option value="2">2日</option><option value="3">3日</option><option value="4">4日</option><option value="5">5日</option><option value="6">6日</option><option value="7">7日</option><option value="8">8日</option><option value="9">9日</option><option value="10">10日</option><option value="11">11日</option><option value="12">12日</option><option value="13">13日</option><option value="14">14日</option><option value="15">15日</option><option value="16">16日</option><option value="17">17日</option><option value="18">18日</option><option value="19">19日</option><option value="20">20日</option><option value="21">21日</option><option value="22">22日</option><option value="23">23日</option><option value="24">24日</option><option value="25">25日</option><option value="26">26日</option><option value="27">27日</option><option value="28">28日</option>
+                </select>
+              </label>
+              <p class="period-current-line">今日の期間：<span id="currentPeriodText">-</span></p>
+            </details>
           </div>
-          <div class="period-box active-period-box">
-            <p>画面に表示中</p>
-            <strong id="activePeriodText">-</strong>
-            <small id="activePeriodNote">現在の管理期間を表示しています。</small>
-          </div>
-        </div>
 
-        <div class="period-history-box">
-          <h3>過去のデータを見る・コピーする</h3>
-          <label>
-            保存済みの期間
-            <select id="periodHistorySelect"></select>
-          </label>
-          <div class="period-actions">
-            <button id="loadSelectedPeriodButton" type="button">見る</button>
-            <button id="copyPreviousPeriodButton" type="button" class="secondary">前回をコピー</button>
-            <button id="copySelectedPeriodButton" type="button" class="secondary">選んだ期間をコピー</button>
-            <button id="returnCurrentPeriodButton" type="button" class="secondary">今の期間に戻る</button>
-            <button id="deleteSelectedPeriodButton" type="button" class="secondary danger-action">削除</button>
-          </div>
-          <p class="period-help">
-            コピーされるのは、収入・固定費・予算・配分だけです。
-            使った額はコピーしません。
-          </p>
-        </div>
-      
-        </section>
-        <section class="settings-block">
-          <div class="settings-block-header"><h3>収入</h3><small>今月入るお金</small></div>
-
-        <p class="section-help">
-          バイト代・仕送りなど、今月使える元になるお金を入れます。
-          ざっくりで大丈夫です。
-        </p>
-
-        <div class="money-fields">
-          <label class="money-field">
-            <span class="field-icon">💼</span>
-            <span class="field-text"><strong>バイト代</strong><small>アルバイトや副業の収入</small></span>
-            <span class="money-control"><input type="number" id="incomeJob" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-          <label class="money-field">
-            <span class="field-icon">🎁</span>
-            <span class="field-text"><strong>仕送り</strong><small>家族からの仕送り・援助</small></span>
-            <span class="money-control"><input type="number" id="incomeAllowance" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-          <label class="money-field">
-            <span class="field-icon">…</span>
-            <span class="field-text"><strong>その他収入</strong><small>臨時収入・お小遣いなど</small></span>
-            <span class="money-control"><input type="number" id="incomeOther" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-        </div>
-
-        <p class="total money-total"><span>今月入るお金の合計</span><strong><span id="totalIncome">0</span>円</strong></p>
-      
-        </section>
-        <section class="settings-block">
-          <div class="settings-block-header"><h3>固定費</h3><small>先に引くお金</small></div>
-
-        <p class="section-help">
-          スマホ代や定期代など、使う前から決まっている支出を入れます。
-          ここに入れた金額は「自由に使えるお金」から自動で差し引かれます。
-        </p>
-
-        <div class="money-fields">
-          <label class="money-field">
-            <span class="field-icon">📱</span>
-            <span class="field-text"><strong>スマホ代</strong><small>スマートフォンの利用料金</small></span>
-            <span class="money-control"><input type="number" id="fixedPhone" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-          <label class="money-field">
-            <span class="field-icon">▶</span>
-            <span class="field-text"><strong>サブスク</strong><small>動画・音楽などの月額サービス</small></span>
-            <span class="money-control"><input type="number" id="fixedSubscription" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-          <label class="money-field">
-            <span class="field-icon">🚃</span>
-            <span class="field-text"><strong>交通定期</strong><small>通学・通勤の定期代</small></span>
-            <span class="money-control"><input type="number" id="fixedPass" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-          <label class="money-field">
-            <span class="field-icon">…</span>
-            <span class="field-text"><strong>その他固定費</strong><small>保険・電気代など</small></span>
-            <span class="money-control"><input type="number" id="fixedOther" min="0" placeholder="0" /><em>円</em></span>
-          </label>
-        </div>
-
-        <p class="total money-total"><span>先に引くお金の合計</span><strong><span id="totalFixed">0</span>円</strong></p>
-      
-        </section>
-        <section class="settings-block">
-          <div class="settings-block-header"><h3>予算配分</h3><small>カテゴリごとの予算を自動作成</small></div>
-
-        <div class="allocation-grid">
-          <div class="allocation-panel rule-section">
-            <h3>予算を自動で分ける</h3>
-            <p class="section-help">
-              自由に使えるお金を、食費・交通費・趣味などの予算に自動で分けます。
-              迷ったら、まずは初期テンプレートを使ってください。
-            </p>
-
-            <label>
-              配分テンプレート
-              <select id="policyPresetSelect"></select>
+          <details class="period-history-compact">
+            <summary>履歴・コピー操作</summary>
+            <label class="compact-select-label">
+              保存済みの期間
+              <select id="periodHistorySelect"></select>
             </label>
-
-            <p id="policyComment" class="policy-comment"></p>
-
-            <div class="rule-summary-box">
-              <h4>どのくらいの割合で分けるか</h4>
-              <div id="policyRateSummary" class="policy-rate-summary"></div>
+            <div class="period-actions compact-period-actions">
+              <button id="loadSelectedPeriodButton" type="button">見る</button>
+              <button id="copyPreviousPeriodButton" type="button" class="secondary">前回コピー</button>
+              <button id="copySelectedPeriodButton" type="button" class="secondary">選択コピー</button>
+              <button id="returnCurrentPeriodButton" type="button" class="secondary">今へ戻る</button>
+              <button id="deleteSelectedPeriodButton" type="button" class="secondary danger-action">削除</button>
             </div>
+          </details>
+        </section>
 
-            <div class="policy-actions">
-              <button id="applyPolicyPresetButton" type="button">この配分で予算を分ける</button>
-              <button id="deletePolicyPresetButton" type="button" class="secondary">選択中の配分を削除</button>
-            </div>
+        <section class="settings-block money-flow-block">
+          <div class="settings-block-header"><h3>今月の使える金額</h3><small>収入 − 固定費</small></div>
+          <div class="money-flow-summary">
+            <div><span>収入</span><strong>+<span id="totalIncome">0</span>円</strong></div>
+            <div><span>固定費</span><strong>−<span id="totalFixed">0</span>円</strong></div>
+            <div class="money-flow-result"><span>使える金額</span><strong><span id="freeMoneySetupMirror">0</span>円</strong></div>
           </div>
 
-          <div class="allocation-panel custom-panel">
-            <div class="inner-panel">
-              <h3>自分の配分を作る</h3>
-                <p class="section-help">
-                  カテゴリごとの割合を決めて、自分の配分として保存できます。
-                  合計が100%未満の場合、残りは「まだ配分していないお金」として残ります。
-                </p>
+          <details class="inline-details money-flow-details" open>
+            <summary>内訳を調整</summary>
+            <div class="money-fields compact-money-fields">
+              <label class="money-field"><span class="field-icon">💼</span><span class="field-text"><strong>バイト代</strong><small>アルバイト・副業</small></span><span class="money-control"><input type="number" id="incomeJob" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field"><span class="field-icon">🎁</span><span class="field-text"><strong>仕送り</strong><small>家族からの援助</small></span><span class="money-control"><input type="number" id="incomeAllowance" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field"><span class="field-icon">…</span><span class="field-text"><strong>その他収入</strong><small>臨時収入など</small></span><span class="money-control"><input type="number" id="incomeOther" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field fixed-field"><span class="field-icon">📱</span><span class="field-text"><strong>スマホ代</strong><small>固定費</small></span><span class="money-control"><input type="number" id="fixedPhone" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field fixed-field"><span class="field-icon">▶</span><span class="field-text"><strong>サブスク</strong><small>固定費</small></span><span class="money-control"><input type="number" id="fixedSubscription" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field fixed-field"><span class="field-icon">🚃</span><span class="field-text"><strong>交通定期</strong><small>固定費</small></span><span class="money-control"><input type="number" id="fixedPass" min="0" placeholder="0" /><em>円</em></span></label>
+              <label class="money-field fixed-field"><span class="field-icon">…</span><span class="field-text"><strong>その他固定費</strong><small>保険・電気代など</small></span><span class="money-control"><input type="number" id="fixedOther" min="0" placeholder="0" /><em>円</em></span></label>
+            </div>
+          </details>
+        </section>
 
-                <label class="preset-name-label">
-                  配分の名前
-                  <input type="text" id="presetNameInput" placeholder="例：デート多め月" />
-                </label>
-
-                <div class="rate-grid">
-                  <label>食費<input type="number" id="rateFood" min="0" max="100" placeholder="35" /></label>
-                  <label>交通費<input type="number" id="rateTransport" min="0" max="100" placeholder="10" /></label>
-                  <label>交際費<input type="number" id="rateSocial" min="0" max="100" placeholder="8" /></label>
-                  <label>デート代<input type="number" id="rateDate" min="0" max="100" placeholder="7" /></label>
-                  <label>趣味<input type="number" id="rateHobby" min="0" max="100" placeholder="6" /></label>
-                  <label>服・美容<input type="number" id="rateFashion" min="0" max="100" placeholder="5" /></label>
-                  <label>勉強<input type="number" id="rateStudy" min="0" max="100" placeholder="4" /></label>
-                  <label>予備費<input type="number" id="rateReserve" min="0" max="100" placeholder="15" /></label>
-                  <label>貯金<input type="number" id="rateSaving" min="0" max="100" placeholder="10" /></label>
-                </div>
-
-                <p class="rate-total">割合合計：<span id="totalRate">0</span>%</p>
-                <p id="rateWarning" class="warning"></p>
-
-                <div class="preset-actions">
-                  <button id="applyCustomRateButton" type="button">この割合で予算を分ける</button>
-                  <button id="saveNamedPresetButton" type="button" class="secondary">名前を付けて保存</button>
-                </div>
+        <section class="settings-block allocation-simple-block">
+          <div class="settings-block-header"><h3>カテゴリ配分</h3><small>％と金額を同じ場所で調整</small></div>
+          <div class="rate-maker-card compact-rate-maker">
+            <div class="rate-maker-head">
+              <div>
+                <h4>使える金額をカテゴリへ割り振る</h4>
+                <p>割合を動かすと、下の金額も自動で更新されます。</p>
               </div>
+              <strong>合計 <span id="totalRate">0</span>%</strong>
+            </div>
+
+            <div class="rate-grid rate-adjust-grid">
+              <label>食費<input type="number" id="rateFood" min="0" max="100" placeholder="35" /></label>
+              <label>交通費<input type="number" id="rateTransport" min="0" max="100" placeholder="10" /></label>
+              <label>交際費<input type="number" id="rateSocial" min="0" max="100" placeholder="8" /></label>
+              <label>デート代<input type="number" id="rateDate" min="0" max="100" placeholder="7" /></label>
+              <label>趣味<input type="number" id="rateHobby" min="0" max="100" placeholder="6" /></label>
+              <label>服・美容<input type="number" id="rateFashion" min="0" max="100" placeholder="5" /></label>
+              <label>勉強<input type="number" id="rateStudy" min="0" max="100" placeholder="4" /></label>
+              <label>予備費<input type="number" id="rateReserve" min="0" max="100" placeholder="15" /></label>
+              <label>貯金<input type="number" id="rateSaving" min="0" max="100" placeholder="10" /></label>
+            </div>
+
+            <p id="rateWarning" class="warning"></p>
+            <div class="rate-main-actions"><button id="applyCustomRateButton" type="button">この割合で予算を作る</button></div>
           </div>
-        </div>
-      
+
+          <div class="preset-compact-box">
+            <div class="preset-compact-grid">
+              <label class="compact-select-label">テンプレート<select id="policyPresetSelect"></select></label>
+              <button id="applyPolicyPresetButton" type="button">適用</button>
+              <button id="deletePolicyPresetButton" type="button" class="secondary danger-action">削除</button>
+            </div>
+            <div class="preset-save-row">
+              <input type="text" id="presetNameInput" placeholder="例：節約月・デート多め" />
+              <button id="saveNamedPresetButton" type="button" class="secondary">現在の配分を保存</button>
+            </div>
+            <p id="policyComment" class="preset-comment"></p>
+            <div id="policyRateSummary" class="policy-rate-summary compact-policy-summary"></div>
+          </div>
+        </section>
+
+        <section class="hidden-compat" hidden>
+          <div class="budget-row"><span>食費</span><label>予算<input type="number" id="budgetFood" min="0" placeholder="0" /></label><input type="number" id="spentFood" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftFood">0</span>円</strong></div>
+          <div class="budget-row"><span>交通費</span><label>予算<input type="number" id="budgetTransport" min="0" placeholder="0" /></label><input type="number" id="spentTransport" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftTransport">0</span>円</strong></div>
+          <div class="budget-row"><span>交際費</span><label>予算<input type="number" id="budgetSocial" min="0" placeholder="0" /></label><input type="number" id="spentSocial" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftSocial">0</span>円</strong></div>
+          <div class="budget-row"><span>デート代</span><label>予算<input type="number" id="budgetDate" min="0" placeholder="0" /></label><input type="number" id="spentDate" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftDate">0</span>円</strong></div>
+          <div class="budget-row"><span>趣味</span><label>予算<input type="number" id="budgetHobby" min="0" placeholder="0" /></label><input type="number" id="spentHobby" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftHobby">0</span>円</strong></div>
+          <div class="budget-row"><span>服・美容</span><label>予算<input type="number" id="budgetFashion" min="0" placeholder="0" /></label><input type="number" id="spentFashion" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftFashion">0</span>円</strong></div>
+          <div class="budget-row"><span>勉強</span><label>予算<input type="number" id="budgetStudy" min="0" placeholder="0" /></label><input type="number" id="spentStudy" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftStudy">0</span>円</strong></div>
+          <div class="budget-row"><span>予備費</span><label>予算<input type="number" id="budgetReserve" min="0" placeholder="0" /></label><input type="number" id="spentReserve" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftReserve">0</span>円</strong></div>
+          <div class="budget-row"><span>貯金</span><label>予算<input type="number" id="budgetSaving" min="0" placeholder="0" /></label><input type="number" id="spentSaving" min="0" value="" hidden aria-hidden="true" /><strong>あと使える：<span id="leftSaving">0</span>円</strong></div>
+          <p id="warning" class="warning"></p>
         </section>
       </div>
     </details>
@@ -336,12 +249,10 @@
     <section class="usage-note">
       <h2>普段の使い方</h2>
       <p>
-        支出は毎回入力しなくても大丈夫です。
-        大きめに使ったときだけ、使った額のスライダーをざっくり動かしてください。
+        支出は毎回細かく入力しなくても大丈夫です。普段は「ざっくり支出入力」で、使ったカテゴリと回数だけ足してください。
       </p>
       <p>
-        赤は使いすぎ、黄色は残り少なめです。
-        家計簿よりも「今月このまま行くと危ないか」を見る道具として使うのが正解です。
+        カテゴリ別の状況は一番上のグラフで確認します。予算を決め直すときだけ、月初設定を開けば大丈夫です。
       </p>
     </section>
 
@@ -358,23 +269,22 @@
       <div class="share-actions">
         <button id="shareFullButton" type="button">しっかり共有</button>
         <button id="shareSimpleButton" type="button" class="secondary">かんたん共有</button>
-        <button id="shareDarkButton" type="button" class="secondary">ダーク共有</button>
         <button id="shareHistoryButton" type="button" class="secondary">月次履歴カード</button>
       </div>
 
       <p class="share-note">
         「しっかり共有」は具体的な金額あり。「かんたん共有」は収入・固定費の詳細なし。
-        「ダーク共有」はSNSで目立つ濃色版、「月次履歴カード」は前回期間とのざっくり比較です。
+        「月次履歴カード」は前回期間とのざっくり比較です。
       </p>
     </section>
 
-    <footer class="app-footer">© 2026 Hanemy</footer>
+    <footer class="app-footer"><span>© 2026 Hanemy</span><span>Version 2.2</span></footer>
   </main>
 
   <div id="tutorialOverlay" class="tutorial-overlay" hidden>
     <section class="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
       <div class="tutorial-progress"><span id="tutorialStepLabel">1 / 3</span></div>
-      <h2 id="tutorialTitle">まずは今月の準備</h2>
+      <h2 id="tutorialTitle">まずは月初設定</h2>
       <p id="tutorialText">管理する1か月、収入、固定費、予算の配分を入れると、自由に使えるお金が見えてきます。</p>
       <div class="tutorial-dots" aria-hidden="true"><span class="active"></span><span></span><span></span></div>
       <div class="tutorial-actions">
@@ -386,6 +296,9 @@
 
 
   <script src="app.js"></script>
+  <script src="quickinput.js"></script>
+  <script src="budgetadjust.js"></script>
+  <script src="setupadjust.js"></script>
   <script src="share.js"></script>
   <script>
     if ("serviceWorker" in navigator) {

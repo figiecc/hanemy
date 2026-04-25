@@ -318,26 +318,6 @@
     return canvas;
   }
 
-  async function drawDarkCard() {
-    const numbers = getShareNumbers();
-    const status = getShareStatus(numbers);
-    const { canvas, ctx, colors } = await createCanvasBase(status, true);
-    await drawHeader(ctx, colors, status, numbers.periodText);
-
-    drawRoundRect(ctx, 118, 378, 844, 216, 38, colors.mainBox, null);
-    drawText(ctx, "今月あと使えるお金", 156, 446, { color: "#6d6254", size: 31, weight: "900" });
-    drawText(ctx, formatYen(numbers.leftInBudget), 156, 532, { color: colors.mainBoxText, size: 72, weight: "900" });
-
-    drawRoundRect(ctx, 118, 632, 844, 154, 34, colors.soft, colors.line, 2);
-    drawText(ctx, "判断", 156, 684, { color: colors.gold, size: 26, weight: "900" });
-    wrapText(ctx, getJudgementMessage(status), 156, 735, 760, 42, { color: colors.ink, size: 32, weight: "900" });
-
-    drawText(ctx, getStatusMessage(status), 120, 860, { color: colors.badgeBg, size: 30, weight: "900" });
-
-    drawFooter(ctx, colors);
-    return canvas;
-  }
-
   function getSavedPeriodKeys() {
     const keys = [];
     for (let i = 0; i < localStorage.length; i += 1) {
@@ -457,14 +437,12 @@
     const makers = {
       full: drawFullCard,
       simple: drawSimpleCard,
-      dark: drawDarkCard,
       history: drawHistoryCard,
     };
 
     const names = {
       full: "hanemy-full-share.png",
       simple: "hanemy-simple-share.png",
-      dark: "hanemy-dark-share.png",
       history: "hanemy-history-share.png",
     };
 
@@ -476,7 +454,6 @@
     const pairs = [
       ["shareFullButton", "full"],
       ["shareSimpleButton", "simple"],
-      ["shareDarkButton", "dark"],
       ["shareHistoryButton", "history"],
     ];
 

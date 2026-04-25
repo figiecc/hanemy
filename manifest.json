@@ -1,7 +1,7 @@
 {
   "name": "ハネミー｜はねないマネーボード",
   "short_name": "ハネミー",
-  "description": "今月あといくら使えるかが分かる、共有画像も作れる予算管理アプリ",
+  "description": "今月あといくら使えるかが分かる、ざっくり支出入力つき予算管理アプリ",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f1ea",

@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanemy-compact-sliders-v1-6";
+const CACHE_NAME = "hanemy-low-cognitive-setup-v2-2";
 
 const FILES_TO_CACHE = [
   "./",
@@ -6,6 +6,9 @@ const FILES_TO_CACHE = [
   "./style.css",
   "./app.js",
   "./share.js",
+  "./quickinput.js",
+  "./budgetadjust.js",
+  "./setupadjust.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
