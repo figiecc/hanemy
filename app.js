@@ -1,10 +1,10 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "hanemy-beta-v081-state";
-  const LEGACY_STORAGE_KEYS = ["hanemy-beta-v075-state", "hanemy-beta-v073-state", "hanemy-beta-v071-state", "hanemy-beta-v070-state", "hanemy-beta-v060-pastel-state"];
-  const FIRST_RUN_KEY = "hanemy-beta-v081-first-run";
-  const LEGACY_FIRST_RUN_KEYS = ["hanemy-beta-v075-first-run", "hanemy-beta-v073-first-run", "hanemy-beta-v071-first-run", "hanemy-beta-v070-first-run", "hanemy-beta-v060-pastel-first-run"];
+  const STORAGE_KEY = "hanemy-state-v1";
+  const LEGACY_STORAGE_KEYS = ["hanemy-beta-v081-state", "hanemy-beta-v075-state", "hanemy-beta-v073-state", "hanemy-beta-v071-state", "hanemy-beta-v070-state", "hanemy-beta-v060-pastel-state"];
+  const FIRST_RUN_KEY = "hanemy-first-run-v1";
+  const LEGACY_FIRST_RUN_KEYS = ["hanemy-beta-v081-first-run", "hanemy-beta-v075-first-run", "hanemy-beta-v073-first-run", "hanemy-beta-v071-first-run", "hanemy-beta-v070-first-run", "hanemy-beta-v060-pastel-first-run"];
 
   const categories = [
     { key: "food", name: "食費", icon: "🍴" },

@@ -1,14 +1,14 @@
-const CACHE_NAME = "hanemy-beta-v0-8-1-overage-savings";
+const CACHE_NAME = "hanemy-beta-v0-9-public-beta";
 const FILES_TO_CACHE = [
   "./",
-  "./index.html?v=081",
-  "./style.css?v=081",
-  "./app.js?v=081",
-  "./share.js?v=081",
-  "./manifest.json?v=081",
-  "./icon-192.png?v=081",
-  "./icon-512.png?v=081",
-  "./favicon.png?v=081"
+  "./index.html?v=090",
+  "./style.css?v=090",
+  "./app.js?v=090",
+  "./share.js?v=090",
+  "./manifest.json?v=090",
+  "./icon-192.png?v=090",
+  "./icon-512.png?v=090",
+  "./favicon.png?v=090"
 ];
 
 self.addEventListener("install", (event) => {
