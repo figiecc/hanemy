@@ -1,14 +1,14 @@
-const CACHE_NAME = "hanemy-beta-v0-6-4-cleanup-mobile";
+const CACHE_NAME = "hanemy-beta-v0-7-5-final-consistency";
 const FILES_TO_CACHE = [
   "./",
-  "./index.html?v=064",
-  "./style.css?v=064",
-  "./app.js?v=064",
-  "./share.js?v=064",
-  "./manifest.json?v=064",
-  "./icon-192.png?v=064",
-  "./icon-512.png?v=064",
-  "./favicon.png?v=064"
+  "./index.html?v=075",
+  "./style.css?v=075",
+  "./app.js?v=075",
+  "./share.js?v=075",
+  "./manifest.json?v=075",
+  "./icon-192.png?v=075",
+  "./icon-512.png?v=075",
+  "./favicon.png?v=075"
 ];
 
 self.addEventListener("install", (event) => {

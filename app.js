@@ -1,8 +1,10 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "hanemy-beta-v060-pastel-state";
-  const FIRST_RUN_KEY = "hanemy-beta-v060-pastel-first-run";
+  const STORAGE_KEY = "hanemy-beta-v075-state";
+  const LEGACY_STORAGE_KEYS = ["hanemy-beta-v073-state", "hanemy-beta-v071-state", "hanemy-beta-v070-state", "hanemy-beta-v060-pastel-state"];
+  const FIRST_RUN_KEY = "hanemy-beta-v075-first-run";
+  const LEGACY_FIRST_RUN_KEYS = ["hanemy-beta-v073-first-run", "hanemy-beta-v071-first-run", "hanemy-beta-v070-first-run", "hanemy-beta-v060-pastel-first-run"];
 
   const categories = [
     { key: "food", name: "食費", icon: "🍴" },
@@ -12,51 +14,33 @@
     { key: "hobby", name: "趣味", icon: "🎧" },
     { key: "fashion", name: "服・美容", icon: "👕" },
     { key: "study", name: "勉強", icon: "📚" },
-    { key: "reserve", name: "予備費", icon: "🧺" },
-    { key: "saving", name: "貯金", icon: "💎" },
+    { key: "savings", name: "貯蓄", icon: "💎" },
   ];
 
   const templates = {
-    home: {
-      label: "実家暮らし",
-      icon: "🏠",
-      short: "自由費多め",
-      dailyMinimumCost: 300,
-      rates: { food: 20, transport: 12, social: 15, date: 8, hobby: 12, fashion: 8, study: 5, reserve: 10, saving: 10 },
-    },
-    alone: {
-      label: "一人暮らし",
-      icon: "🛋️",
-      short: "生活安全寄り",
-      dailyMinimumCost: 900,
-      rates: { food: 35, transport: 8, social: 8, date: 6, hobby: 6, fashion: 5, study: 4, reserve: 18, saving: 10 },
-    },
-    allowance: {
-      label: "仕送り＋バイト",
-      icon: "👛",
-      short: "親共有向き",
+    basic: {
+      label: "基本テンプレート",
+      icon: "⚖️",
+      short: "貯蓄を先に確保",
       dailyMinimumCost: 700,
-      rates: { food: 30, transport: 10, social: 8, date: 6, hobby: 6, fashion: 5, study: 4, reserve: 21, saving: 10 },
-    },
-    parttime: {
-      label: "バイト中心",
-      icon: "🎒",
-      short: "変動に強め",
-      dailyMinimumCost: 600,
-      rates: { food: 30, transport: 10, social: 7, date: 5, hobby: 6, fashion: 5, study: 4, reserve: 23, saving: 10 },
+      rates: { food: 35, transport: 10, social: 10, date: 5, hobby: 7, fashion: 5, study: 3, savings: 25 },
     },
   };
 
   const inputIds = ["incomeJob", "incomeAllowance", "incomeOther", "fixedPhone", "fixedSubscription", "fixedPass", "fixedOther", "periodStartDay"];
-  const quickCategories = categories.filter((category) => category.key !== "saving");
+  const quickCategories = categories.filter((category) => category.key !== "savings");
 
   let state = createInitialState();
   let quickMode = "add";
   let selectedUnit = 1000;
   const quickCounts = {};
   let autosaveTimer = null;
+  let lastQuickAction = null;
 
   function el(id) { return document.getElementById(id); }
+  function calendarMonthKey(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  }
   function yen(value) { return Math.round(Number(value || 0)).toLocaleString("ja-JP"); }
   function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
   function round100(value) { return Math.floor(Number(value || 0) / 100) * 100; }
@@ -100,10 +84,14 @@
     root.querySelectorAll('input[data-numeric-only="true"], input[inputmode="numeric"]').forEach(prepareNumericInput);
   }
 
+  function spendCategories() {
+    return categories.filter((category) => category.key !== "savings");
+  }
+
   function createInitialState() {
-    const base = templates.allowance;
+    const base = templates.basic;
     return {
-      mode: "allowance",
+      mode: "basic",
       customLabel: "カスタム",
       periodStartDay: 1,
       income: { job: 0, allowance: 0, other: 0 },
@@ -112,12 +100,15 @@
       dailyMinimumCost: base.dailyMinimumCost,
       budgets: Object.fromEntries(categories.map((category) => [category.key, 0])),
       spent: Object.fromEntries(categories.map((category) => [category.key, 0])),
+      savingsTotal: 0,
+      monthKey: calendarMonthKey(),
+      setupSuccessShown: false,
     };
   }
 
   function activeModeLabel() {
     if (state.mode === "custom") return state.customLabel || "カスタム";
-    return templates[state.mode]?.label || "生活タイプ未設定";
+    return templates[state.mode]?.label || "配分準備中";
   }
 
   function getPeriod() {
@@ -147,14 +138,30 @@
     const income = Number(state.income.job || 0) + Number(state.income.allowance || 0) + Number(state.income.other || 0);
     const fixed = Number(state.fixed.phone || 0) + Number(state.fixed.subscription || 0) + Number(state.fixed.pass || 0) + Number(state.fixed.other || 0);
     const free = income - fixed;
-    const budget = categories.reduce((sum, category) => sum + Number(state.budgets[category.key] || 0), 0);
-    const spent = categories.reduce((sum, category) => sum + Number(state.spent[category.key] || 0), 0);
-    const left = budget - spent;
+    const savingsBudget = Math.max(0, Number(state.budgets.savings || 0));
+    const livingBudget = spendCategories().reduce((sum, category) => sum + Number(state.budgets[category.key] || 0), 0);
+    const spent = spendCategories().reduce((sum, category) => sum + Number(state.spent[category.key] || 0), 0);
+    const left = livingBudget - spent;
     const days = remainingDays();
     const minimumLine = days * Number(state.dailyMinimumCost || 0);
     const safeLeft = left - minimumLine;
-    const safeDaily = budget > 0 && safeLeft > 0 ? round100(safeLeft / days) : 0;
-    return { income, fixed, free, budget, spent, left, days, minimumLine, safeLeft, safeDaily };
+    const safeDaily = livingBudget > 0 && safeLeft > 0 ? round100(safeLeft / days) : 0;
+    return {
+      income,
+      fixed,
+      free,
+      budget: livingBudget,
+      livingBudget,
+      savingsBudget,
+      totalAllocated: livingBudget + savingsBudget,
+      spent,
+      left,
+      days,
+      minimumLine,
+      safeLeft,
+      safeDaily,
+      savingsTotal: Number(state.savingsTotal || 0),
+    };
   }
 
   function statusKey(total) {
@@ -166,17 +173,17 @@
   }
 
   function statusLabel(key) {
-    return { safe: "安定", caution: "注意", danger: "危険", neutral: "未設定" }[key] || "未設定";
+    return { safe: "大丈夫", caution: "少し注意", danger: "厳しめ", neutral: "準備中" }[key] || "準備中";
   }
 
   function getDangerForecast(total) {
-    if (total.budget <= 0) return { text: "未設定", note: "生活タイプと今月のお金を入れると表示されます。" };
-    if (total.left < 0) return { text: "すでに予算オーバー", note: "まずは今日の追加支出を止めたい状態です。" };
-    if (total.safeLeft <= 0) return { text: "生活ラインが近いです", note: "月末までの最低限を残すなら、今日は抑えたい状態です。" };
+    if (total.budget <= 0) return { text: "まずは今月入るお金を入力", note: "入れるだけで、今月の見通しが出ます。" };
+    if (total.left < 0) return { text: "かなり厳しめです", note: "まずは今日の追加支出を抑えたい状態です。" };
+    if (total.safeLeft <= 0) return { text: "少し注意です", note: "月末までの最低限を残すなら、今日は控えめが安心です。" };
     if (total.spent <= 0) return { text: "このままなら月末まで持ちます", note: "まだ支出ペースが低いので、安全寄りです。" };
 
     const averageSpend = total.spent / elapsedDays();
-    if (averageSpend <= 0) return { text: "このままなら月末まで持ちます", note: "今の入力では危険日は出ていません。" };
+    if (averageSpend <= 0) return { text: "このままなら月末まで持ちます", note: "今の入力では注意日は出ていません。" };
 
     const daysCanLast = Math.floor(total.safeLeft / averageSpend);
     if (daysCanLast < total.days) {
@@ -239,10 +246,50 @@
     autosaveTimer = setTimeout(save, 250);
   }
 
+  function readSavedState() {
+    const keys = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+    for (const key of keys) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed;
+      } catch {
+        // 壊れた古い保存データは読み飛ばす
+      }
+    }
+    return null;
+  }
+
+  function normalizeModeAfterLoad(saved) {
+    const legacyReserveRate = Number(saved?.rates?.reserve || 0);
+    const legacySavingRate = Number(saved?.rates?.saving || 0);
+    const incomingSavingsRate = Number(saved?.rates?.savings || 0);
+
+    if (state.mode === "custom") {
+      state.rates.savings = incomingSavingsRate || legacyReserveRate + legacySavingRate || state.rates.savings || templates.basic.rates.savings;
+    } else {
+      state.mode = "basic";
+      state.rates = { ...templates.basic.rates };
+      state.dailyMinimumCost = templates.basic.dailyMinimumCost;
+      if (saved && saved.customLabel) state.customLabel = saved.customLabel;
+    }
+
+    state.budgets.savings = Number(saved?.budgets?.savings || 0) || Number(saved?.budgets?.reserve || 0) + Number(saved?.budgets?.saving || 0) || 0;
+    state.spent.savings = 0;
+    delete state.rates.reserve;
+    delete state.rates.saving;
+    delete state.budgets.reserve;
+    delete state.budgets.saving;
+    delete state.spent.reserve;
+    delete state.spent.saving;
+    state.savingsTotal = Math.max(0, Number(saved?.savingsTotal || 0));
+  }
+
   function load() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-      if (!saved || typeof saved !== "object") return;
+      const saved = readSavedState();
+      if (!saved) return;
       const initial = createInitialState();
       state = {
         ...initial,
@@ -253,9 +300,94 @@
         budgets: { ...initial.budgets, ...(saved.budgets || {}) },
         spent: { ...initial.spent, ...(saved.spent || {}) },
       };
+      normalizeModeAfterLoad(saved);
+      if (!saved.monthKey) state.monthKey = calendarMonthKey();
+      if (typeof saved.setupSuccessShown !== "boolean") state.setupSuccessShown = true;
     } catch {
       state = createInitialState();
     }
+  }
+
+  function calculateRolloverSavings() {
+    applyRatesToBudgets();
+    const total = totals();
+    return Math.max(0, total.savingsBudget) + Math.max(0, total.left);
+  }
+
+  function applyMonthRolloverIfNeeded() {
+    if (!state.monthKey || state.monthKey === calendarMonthKey()) return 0;
+    const amount = calculateRolloverSavings();
+    if (amount > 0) state.savingsTotal = Math.max(0, Number(state.savingsTotal || 0)) + amount;
+    return amount;
+  }
+
+  function resetSpent() {
+    categories.forEach((category) => {
+      state.spent[category.key] = 0;
+    });
+    lastQuickAction = null;
+  }
+
+  function resetMoneyInputsForFreshMonth() {
+    state.income = { job: 0, allowance: 0, other: 0 };
+    state.fixed = { phone: 0, subscription: 0, pass: 0, other: 0 };
+    resetSpent();
+    applyRatesToBudgets();
+    writeStateToInputs();
+  }
+
+  function renderMonthResetCard(total) {
+    const card = el("monthResetCard");
+    if (!card) return;
+    const hasSetup = total.budget > 0 || total.income > 0 || total.fixed > 0;
+    const shouldShow = hasSetup && state.monthKey && state.monthKey !== calendarMonthKey();
+    card.hidden = !shouldShow;
+  }
+
+  function startMonthWithSameSettings() {
+    const rolled = applyMonthRolloverIfNeeded();
+    resetSpent();
+    state.monthKey = calendarMonthKey();
+    state.setupSuccessShown = true;
+    render();
+    scheduleSave();
+    const note = rolled > 0 ? `${yen(rolled)}円を貯蓄に追加しました。今月もこの設定で始めます。` : "今月もこの設定で始めます。";
+    showSetupSuccess("使わなかった分を貯蓄にまわしました。", note);
+    toast("先月と同じ設定で今月を始めました。");
+  }
+
+  function startFreshMonth() {
+    const rolled = applyMonthRolloverIfNeeded();
+    resetMoneyInputsForFreshMonth();
+    state.monthKey = calendarMonthKey();
+    state.setupSuccessShown = false;
+    render();
+    scheduleSave();
+    const note = rolled > 0 ? `${yen(rolled)}円を貯蓄に追加しました。今月のお金を入れれば、見通しが出ます。` : "基本設定と今月のお金を入れれば、今月の見通しが出ます。";
+    showSetupSuccess("新しく設定できます。", note);
+    el("setupCard")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function showSetupSuccess(title = "今月はこのペースなら大丈夫そうです。", text = "使った分だけ、あとからざっくり足していきましょう。") {
+    const card = el("setupSuccessCard");
+    if (!card) return;
+    el("setupSuccessTitle").textContent = title;
+    el("setupSuccessText").textContent = text;
+    card.hidden = false;
+  }
+
+  function hideSetupSuccess() {
+    const card = el("setupSuccessCard");
+    if (card) card.hidden = true;
+  }
+
+  function maybeShowSetupSuccess() {
+    const total = totals();
+    if (state.setupSuccessShown || total.budget <= 0 || total.free <= 0) return;
+    state.setupSuccessShown = true;
+    state.monthKey = calendarMonthKey();
+    showSetupSuccess();
+    scheduleSave();
   }
 
   function render() {
@@ -268,14 +400,20 @@
     el("statusBadge").textContent = statusLabel(key);
     el("statusBadge").className = `status-badge ${key}`;
     el("leftMoney").textContent = yen(total.left);
-    el("freeMoney").textContent = yen(total.free);
+    el("freeMoney").textContent = yen(total.budget);
     el("remainingDaysText").textContent = total.budget > 0 ? `残り${total.days}日` : "-";
     el("dangerForecastText").textContent = forecast.text;
-    el("dailyAllowanceText").textContent = total.budget > 0 ? (total.safeDaily > 0 ? `${yen(total.safeDaily)}円くらい` : "今日は支出を抑えたい") : "未設定";
+    el("dailyAllowanceText").textContent = total.budget > 0 ? (total.safeDaily > 0 ? `${yen(total.safeDaily)}円くらい` : "今日は控えめが安心") : "今月のお金を入力";
+    el("savingsTotalText").textContent = yen(total.savingsTotal);
+    const savingsMeta = el("savingsMetaText");
+    if (savingsMeta) savingsMeta.textContent = total.totalAllocated > 0
+      ? `今月分として${yen(total.savingsBudget)}円を先に残します。`
+      : "今月のお金を入れると、自動で貯蓄分を確保します。";
     el("dailyAllowanceNote").textContent = forecast.note;
     el("allowanceBox").className = `allowance-box ${key}`;
     el("stickyBar").textContent = `今月あと使えるお金：${yen(total.left)}円 ｜ ${statusLabel(key)}`;
 
+    renderMonthResetCard(total);
     renderModeButtons();
     renderCategoryStrip(total);
     renderQuickTotal();
@@ -290,6 +428,8 @@
       modeLabel: activeModeLabel(),
       dangerForecast: forecast.text,
       dailyAllowance: total.safeDaily,
+      savingsBudget: total.savingsBudget,
+      savingsTotal: total.savingsTotal,
       categories,
       budgets: { ...state.budgets },
       spent: { ...state.spent },
@@ -300,10 +440,10 @@
     const wrap = el("categoryStrip");
     if (!wrap) return;
     if (total.budget <= 0) {
-      wrap.innerHTML = `<p class="empty-message">今月の準備をすると、カテゴリごとの残り金額が出ます。</p>`;
+      wrap.innerHTML = `<p class="empty-message">まずは今月入るお金を入れるだけでOKです。カテゴリごとの残り金額も自動で出ます。</p>`;
       return;
     }
-    wrap.innerHTML = categories.filter((category) => Number(state.budgets[category.key] || 0) > 0).map((category) => {
+    wrap.innerHTML = spendCategories().filter((category) => Number(state.budgets[category.key] || 0) > 0).map((category) => {
       const budget = Number(state.budgets[category.key] || 0);
       const spent = Number(state.spent[category.key] || 0);
       const left = budget - spent;
@@ -383,18 +523,48 @@
   function applyQuickInput() {
     const total = quickTotal();
     if (total <= 0) return;
+    const changes = [];
+
     quickCategories.forEach((category) => {
       const amount = (quickCounts[category.key] || 0) * selectedUnit;
       if (amount <= 0) return;
       const current = Number(state.spent[category.key] || 0);
-      state.spent[category.key] = quickMode === "subtract" ? Math.max(0, current - amount) : current + amount;
+      const next = quickMode === "subtract" ? Math.max(0, current - amount) : current + amount;
+      const appliedAmount = Math.abs(next - current);
+      if (appliedAmount <= 0) return;
+      state.spent[category.key] = next;
+      changes.push({ key: category.key, amount: appliedAmount });
     });
+
+    const appliedTotal = changes.reduce((sum, item) => sum + item.amount, 0);
+    if (appliedTotal <= 0) {
+      resetQuickCounts();
+      render();
+      toast("取り消せる金額がありません。");
+      return;
+    }
+
+    lastQuickAction = { mode: quickMode, changes };
     const label = quickMode === "subtract" ? "取り消しました" : "追加しました";
     resetQuickCounts();
     render();
     scheduleSave();
-    toast(`${yen(total)}円を${label}。`);
+    toast(`${yen(appliedTotal)}円を${label}。`, { actionLabel: "取り消し", action: undoLastQuickAction, timeout: 4600 });
     if (isMobileViewport()) window.setTimeout(closeQuickSheet, 120);
+  }
+
+  function undoLastQuickAction() {
+    if (!lastQuickAction || !Array.isArray(lastQuickAction.changes)) return;
+    lastQuickAction.changes.forEach((change) => {
+      const current = Number(state.spent[change.key] || 0);
+      if (lastQuickAction.mode === "subtract") state.spent[change.key] = current + change.amount;
+      else state.spent[change.key] = Math.max(0, current - change.amount);
+    });
+    const undoneTotal = lastQuickAction.changes.reduce((sum, item) => sum + item.amount, 0);
+    lastQuickAction = null;
+    render();
+    scheduleSave();
+    toast(`${yen(undoneTotal)}円の操作を取り消しました。`);
   }
 
   function setupPeriodSelect() {
@@ -410,7 +580,7 @@
 
   function renderModeButtons() {
     const html = Object.entries(templates).map(([key, item]) => `<button type="button" data-mode-select="${key}" class="mode-choice-card ${state.mode === key ? "active" : ""}"><span class="mode-check">✓</span><span class="mode-icon" aria-hidden="true">${item.icon || ""}</span><strong>${item.label}</strong><small>${item.short}</small></button>`).join("") +
-      `<button type="button" data-mode-select="custom" class="mode-choice-card ${state.mode === "custom" ? "active" : ""}"><span class="mode-check">✓</span><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><small>自分用設定</small></button>`;
+      `<button type="button" data-mode-select="custom" class="mode-choice-card ${state.mode === "custom" ? "active" : ""}"><span class="mode-check">✓</span><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><small>自分で調整</small></button>`;
 
     const mini = el("modeMiniGrid");
     if (mini && mini.dataset.html !== html) {
@@ -423,7 +593,7 @@
   function renderModeOverlay() {
     const list = el("modeList");
     list.innerHTML = Object.entries(templates).map(([key, item]) => `<button type="button" data-overlay-mode="${key}"><span class="mode-icon" aria-hidden="true">${item.icon || ""}</span><strong>${item.label}</strong><span>${item.short}</span></button>`).join("") +
-      `<button type="button" data-overlay-mode="custom"><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><span>自分で調整した設定</span></button>`;
+      `<button type="button" data-overlay-mode="custom"><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><span>自分で調整</span></button>`;
     list.querySelectorAll("[data-overlay-mode]").forEach((button) => button.addEventListener("click", () => {
       applyMode(button.dataset.overlayMode);
       closeModeOverlay();
@@ -495,7 +665,7 @@
     applyRatesToBudgets();
     render();
     scheduleSave();
-    toast("カスタム生活タイプを反映しました。");
+    toast("カスタム配分を反映しました。");
   }
 
   function adjustMoneyInput(id, step) {
@@ -571,8 +741,8 @@
     prepareAllNumericInputs();
 
     inputIds.forEach((id) => {
-      el(id)?.addEventListener("input", () => { sanitizeNumericInput(el(id)); readInputsToState(); render(); scheduleSave(); });
-      el(id)?.addEventListener("change", () => { sanitizeNumericInput(el(id)); readInputsToState(); render(); scheduleSave(); });
+      el(id)?.addEventListener("input", () => { sanitizeNumericInput(el(id)); readInputsToState(); render(); maybeShowSetupSuccess(); scheduleSave(); });
+      el(id)?.addEventListener("change", () => { sanitizeNumericInput(el(id)); readInputsToState(); render(); maybeShowSetupSuccess(); scheduleSave(); });
     });
 
     document.querySelectorAll("[data-unit]").forEach((button) => {
@@ -597,15 +767,17 @@
       button.addEventListener("click", () => adjustMoneyInput(button.dataset.moneyStep, Number(button.dataset.step || 0)));
     });
 
+    el("copyLastMonthButton")?.addEventListener("click", startMonthWithSameSettings);
+    el("startFreshMonthButton")?.addEventListener("click", startFreshMonth);
+    el("dismissSetupSuccess")?.addEventListener("click", hideSetupSuccess);
     el("applyQuickButton").addEventListener("click", applyQuickInput);
     el("noSpendButton").addEventListener("click", () => toast("今日は大きな支出なしとして確認しました。"));
     el("openQuickButton").addEventListener("click", openQuickSheet);
-    el("openSetupButton").addEventListener("click", () => el("setupCard").scrollIntoView({ behavior: "smooth", block: "start" }));
     el("openModeButton").addEventListener("click", openModeOverlay);
     el("skipModeButton").addEventListener("click", closeModeOverlay);
     el("saveCustomModeButton").addEventListener("click", saveCustomMode);
     el("customModeName").addEventListener("input", () => { state.customLabel = el("customModeName").value.trim() || "カスタム"; state.mode = "custom"; render(); scheduleSave(); });
-    el("customDailyMinimum").addEventListener("input", () => { sanitizeNumericInput(el("customDailyMinimum")); state.dailyMinimumCost = Math.max(0, numberFromInput("customDailyMinimum")); state.mode = "custom"; render(); scheduleSave(); });
+    el("customDailyMinimum").addEventListener("input", () => { sanitizeNumericInput(el("customDailyMinimum")); state.dailyMinimumCost = Math.max(0, numberFromInput("customDailyMinimum")); state.mode = "custom"; render(); maybeShowSetupSuccess(); scheduleSave(); });
 
     const observer = new IntersectionObserver((entries) => {
       el("stickyBar").classList.toggle("show", !entries[0].isIntersecting);
@@ -614,12 +786,27 @@
     observer.observe(el("heroCard"));
   }
 
-  function toast(message) {
+  function toast(message, options = {}) {
     const node = document.createElement("div");
     node.className = "toast";
-    node.textContent = message;
+    const textNode = document.createElement("span");
+    textNode.textContent = message;
+    node.appendChild(textNode);
+
+    if (options.actionLabel && typeof options.action === "function") {
+      const actionButton = document.createElement("button");
+      actionButton.type = "button";
+      actionButton.className = "toast-action";
+      actionButton.textContent = options.actionLabel;
+      actionButton.addEventListener("click", () => {
+        node.remove();
+        options.action();
+      });
+      node.appendChild(actionButton);
+    }
+
     document.body.appendChild(node);
-    setTimeout(() => node.remove(), 2200);
+    setTimeout(() => node.remove(), options.timeout || 2200);
   }
 
   function init() {
@@ -634,7 +821,7 @@
     setupMobileNav();
     bind();
     render();
-    if (!localStorage.getItem(FIRST_RUN_KEY)) openModeOverlay();
+    if (![FIRST_RUN_KEY, ...LEGACY_FIRST_RUN_KEYS].some((key) => localStorage.getItem(key))) openModeOverlay();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

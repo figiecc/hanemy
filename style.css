@@ -82,6 +82,7 @@ h1 { margin: 0; font-size: clamp(38px, 8vw, 56px); line-height: .95; letter-spac
 .hero-label { margin: 0 0 8px; color: var(--mint-dark); font-weight: 950; }
 .hero-money { display: block; color: #36a99f; font-size: clamp(50px, 12vw, 78px); line-height: 1; letter-spacing: -.045em; }
 .hero-subline { margin: 8px 0 0; color: #4f7b80; font-size: 14px; font-weight: 850; }
+.hero-note { margin: 5px 0 0; color: var(--muted); font-size: 12px; font-weight: 800; line-height: 1.5; }
 .hero-mascot { width: 70px; height: 70px; display: grid; place-items: center; border-radius: 999px; background: #fff; color: var(--mint); font-size: 34px; box-shadow: 0 10px 22px rgba(62,139,139,.12); }
 .status-message-card { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-top: 12px; padding: 12px 14px; border-radius: 20px; background: #fff; border: 1px solid #e3f1ef; }
 .status-face { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; background: #fff2c9; }
@@ -151,7 +152,7 @@ details summary::-webkit-details-marker { display: none; }
 .setup-block { display: grid; gap: 11px; padding: 16px; border: 1px solid var(--line); border-radius: 24px; background: rgba(255,255,255,.80); }
 .setup-block h3 { margin: 0; font-size: 20px; }
 .setup-title-row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-.mode-mini-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.mode-mini-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .mode-choice-card { position: relative; display: grid; place-items: center; gap: 4px; min-height: 112px; padding: 10px 8px; text-align: center; border-radius: 20px; background: #fff; color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-soft); }
 .mode-choice-card.active { background: #fff; color: var(--mint-dark); border-color: var(--mint); box-shadow: 0 12px 24px rgba(101,199,189,.18); }
 .mode-icon { font-size: 24px; line-height: 1; }
@@ -390,3 +391,151 @@ input[data-numeric-only="true"], input[inputmode="numeric"] { -moz-appearance: t
 @media (min-width: 761px) {
   .mobile-sheet-backdrop, .mobile-bottom-nav { display: none !important; }
 }
+
+
+/* v0.7.5 final consistency: 基本テンプレート + カスタム + 貯蓄 */
+.month-reset-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: linear-gradient(135deg, #ffffff, #f1fffb);
+  border-color: #ccece8;
+}
+.month-reset-card[hidden] { display: none; }
+.month-reset-card h2,
+.plus-plan-card h2 {
+  margin: 0 0 5px;
+  font-size: 22px;
+}
+.month-reset-card p,
+.plus-plan-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  font-weight: 750;
+}
+.month-reset-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  min-width: 220px;
+}
+.setup-success-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 14px;
+  padding: 13px 14px;
+  border: 1px solid #cfece8;
+  border-radius: 22px;
+  background: rgba(239, 255, 251, .92);
+}
+.setup-success-card[hidden] { display: none; }
+.setup-success-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--mint);
+  color: #fff;
+  font-weight: 950;
+}
+.setup-success-card strong {
+  display: block;
+  font-size: 15px;
+  color: var(--ink);
+}
+.setup-success-card p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 760;
+}
+.plus-plan-card {
+  padding: 14px 16px;
+  background: rgba(255,255,255,.62);
+  border-style: dashed;
+  box-shadow: none;
+}
+.plus-plan-card .eyebrow {
+  opacity: .72;
+}
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast-action {
+  min-height: 30px;
+  width: auto;
+  padding: 6px 10px;
+  background: #fff;
+  color: var(--ink);
+  border: 0;
+  box-shadow: none;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .month-reset-card,
+  .setup-success-card {
+    grid-template-columns: 1fr;
+  }
+  .month-reset-actions {
+    min-width: 0;
+  }
+  .setup-success-card .secondary.small {
+    width: 100%;
+  }
+  .plus-plan-card {
+    padding: 13px;
+  }
+}
+
+
+/* v0.7.5 final consistency: 貯蓄をホームに小さく表示 */
+.savings-balance-card {
+  display: grid;
+  gap: 3px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid #d9ece8;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .82);
+}
+.savings-balance-card span {
+  color: var(--mint-dark);
+  font-size: 12px;
+  font-weight: 950;
+}
+.savings-balance-card strong {
+  color: var(--ink);
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1.1;
+}
+.savings-balance-card small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
+
+/* v0.7.5 final consistency */
+.action-strip.single-action { grid-template-columns: 1fr; }
+.savings-balance-card {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #f5fffc, #fffaf1);
+  border: 1px solid #dcefeb;
+}
+.savings-balance-card span { display: block; color: var(--mint-dark); font-size: 13px; font-weight: 950; }
+.savings-balance-card strong { display: block; margin-top: 4px; color: #2a817a; font-size: clamp(26px, 6.5vw, 38px); line-height: 1; }
+.savings-balance-card small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.55; font-weight: 800; }
+@media (max-width: 760px) { .action-strip.single-action { grid-template-columns: 1fr; } }

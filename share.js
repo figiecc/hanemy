@@ -4,10 +4,17 @@
   const SIZE = 1080;
 
   function yen(value) { return Number(value || 0).toLocaleString("ja-JP") + "円"; }
+  function shareStatusLabel(state) {
+    if (!state || state.budget <= 0) return "まだ準備中";
+    if (state.statusKey === "danger") return "かなり厳しめ";
+    if (state.statusKey === "caution") return "少し注意";
+    return "大丈夫そう";
+  }
+
   function statusMessage(state) {
-    if (!state || state.budget <= 0) return "今月の準備がまだ終わっていません";
-    if (state.statusKey === "danger") return "追加支出を止めたい状態です";
-    if (state.statusKey === "caution") return "少しペースを落とすと安心です";
+    if (!state || state.budget <= 0) return "まずは今月入るお金を入れるだけでOKです";
+    if (state.statusKey === "danger") return "かなり厳しめ。追加支出は控えたい状態です";
+    if (state.statusKey === "caution") return "少し注意。ペースを落とすと安心です";
     return "このままなら月末まで持ちそうです";
   }
 
@@ -59,6 +66,7 @@
       danger: "#bf3d31",
       neutral: "#64777d",
     };
+    const shareStatus = shareStatusLabel(state);
     const statusColor = colors[state.statusKey] || colors.neutral;
     const badgeBg = state.statusKey === "safe" ? "#e8f5ec" : state.statusKey === "danger" ? "#fdecea" : state.statusKey === "caution" ? "#fff4d6" : "#eeeeee";
 
@@ -75,11 +83,11 @@
     if (logo) ctx.drawImage(logo, 108, 108, 132, 132);
 
     text(ctx, "ハネミー", 280, 150, 54, colors.ink, 950);
-    text(ctx, "大学生の生活費確認カード", 284, 198, 28, colors.gold, 900);
-    text(ctx, state.modeLabel || "生活タイプ未設定", 284, 236, 24, colors.muted, 800);
+    text(ctx, "今月の生活費、こんな感じです", 284, 198, 28, colors.gold, 900);
+    text(ctx, state.modeLabel || "配分準備中", 284, 236, 24, colors.muted, 800);
 
     round(ctx, 742, 124, 196, 58, 29, badgeBg, null, 0);
-    text(ctx, `判定：${state.statusLabel || "未設定"}`, 840, 162, 24, statusColor, 950, "center");
+    text(ctx, shareStatus, 840, 162, 24, statusColor, 950, "center");
 
     round(ctx, 118, 320, 844, 190, 40, colors.ink, null, 0);
     text(ctx, "今月あと使えるお金", 158, 382, 32, "#ecfffc", 900);
@@ -91,7 +99,7 @@
 
     round(ctx, 555, 548, 407, 138, 32, "#e4faf6", colors.line, 3);
     text(ctx, "状態", 592, 606, 28, colors.muted, 900);
-    text(ctx, state.statusLabel || "未設定", 592, 660, 42, colors.ink, 900);
+    text(ctx, shareStatus, 592, 660, 42, colors.ink, 900);
 
     round(ctx, 118, 724, 844, 128, 32, "#dff7f3", null, 0);
     text(ctx, "生活費ナビ", 156, 778, 28, "#916113", 900);
@@ -114,7 +122,7 @@
 
     if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
       try {
-        await navigator.share({ title: "ハネミー生活費カード", text: "今月の生活費状況です", files: [file] });
+        await navigator.share({ title: "ハネミー生活費カード", text: "今月の生活費、こんな感じです", files: [file] });
         return;
       } catch (error) {
         if (error && error.name === "AbortError") return;

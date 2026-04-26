@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ハネミー β v0.6.4｜コンパクト生活費ボード</title>
-  <link rel="stylesheet" href="style.css?v=064" />
-  <link rel="manifest" href="manifest.json?v=064" />
+  <title>ハネミー β v0.7.5｜生活費ボード</title>
+  <link rel="stylesheet" href="style.css?v=075" />
+  <link rel="manifest" href="manifest.json?v=075" />
   <meta name="theme-color" content="#65c7bd" />
-  <link rel="apple-touch-icon" href="icon-192.png?v=064" />
-  <link rel="icon" href="favicon.png?v=064" />
+  <link rel="apple-touch-icon" href="icon-192.png?v=075" />
+  <link rel="icon" href="favicon.png?v=075" />
 </head>
 <body>
   <div id="stickyBar" class="sticky-bar" aria-hidden="true">今月あと使えるお金：0円</div>
@@ -16,7 +16,7 @@
   <main class="app">
     <header class="brand-header">
       <div class="brand-mark-shell">
-        <img src="icon-192.png?v=064" alt="ハネミー ロゴ" class="brand-icon" />
+        <img src="icon-192.png?v=075" alt="ハネミー ロゴ" class="brand-icon" />
       </div>
       <div class="brand-copy-wrap">
         <p class="brand-kicker">大学生のための</p>
@@ -29,8 +29,8 @@
     <section class="hero-card" id="heroCard" aria-label="今月の生活費状況">
       <div class="hero-sky" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="hero-topline">
-        <span class="mode-pill" id="modeLabel">生活タイプ未設定</span>
-        <span id="statusBadge" class="status-badge neutral">未設定</span>
+        <span class="mode-pill" id="modeLabel">配分準備中</span>
+        <span id="statusBadge" class="status-badge neutral">準備中</span>
       </div>
 
       <div class="hero-main">
@@ -38,6 +38,7 @@
           <p class="hero-label">今月あと使えるお金</p>
           <strong class="hero-money"><span id="leftMoney">0</span>円</strong>
           <p class="hero-subline"><span id="remainingDaysText">-</span> / 月末までの見通し</p>
+          <p class="hero-note">貯蓄分を除いた、生活費として使える残りです。</p>
         </div>
         <div class="hero-mascot" aria-hidden="true">¥</div>
       </div>
@@ -45,14 +46,20 @@
       <div class="status-message-card">
         <span class="status-face">😊</span>
         <div>
-          <strong id="dangerForecastText">未設定</strong>
-          <small id="dailyAllowanceNote">生活タイプと今月のお金を入れると表示されます。</small>
+          <strong id="dangerForecastText">まずは今月入るお金を入力</strong>
+          <small id="dailyAllowanceNote">基本設定と今月のお金を入れると表示されます。</small>
         </div>
       </div>
 
       <div class="allowance-box" id="allowanceBox">
-        <span>今日はこのくらいなら安心</span>
-        <strong id="dailyAllowanceText">未設定</strong>
+        <span>今日使うならこのくらいまで</span>
+        <strong id="dailyAllowanceText">今月のお金を入力</strong>
+      </div>
+
+      <div class="savings-balance-card" id="savingsBalanceCard" aria-label="貯蓄">
+        <span>貯蓄</span>
+        <strong><span id="savingsTotalText">0</span>円</strong>
+        <small id="savingsMetaText">使わずに残すお金として、月をまたいで積み上がります。</small>
       </div>
 
       <details class="category-summary" open>
@@ -61,9 +68,29 @@
       </details>
     </section>
 
-    <section class="action-strip" aria-label="よく使う操作">
+    <section id="monthResetCard" class="card month-reset-card" hidden>
+      <div>
+        <p class="eyebrow">MONTH START</p>
+        <h2>新しい月を始めますか？</h2>
+        <p>先月の貯蓄分と使わなかった生活費を貯蓄にまわして、今月を始めます。</p>
+      </div>
+      <div class="month-reset-actions">
+        <button id="copyLastMonthButton" type="button">先月と同じ設定で始める</button>
+        <button id="startFreshMonthButton" type="button" class="secondary">新しく設定する</button>
+      </div>
+    </section>
+
+    <section id="setupSuccessCard" class="setup-success-card" hidden>
+      <span class="setup-success-icon">✓</span>
+      <div>
+        <strong id="setupSuccessTitle">今月はこのペースなら大丈夫そうです。</strong>
+        <p id="setupSuccessText">使った分だけ、あとからざっくり足していきましょう。</p>
+      </div>
+      <button id="dismissSetupSuccess" type="button" class="secondary small">閉じる</button>
+    </section>
+
+    <section class="action-strip single-action" aria-label="よく使う操作">
       <button type="button" id="openQuickButton">＋ 今日使った分を足す</button>
-      <button type="button" id="openSetupButton" class="secondary">今月の準備</button>
     </section>
 
     <section class="quick-card card quick-sheet" id="quickCard">
@@ -112,8 +139,8 @@
           <div class="setup-title-row">
             <div>
               <p class="setup-step-label">STEP 1</p>
-              <h3>生活タイプ</h3>
-              <p>近いタイプを選ぶと、配分と安心目安が入ります。</p>
+              <h3>配分設定</h3>
+              <p>基本テンプレートで始めて、必要なら自分用に調整できます。</p>
             </div>
             <button type="button" id="openModeButton" class="secondary small">選び直す</button>
           </div>
@@ -216,15 +243,15 @@
         </div>
 
         <div class="free-box setup-result-box">
-          <span>今月自由に使えるお金</span>
+          <span>生活費として使えるお金</span>
           <strong><span id="freeMoney">0</span>円</strong>
-          <small>入力すると黒ボードに自動反映されます。</small>
+          <small>貯蓄分を除いて、ホームに自動反映されます。</small>
         </div>
 
         <details class="customize-card" id="customizeCard">
-          <summary>生活タイプを自分用に調整する</summary>
+          <summary>配分を自分用に調整する</summary>
           <div class="customize-body">
-            <p class="help-text no-margin">標準テンプレが合わない場合だけ触ります。保存すると生活タイプが「カスタム」になります。</p>
+            <p class="help-text no-margin">基本テンプレートが合わない場合だけ触ります。保存すると配分設定が「カスタム」になります。</p>
             <label class="field custom-name-field">
               <span>名前</span>
               <input id="customModeName" type="text" maxlength="16" placeholder="例：節約寄り" />
@@ -238,19 +265,25 @@
               <span>合計 <b id="rateTotal">100</b>%</span>
             </div>
             <div id="customRateGrid" class="custom-rate-grid"></div>
-            <button id="saveCustomModeButton" type="button" class="wide">この設定をカスタムとして使う</button>
+            <button id="saveCustomModeButton" type="button" class="wide">この設定をカスタム配分として使う</button>
           </div>
         </details>
       </div>
     </details>
 
+    <section class="card plus-plan-card" id="plusPlanSection">
+      <p class="eyebrow">COMING SOON</p>
+      <h2>Hanemy Plus 予定</h2>
+      <p>月次レポート、共有カードデザイン追加、テーマ変更、過去月の見返しを検討中です。いまは無料版の使いやすさを優先します。</p>
+    </section>
+
     <section class="card share-card" id="shareSection">
-      <h2>親に見せる生活費カード</h2>
+      <h2>今月の生活費、こんな感じです</h2>
       <p>収入・固定費・カテゴリ内訳は見せず、残額・残り日数・安全判定だけを共有します。</p>
       <button id="shareParentButton" type="button" class="wide">親に送るカードを作る</button>
     </section>
 
-    <footer class="footer">β v0.6.4 cleanup mobile｜大学生向け生活費設計ボード</footer>
+    <footer class="footer">β v0.7.5 final consistency｜大学生向け生活費ボード</footer>
   </main>
 
   <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
@@ -258,25 +291,24 @@
   <nav class="mobile-bottom-nav" aria-label="下部ナビ">
     <button type="button" class="mobile-nav-button is-active" data-mobile-target="home"><span class="mobile-nav-icon">🏠</span><span>ホーム</span></button>
     <button type="button" class="mobile-nav-button mobile-nav-primary" data-mobile-target="quick"><span class="mobile-nav-plus">＋</span><span>入力</span></button>
-    <button type="button" class="mobile-nav-button" data-mobile-target="setup"><span class="mobile-nav-icon">⚙️</span><span>設定</span></button>
     <button type="button" class="mobile-nav-button" data-mobile-target="share"><span class="mobile-nav-icon">🖼️</span><span>共有</span></button>
   </nav>
 
   <div id="modeOverlay" class="overlay" hidden>
     <section class="mode-card" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
       <p class="eyebrow">FIRST SETUP</p>
-      <h2 id="modeTitle">生活タイプを選んでください</h2>
-      <p class="mode-lead">近いタイプを選ぶだけで、分け方と安心目安を自動で入れます。合わなければ後からカスタムできます。</p>
+      <h2 id="modeTitle">配分設定を選んでください</h2>
+      <p class="mode-lead">迷ったら基本テンプレートで始めて、合わなければ後からカスタムできます。</p>
       <div class="mode-list" id="modeList"></div>
       <button id="skipModeButton" type="button" class="secondary wide">あとで決める</button>
     </section>
   </div>
 
-  <script src="app.js?v=064"></script>
-  <script src="share.js?v=064"></script>
+  <script src="app.js?v=075"></script>
+  <script src="share.js?v=075"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=064"));
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=075"));
     }
   </script>
 </body>
