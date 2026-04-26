@@ -1,10 +1,10 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "hanemy-beta-v075-state";
-  const LEGACY_STORAGE_KEYS = ["hanemy-beta-v073-state", "hanemy-beta-v071-state", "hanemy-beta-v070-state", "hanemy-beta-v060-pastel-state"];
-  const FIRST_RUN_KEY = "hanemy-beta-v075-first-run";
-  const LEGACY_FIRST_RUN_KEYS = ["hanemy-beta-v073-first-run", "hanemy-beta-v071-first-run", "hanemy-beta-v070-first-run", "hanemy-beta-v060-pastel-first-run"];
+  const STORAGE_KEY = "hanemy-beta-v081-state";
+  const LEGACY_STORAGE_KEYS = ["hanemy-beta-v075-state", "hanemy-beta-v073-state", "hanemy-beta-v071-state", "hanemy-beta-v070-state", "hanemy-beta-v060-pastel-state"];
+  const FIRST_RUN_KEY = "hanemy-beta-v081-first-run";
+  const LEGACY_FIRST_RUN_KEYS = ["hanemy-beta-v075-first-run", "hanemy-beta-v073-first-run", "hanemy-beta-v071-first-run", "hanemy-beta-v070-first-run", "hanemy-beta-v060-pastel-first-run"];
 
   const categories = [
     { key: "food", name: "食費", icon: "🍴" },
@@ -36,10 +36,22 @@
   const quickCounts = {};
   let autosaveTimer = null;
   let lastQuickAction = null;
+  let lastSavingsCoverAction = null;
 
   function el(id) { return document.getElementById(id); }
-  function calendarMonthKey(date = new Date()) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  function periodKeyForStartDay(startDay = 1, date = new Date()) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const safeStartDay = clamp(Number(startDay || 1), 1, 28);
+    let year = d.getFullYear();
+    let month = d.getMonth();
+    if (d.getDate() < safeStartDay) month -= 1;
+    const start = new Date(year, month, safeStartDay);
+    return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+  }
+
+  function currentPeriodKey() {
+    return periodKeyForStartDay(state?.periodStartDay || 1);
   }
   function yen(value) { return Math.round(Number(value || 0)).toLocaleString("ja-JP"); }
   function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
@@ -101,7 +113,8 @@
       budgets: Object.fromEntries(categories.map((category) => [category.key, 0])),
       spent: Object.fromEntries(categories.map((category) => [category.key, 0])),
       savingsTotal: 0,
-      monthKey: calendarMonthKey(),
+      savingsCoverage: 0,
+      monthKey: periodKeyForStartDay(1),
       setupSuccessShown: false,
     };
   }
@@ -142,6 +155,11 @@
     const livingBudget = spendCategories().reduce((sum, category) => sum + Number(state.budgets[category.key] || 0), 0);
     const spent = spendCategories().reduce((sum, category) => sum + Number(state.spent[category.key] || 0), 0);
     const left = livingBudget - spent;
+    const savingsCoverage = Math.max(0, Number(state.savingsCoverage || 0));
+    const grossOverallOver = Math.max(0, spent - free);
+    const overallOver = Math.max(0, spent - free - savingsCoverage);
+    const livingOver = Math.max(0, spent - livingBudget);
+    const rolloverSavings = Math.max(0, free - spent);
     const days = remainingDays();
     const minimumLine = days * Number(state.dailyMinimumCost || 0);
     const safeLeft = left - minimumLine;
@@ -156,6 +174,11 @@
       totalAllocated: livingBudget + savingsBudget,
       spent,
       left,
+      livingOver,
+      grossOverallOver,
+      overallOver,
+      savingsCoverage,
+      rolloverSavings,
       days,
       minimumLine,
       safeLeft,
@@ -166,7 +189,8 @@
 
   function statusKey(total) {
     if (total.budget <= 0) return "neutral";
-    if (total.left < 0) return "danger";
+    if (total.overallOver > 0) return "danger";
+    if (total.left < 0) return "caution";
     if (total.safeLeft <= 0) return "caution";
     if (total.left <= total.budget * 0.2) return "caution";
     return "safe";
@@ -178,7 +202,9 @@
 
   function getDangerForecast(total) {
     if (total.budget <= 0) return { text: "まずは今月入るお金を入力", note: "入れるだけで、今月の見通しが出ます。" };
-    if (total.left < 0) return { text: "かなり厳しめです", note: "まずは今日の追加支出を抑えたい状態です。" };
+    if (total.overallOver > 0) return { text: `今月の使えるお金を${yen(total.overallOver)}円超えています`, note: "必要なら、貯蓄から補填できます。" };
+    if (total.savingsCoverage > 0) return { text: `貯蓄から${yen(total.savingsCoverage)}円補填済みです`, note: "今月の貯蓄に回る額は0円です。" };
+    if (total.left < 0) return { text: `生活費を${yen(Math.abs(total.left))}円超えています`, note: `このままだと、今月貯蓄に回る額は${yen(total.rolloverSavings)}円です。` };
     if (total.safeLeft <= 0) return { text: "少し注意です", note: "月末までの最低限を残すなら、今日は控えめが安心です。" };
     if (total.spent <= 0) return { text: "このままなら月末まで持ちます", note: "まだ支出ペースが低いので、安全寄りです。" };
 
@@ -284,6 +310,7 @@
     delete state.spent.reserve;
     delete state.spent.saving;
     state.savingsTotal = Math.max(0, Number(saved?.savingsTotal || 0));
+    state.savingsCoverage = Math.max(0, Number(saved?.savingsCoverage || 0));
   }
 
   function load() {
@@ -301,7 +328,7 @@
         spent: { ...initial.spent, ...(saved.spent || {}) },
       };
       normalizeModeAfterLoad(saved);
-      if (!saved.monthKey) state.monthKey = calendarMonthKey();
+      if (!saved.monthKey) state.monthKey = currentPeriodKey();
       if (typeof saved.setupSuccessShown !== "boolean") state.setupSuccessShown = true;
     } catch {
       state = createInitialState();
@@ -311,11 +338,11 @@
   function calculateRolloverSavings() {
     applyRatesToBudgets();
     const total = totals();
-    return Math.max(0, total.savingsBudget) + Math.max(0, total.left);
+    return Math.max(0, total.rolloverSavings);
   }
 
   function applyMonthRolloverIfNeeded() {
-    if (!state.monthKey || state.monthKey === calendarMonthKey()) return 0;
+    if (!state.monthKey || state.monthKey === currentPeriodKey()) return 0;
     const amount = calculateRolloverSavings();
     if (amount > 0) state.savingsTotal = Math.max(0, Number(state.savingsTotal || 0)) + amount;
     return amount;
@@ -325,7 +352,9 @@
     categories.forEach((category) => {
       state.spent[category.key] = 0;
     });
+    state.savingsCoverage = 0;
     lastQuickAction = null;
+    lastSavingsCoverAction = null;
   }
 
   function resetMoneyInputsForFreshMonth() {
@@ -340,14 +369,14 @@
     const card = el("monthResetCard");
     if (!card) return;
     const hasSetup = total.budget > 0 || total.income > 0 || total.fixed > 0;
-    const shouldShow = hasSetup && state.monthKey && state.monthKey !== calendarMonthKey();
+    const shouldShow = hasSetup && state.monthKey && state.monthKey !== currentPeriodKey();
     card.hidden = !shouldShow;
   }
 
   function startMonthWithSameSettings() {
     const rolled = applyMonthRolloverIfNeeded();
     resetSpent();
-    state.monthKey = calendarMonthKey();
+    state.monthKey = currentPeriodKey();
     state.setupSuccessShown = true;
     render();
     scheduleSave();
@@ -359,7 +388,7 @@
   function startFreshMonth() {
     const rolled = applyMonthRolloverIfNeeded();
     resetMoneyInputsForFreshMonth();
-    state.monthKey = calendarMonthKey();
+    state.monthKey = currentPeriodKey();
     state.setupSuccessShown = false;
     render();
     scheduleSave();
@@ -385,7 +414,7 @@
     const total = totals();
     if (state.setupSuccessShown || total.budget <= 0 || total.free <= 0) return;
     state.setupSuccessShown = true;
-    state.monthKey = calendarMonthKey();
+    state.monthKey = currentPeriodKey();
     showSetupSuccess();
     scheduleSave();
   }
@@ -406,9 +435,14 @@
     el("dailyAllowanceText").textContent = total.budget > 0 ? (total.safeDaily > 0 ? `${yen(total.safeDaily)}円くらい` : "今日は控えめが安心") : "今月のお金を入力";
     el("savingsTotalText").textContent = yen(total.savingsTotal);
     const savingsMeta = el("savingsMetaText");
-    if (savingsMeta) savingsMeta.textContent = total.totalAllocated > 0
-      ? `今月分として${yen(total.savingsBudget)}円を先に残します。`
-      : "今月のお金を入れると、自動で貯蓄分を確保します。";
+    if (savingsMeta) {
+      if (total.totalAllocated <= 0) savingsMeta.textContent = "今月のお金を入れると、自動で貯蓄分を確保します。";
+      else if (total.overallOver > 0) savingsMeta.textContent = `今月の使えるお金を${yen(total.overallOver)}円超えています。`;
+      else if (total.savingsCoverage > 0) savingsMeta.textContent = `今月は貯蓄から${yen(total.savingsCoverage)}円補填済みです。`;
+      else if (total.left < 0) savingsMeta.textContent = `このままだと今月貯蓄に回る額は${yen(total.rolloverSavings)}円です。`;
+      else savingsMeta.textContent = `このままだと今月は${yen(total.rolloverSavings)}円が貯蓄に回ります。`;
+    }
+    renderSavingsCover(total);
     el("dailyAllowanceNote").textContent = forecast.note;
     el("allowanceBox").className = `allowance-box ${key}`;
     el("stickyBar").textContent = `今月あと使えるお金：${yen(total.left)}円 ｜ ${statusLabel(key)}`;
@@ -430,10 +464,78 @@
       dailyAllowance: total.safeDaily,
       savingsBudget: total.savingsBudget,
       savingsTotal: total.savingsTotal,
+      savingsCoverage: total.savingsCoverage,
+      rolloverSavings: total.rolloverSavings,
+      overallOver: total.overallOver,
       categories,
       budgets: { ...state.budgets },
       spent: { ...state.spent },
     };
+  }
+
+  function renderSavingsCover(total) {
+    const panel = el("savingsCoverPanel");
+    const text = el("savingsCoverText");
+    const button = el("coverFromSavingsButton");
+    if (!panel || !text || !button) return;
+
+    const over = Math.max(0, Number(total.overallOver || 0));
+    const available = Math.max(0, Number(state.savingsTotal || 0));
+    const coverable = Math.min(over, available);
+
+    if (over <= 0) {
+      panel.hidden = true;
+      button.disabled = true;
+      return;
+    }
+
+    panel.hidden = false;
+    if (available <= 0) {
+      text.textContent = "貯蓄からの補填が必要ですが、いま使える貯蓄がありません。";
+      button.textContent = "補填できる貯蓄がありません";
+      button.disabled = true;
+      return;
+    }
+
+    const suffix = coverable < over ? `（不足分のうち${yen(coverable)}円まで補填できます）` : "";
+    text.textContent = `必要なら貯蓄から補填できます${suffix}`;
+    button.textContent = coverable < over ? `貯蓄から${yen(coverable)}円だけ補填する` : `貯蓄から${yen(over)}円補填する`;
+    button.disabled = false;
+  }
+
+  function applySavingsCover() {
+    applyRatesToBudgets();
+    const total = totals();
+    const over = Math.max(0, Number(total.overallOver || 0));
+    const available = Math.max(0, Number(state.savingsTotal || 0));
+    const amount = Math.min(over, available);
+
+    if (over <= 0) {
+      toast("補填が必要な超過はありません。");
+      return;
+    }
+    if (amount <= 0) {
+      toast("補填できる貯蓄がありません。");
+      return;
+    }
+
+    state.savingsTotal = Math.max(0, available - amount);
+    state.savingsCoverage = Math.max(0, Number(state.savingsCoverage || 0)) + amount;
+    lastSavingsCoverAction = { amount };
+    render();
+    scheduleSave();
+    toast(`貯蓄から${yen(amount)}円補填しました。`, { actionLabel: "取り消し", action: undoLastSavingsCover, timeout: 4600 });
+  }
+
+  function undoLastSavingsCover() {
+    if (!lastSavingsCoverAction || !lastSavingsCoverAction.amount) return;
+    const amount = Number(lastSavingsCoverAction.amount || 0);
+    state.savingsTotal = Math.max(0, Number(state.savingsTotal || 0)) + amount;
+    state.savingsCoverage = Math.max(0, Number(state.savingsCoverage || 0) - amount);
+    lastSavingsCoverAction = null;
+    render();
+    scheduleSave();
+    toast(`貯蓄からの${yen(amount)}円補填を取り消しました。`);
   }
 
   function renderCategoryStrip(total) {
@@ -612,7 +714,7 @@
     applyRatesToBudgets();
     render();
     scheduleSave();
-    toast(`${activeModeLabel()}に設定しました。`);
+    toast(`${activeModeLabel()}で始めます。`);
   }
 
   function renderCustomRateInputs(attachListeners = true) {
@@ -768,6 +870,7 @@
     });
 
     el("copyLastMonthButton")?.addEventListener("click", startMonthWithSameSettings);
+    el("coverFromSavingsButton")?.addEventListener("click", applySavingsCover);
     el("startFreshMonthButton")?.addEventListener("click", startFreshMonth);
     el("dismissSetupSuccess")?.addEventListener("click", hideSetupSuccess);
     el("applyQuickButton").addEventListener("click", applyQuickInput);

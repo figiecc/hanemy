@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ハネミー β v0.7.5｜生活費ボード</title>
-  <link rel="stylesheet" href="style.css?v=075" />
-  <link rel="manifest" href="manifest.json?v=075" />
+  <title>ハネミー β v0.8.1｜超過・貯蓄調整版</title>
+  <link rel="stylesheet" href="style.css?v=081" />
+  <link rel="manifest" href="manifest.json?v=081" />
   <meta name="theme-color" content="#65c7bd" />
-  <link rel="apple-touch-icon" href="icon-192.png?v=075" />
-  <link rel="icon" href="favicon.png?v=075" />
+  <link rel="apple-touch-icon" href="icon-192.png?v=081" />
+  <link rel="icon" href="favicon.png?v=081" />
 </head>
 <body>
   <div id="stickyBar" class="sticky-bar" aria-hidden="true">今月あと使えるお金：0円</div>
@@ -16,7 +16,7 @@
   <main class="app">
     <header class="brand-header">
       <div class="brand-mark-shell">
-        <img src="icon-192.png?v=075" alt="ハネミー ロゴ" class="brand-icon" />
+        <img src="icon-192.png?v=081" alt="ハネミー ロゴ" class="brand-icon" />
       </div>
       <div class="brand-copy-wrap">
         <p class="brand-kicker">大学生のための</p>
@@ -60,6 +60,10 @@
         <span>貯蓄</span>
         <strong><span id="savingsTotalText">0</span>円</strong>
         <small id="savingsMetaText">使わずに残すお金として、月をまたいで積み上がります。</small>
+        <div id="savingsCoverPanel" class="savings-cover-panel" hidden>
+          <p id="savingsCoverText">必要なら貯蓄から補填できます。</p>
+          <button id="coverFromSavingsButton" type="button" class="secondary small">貯蓄から補填する</button>
+        </div>
       </div>
 
       <details class="category-summary" open>
@@ -72,7 +76,7 @@
       <div>
         <p class="eyebrow">MONTH START</p>
         <h2>新しい月を始めますか？</h2>
-        <p>先月の貯蓄分と使わなかった生活費を貯蓄にまわして、今月を始めます。</p>
+        <p>前の期間の貯蓄分と使わなかった生活費を貯蓄にまわして、今月を始めます。</p>
       </div>
       <div class="month-reset-actions">
         <button id="copyLastMonthButton" type="button">先月と同じ設定で始める</button>
@@ -283,7 +287,7 @@
       <button id="shareParentButton" type="button" class="wide">親に送るカードを作る</button>
     </section>
 
-    <footer class="footer">β v0.7.5 final consistency｜大学生向け生活費ボード</footer>
+    <footer class="footer">β v0.8.1 overage savings｜大学生向け生活費ボード</footer>
   </main>
 
   <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
@@ -297,18 +301,18 @@
   <div id="modeOverlay" class="overlay" hidden>
     <section class="mode-card" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
       <p class="eyebrow">FIRST SETUP</p>
-      <h2 id="modeTitle">配分設定を選んでください</h2>
-      <p class="mode-lead">迷ったら基本テンプレートで始めて、合わなければ後からカスタムできます。</p>
+      <h2 id="modeTitle">まず基本テンプレートで始めます</h2>
+      <p class="mode-lead">細かい設定は後からで大丈夫です。今月入るお金を入れるだけで見通しが出ます。</p>
       <div class="mode-list" id="modeList"></div>
-      <button id="skipModeButton" type="button" class="secondary wide">あとで決める</button>
+      <button id="skipModeButton" type="button" class="secondary wide">このまま始める</button>
     </section>
   </div>
 
-  <script src="app.js?v=075"></script>
-  <script src="share.js?v=075"></script>
+  <script src="app.js?v=081"></script>
+  <script src="share.js?v=081"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=075"));
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=081"));
     }
   </script>
 </body>
