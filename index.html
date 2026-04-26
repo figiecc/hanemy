@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ハネミー β v0.9｜Public Beta</title>
-  <link rel="stylesheet" href="style.css?v=090" />
-  <link rel="manifest" href="manifest.json?v=090" />
+  <title>ハネミー β v0.9.1｜Public Beta</title>
+  <link rel="stylesheet" href="style.css?v=091" />
+  <link rel="manifest" href="manifest.json?v=091" />
   <meta name="theme-color" content="#65c7bd" />
-  <link rel="apple-touch-icon" href="icon-192.png?v=090" />
-  <link rel="icon" href="favicon.png?v=090" />
+  <link rel="apple-touch-icon" href="icon-192.png?v=091" />
+  <link rel="icon" href="favicon.png?v=091" />
 </head>
 <body>
   <div id="stickyBar" class="sticky-bar" aria-hidden="true">今月あと使えるお金：0円</div>
 
   <main class="app">
-    <header class="brand-header">
-      <div class="brand-mark-shell">
-        <img src="icon-192.png?v=090" alt="ハネミー ロゴ" class="brand-icon" />
-      </div>
-      <div class="brand-copy-wrap">
-        <p class="brand-kicker">大学生のための</p>
-        <h1>ハネミー</h1>
-        <p class="brand-en">HANEMY</p>
-        <p class="brand-copy">使えるお金が、ひと目でわかる。</p>
+    <header class="brand-header brand-header-logo">
+      <img src="logo-horizontal.png?v=091" alt="ハネミー ロゴ" class="brand-lockup" />
+      <div class="brand-copy-wrap brand-copy-wrap-logo">
+        <p class="brand-kicker">大学生のための生活費ボード</p>
+        <p class="brand-copy">家計簿じゃなくて、今月あといくら使えるかを見るアプリ。</p>
       </div>
     </header>
 
@@ -287,7 +283,7 @@
       <button id="shareParentButton" type="button" class="wide">親に送るカードを作る</button>
     </section>
 
-    <footer class="footer">β v0.9 Public Beta｜大学生向け生活費ボード</footer>
+    <footer class="footer">β v0.9.1 Public Beta｜新ロゴ適用版</footer>
   </main>
 
   <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
@@ -308,11 +304,11 @@
     </section>
   </div>
 
-  <script src="app.js?v=090"></script>
-  <script src="share.js?v=090"></script>
+  <script src="app.js?v=091"></script>
+  <script src="share.js?v=091"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=090"));
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=091"));
     }
   </script>
 </body>

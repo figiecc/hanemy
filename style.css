@@ -526,7 +526,7 @@ input[data-numeric-only="true"], input[inputmode="numeric"] { -moz-appearance: t
 }
 
 
-/* v0.9 public beta */
+/* v0.9.1 public beta */
 .action-strip.single-action { grid-template-columns: 1fr; }
 .savings-balance-card {
   margin-top: 12px;
@@ -576,3 +576,11 @@ input[data-numeric-only="true"], input[inputmode="numeric"] { -moz-appearance: t
 @media (max-width: 760px) {
   .savings-cover-panel button { width: 100%; }
 }
+
+
+/* v0.9.1 public beta: new logo applied */
+.brand-header-logo { display: grid; gap: 10px; align-items: start; }
+.brand-lockup { display: block; width: min(520px, 100%); height: auto; }
+.brand-copy-wrap-logo { display: grid; gap: 6px; }
+.brand-copy-wrap-logo .brand-copy { margin-top: 0; }
+@media (max-width: 560px) { .brand-lockup { width: min(360px, 100%); } .brand-copy-wrap-logo .brand-kicker { font-size: 11px; } }

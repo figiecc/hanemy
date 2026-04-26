@@ -1,14 +1,14 @@
-const CACHE_NAME = "hanemy-beta-v0-9-public-beta";
+const CACHE_NAME = "hanemy-beta-v0-9-1-public-beta-logo";
 const FILES_TO_CACHE = [
   "./",
-  "./index.html?v=090",
-  "./style.css?v=090",
-  "./app.js?v=090",
-  "./share.js?v=090",
-  "./manifest.json?v=090",
-  "./icon-192.png?v=090",
-  "./icon-512.png?v=090",
-  "./favicon.png?v=090"
+  "./index.html?v=091",
+  "./style.css?v=091",
+  "./app.js?v=091",
+  "./share.js?v=091",
+  "./manifest.json?v=091",
+  "./icon-192.png?v=091",
+  "./icon-512.png?v=091",
+  "./favicon.png?v=091"
 ];
 
 self.addEventListener("install", (event) => {
