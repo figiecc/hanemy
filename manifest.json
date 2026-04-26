@@ -1,15 +1,23 @@
 {
-  "name": "ハネミー β｜やさしい生活費ボード",
+  "name": "ハネミー｜使えるお金が、ひと目でわかる",
   "short_name": "ハネミー",
-  "description": "大学生が今月あといくら使えるかをやさしく見える化する生活費ボード",
-  "start_url": "./index.html?v=060",
+  "description": "今月あといくら使えるかが分かる、大学生向けの生活費管理アプリ",
+  "start_url": "./index.html?v=062",
   "display": "standalone",
-  "background_color": "#f4fbf8",
-  "theme_color": "#65c7bd",
+  "background_color": "#F7FAFA",
+  "theme_color": "#7FD1C1",
   "orientation": "portrait",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png?v=062",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png?v=062",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ],
-  "id": "./"
+  "id": "./?v=062"
 }
