@@ -99,6 +99,8 @@ const fixedIds = [
   "fixedSubscription",
   "fixedPass",
   "fixedOther",
+  "fixedCredit",
+  "fixedPlanned",
 ];
 
 const categories = [
@@ -1138,16 +1140,26 @@ function applyRatesToBudgets(rates) {
     return;
   }
 
+  let allocatedTotal = 0;
+  const categoriesWithRate = unlockedCategories.filter((category) => {
+    return Number(rates[category.rateKey] || 0) > 0;
+  });
+
   unlockedCategories.forEach((category) => {
     const rate = Number(rates[category.rateKey] || 0);
 
-    if (unlockedRateTotal <= 0) {
+    if (unlockedRateTotal <= 0 || rate <= 0) {
       getElement(category.budgetId).value = 0;
       return;
     }
 
-    const recommendedAmount = roundDownToHundred(remainingTargetBudget * (rate / unlockedRateTotal));
+    const isLastRatedCategory = categoriesWithRate[categoriesWithRate.length - 1]?.budgetId === category.budgetId;
+    const recommendedAmount = isLastRatedCategory
+      ? Math.max(0, Math.round(remainingTargetBudget - allocatedTotal))
+      : roundDownToHundred(remainingTargetBudget * (rate / unlockedRateTotal));
+
     getElement(category.budgetId).value = recommendedAmount;
+    allocatedTotal += recommendedAmount;
   });
 
   updateScreen();
@@ -1583,6 +1595,27 @@ function handlePeriodStartDayChange() {
   loadCurrentPeriodData();
 }
 
+
+function setupTopActionJumps() {
+  const quickButton = getElement("jumpQuickInputButton");
+  const setupButton = getElement("jumpMonthlySetupButton");
+
+  if (quickButton) {
+    quickButton.addEventListener("click", () => {
+      getElement("atmInputTitle")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  if (setupButton) {
+    setupButton.addEventListener("click", () => {
+      const settingsCard = document.querySelector(".monthly-settings-card");
+      if (settingsCard) settingsCard.open = true;
+      settingsCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+}
+
+setupTopActionJumps();
 setupStickyBudgetBar();
 setupStatusMessage();
 setupTutorial();

@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = "hanemy-quick-check-date-v1";
   let selectedUnit = 1000;
+  let quickMode = "add";
   const counts = {};
 
   const quickCategories = [
@@ -69,6 +70,11 @@
     }, 0);
   }
 
+  function getSignedTotal() {
+    const total = getTotal();
+    return quickMode === "subtract" ? -total : total;
+  }
+
   function renderCounts() {
     quickCategories.forEach((category) => {
       const count = counts[category.key] || 0;
@@ -82,10 +88,19 @@
     });
 
     const totalNode = el("quickInputTotal");
-    if (totalNode) totalNode.textContent = formatYen(getTotal());
+    const total = getTotal();
+    const signedTotal = getSignedTotal();
+
+    if (totalNode) totalNode.textContent = formatYen(Math.abs(signedTotal));
+
+    const totalLabel = el("quickInputTotalLabel");
+    if (totalLabel) totalLabel.textContent = quickMode === "subtract" ? "取り消し予定" : "追加予定";
 
     const applyButton = el("applyQuickInputButton");
-    if (applyButton) applyButton.disabled = getTotal() <= 0;
+    if (applyButton) {
+      applyButton.disabled = total <= 0;
+      applyButton.textContent = quickMode === "subtract" ? "まとめて取り消す" : "まとめて追加";
+    }
   }
 
   function resetCounts() {
@@ -144,6 +159,7 @@
 
   function applyQuickInput() {
     const amount = getTotal();
+    const signedAmount = getSignedTotal();
     if (amount <= 0) return;
 
     quickCategories.forEach((category) => {
@@ -153,13 +169,15 @@
       const input = el(category.spentId);
       if (!input) return;
 
-      input.value = getNumber(category.spentId) + count * selectedUnit;
+      const delta = count * selectedUnit * (quickMode === "subtract" ? -1 : 1);
+      input.value = Math.max(0, getNumber(category.spentId) + delta);
     });
 
     if (typeof window.updateScreen === "function") window.updateScreen();
     if (typeof window.scheduleAutosave === "function") window.scheduleAutosave();
     if (typeof window.showStatus === "function") {
-      window.showStatus(`支出をまとめて${formatYen(amount)}円追加しました。`);
+      const actionText = signedAmount < 0 ? "取り消しました" : "追加しました";
+      window.showStatus(`支出をまとめて${formatYen(Math.abs(signedAmount))}円${actionText}。`);
     }
 
     markTodayChecked();
@@ -188,6 +206,16 @@
 
     quickCategories.forEach((category) => {
       counts[category.key] = 0;
+    });
+
+    document.querySelectorAll("[data-quick-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        quickMode = button.dataset.quickMode === "subtract" ? "subtract" : "add";
+        document.querySelectorAll("[data-quick-mode]").forEach((item) => {
+          item.classList.toggle("active", item === button);
+        });
+        renderCounts();
+      });
     });
 
     document.querySelectorAll("[data-quick-unit]").forEach((button) => {

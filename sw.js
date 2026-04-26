@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanemy-low-cognitive-setup-v2-2";
+const CACHE_NAME = "hanemy-low-cognitive-setup-v2-3";
 
 const FILES_TO_CACHE = [
   "./",

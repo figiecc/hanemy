@@ -971,7 +971,7 @@ label {
 
 .share-actions {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -2061,226 +2061,76 @@ label {
   }
 }
 
-/* v2.2 月初設定再設計：配分と予算を統合 */
-.hidden-compat[hidden] { display: none !important; }
-
-.compact-period-block,
-.money-flow-block,
-.allocation-simple-block {
-  padding-top: 12px;
-}
-
-.period-compact-head {
+/* v2.3 初見導線：黒ボード直下に行動を置く */
+.top-action-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
+  margin: -2px 0 16px;
   padding: 14px;
-  border-radius: 18px;
-  background: #fff8ec;
-  border: 1px solid #ecd8aa;
+  border: 1px solid #e3d8c8;
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 10px 28px rgba(80, 60, 30, 0.08);
 }
 
-.period-compact-head p,
-.period-current-line {
-  margin: 0 0 4px;
+.top-action-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.top-action-copy strong {
+  font-size: 16px;
+}
+
+.top-action-copy span {
   color: var(--muted);
   font-size: 13px;
-  font-weight: 900;
-}
-
-.period-compact-head strong {
-  display: block;
-  font-size: 20px;
-  line-height: 1.35;
-}
-
-.period-compact-head small {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
   line-height: 1.5;
 }
 
-.inline-details,
-.period-history-compact {
-  border-radius: 16px;
-  background: #fffdf8;
-  border: 1px solid #eee2d2;
-  padding: 10px 12px;
-}
-
-.inline-details summary,
-.period-history-compact summary {
-  cursor: pointer;
-  list-style: none;
-  color: #8a6b3d;
-  font-weight: 900;
-}
-
-.inline-details summary::-webkit-details-marker,
-.period-history-compact summary::-webkit-details-marker { display: none; }
-
-.inline-details summary::after,
-.period-history-compact summary::after {
-  content: " ▼";
-  font-size: 11px;
-}
-
-.inline-details[open] summary::after,
-.period-history-compact[open] summary::after { content: " ▲"; }
-
-.compact-select-label {
+.top-action-jump-buttons {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.period-history-compact { margin-top: 10px; }
-.compact-period-actions { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-
-.money-flow-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-bottom: 12px;
+  min-width: min(420px, 100%);
 }
 
-.money-flow-summary div {
-  padding: 14px;
-  border: 1px solid #eee2d2;
-  border-radius: 18px;
-  background: #fffdf8;
+.top-action-jump-buttons button {
+  width: 100%;
+  min-height: 48px;
 }
 
-.money-flow-summary span {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
+.atm-mode-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.money-flow-summary strong {
-  font-size: 24px;
-  line-height: 1;
-}
-
-.money-flow-result {
-  background: var(--ink) !important;
-  border-color: var(--ink) !important;
-  color: #fff;
-}
-
-.money-flow-result span { color: #e8dcca; }
-.money-flow-result strong { font-size: 30px; }
-
-.compact-money-fields {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 12px;
-  border-top: 0;
-}
-
-.compact-money-fields .money-field {
-  border: 1px solid #eee2d2;
-  border-radius: 16px;
-  padding: 10px;
-  background: rgba(255, 253, 248, 0.88);
-}
-
-.fixed-field .field-icon { background: #efe4d4; color: #6d6254; }
-
-.compact-rate-maker { margin-bottom: 12px; }
-
-.rate-money-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  padding: 9px 10px;
-  border-radius: 12px;
-  background: #f6efe4;
-}
-
-.rate-money-line span {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.rate-money-line strong {
+.atm-mode-button {
+  min-height: 46px;
+  background: #d8cbbb;
   color: var(--ink);
-  font-size: 18px;
 }
 
-.compact-rate-chip-row { grid-template-columns: repeat(4, 1fr); }
-
-.rate-manual-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: 6px;
-  align-items: center;
-  margin-top: 7px;
+.atm-mode-button.active {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(47, 42, 36, 0.18);
 }
 
-.rate-manual-grid span {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 900;
+.atm-label-spaced {
+  margin-top: 14px;
 }
-
-.rate-manual-grid input { padding: 8px 9px; text-align: right; font-size: 14px; }
-
-.preset-compact-box {
-  padding: 14px;
-  border: 1px solid #eee2d2;
-  border-radius: 18px;
-  background: rgba(255, 253, 248, 0.82);
-}
-
-.preset-compact-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 96px 96px;
-  gap: 10px;
-  align-items: end;
-}
-
-.preset-save-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.preset-comment {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.compact-policy-summary {
-  margin-top: 8px;
-}
-
-.share-actions { grid-template-columns: repeat(3, 1fr); }
 
 @media (max-width: 860px) {
-  .period-compact-head,
-  .money-flow-summary,
-  .compact-money-fields,
-  .preset-compact-grid,
-  .preset-save-row,
-  .compact-period-actions,
-  .share-actions {
+  .top-action-card {
     grid-template-columns: 1fr;
   }
 
-  .period-compact-head strong { font-size: 17px; }
-  .money-flow-summary strong { font-size: 22px; }
-  .money-flow-result strong { font-size: 28px; }
+  .top-action-jump-buttons {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
 }

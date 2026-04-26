@@ -16,7 +16,7 @@
   };
 
   const incomeIds = ["incomeJob", "incomeAllowance", "incomeOther"];
-  const fixedIds = ["fixedPhone", "fixedSubscription", "fixedPass", "fixedOther"];
+  const fixedIds = ["fixedPhone", "fixedSubscription", "fixedPass", "fixedOther", "fixedCredit", "fixedPlanned"];
   const budgetIds = [
     "budgetFood", "budgetTransport", "budgetSocial", "budgetDate", "budgetHobby",
     "budgetFashion", "budgetStudy", "budgetReserve", "budgetSaving"
