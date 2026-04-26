@@ -1,32 +1,31 @@
-# ハネミー｜はねないマネーボード
+# ハネミー β v0.5.1 UI refine
 
-今月あといくら使えるかが分かる予算管理アプリです。
+大学生向けの生活費判断ボードです。
+家計簿ではなく、「今月あといくら使っていいか」を中心に確認します。
 
-家計簿のように細かく記録するのではなく、
-「このまま使って大丈夫か」を判断するためのボードとして作りました。
+## 今回の主な変更
 
-## 特徴
-
-- 収入と固定費を入れるだけ
-- 自動でカテゴリ別予算を作成
-- ざっくり支出追加ボタン対応
-- 使いすぎを色で警告
-- スマホホーム画面アプリ対応（PWA）
+- 生活タイプを横並びの同サイズカードに整理
+- STEP3/STEP4を金額調整カードとして洗練
+- 収入・固定費カードに補助文と「円」表示を追加
+- カテゴリ状況に具体的な残り金額を表示
+- 既存の足す/取り消す、カスタム生活タイプ、親共有カードは維持
 
 ## 使い方
 
-1. 管理する1か月を決める
-2. 収入を入れる
-3. 固定費を入れる
-4. 予算の配分を作る
-5. 残りを確認する
+1. `index.html` を開く
+2. 生活タイプを選ぶ
+3. 今月入るお金と先に消えるお金を入れる
+4. 今日使った分だけざっくり足す
 
-## 公開URL
+## ファイル構成
 
-https://figiecc.github.io/hanemy/
-
-This project is open-source under MIT License.
-
-However, the Hanemy name, subtitle, logo,
-and generated share card designs are not permitted
-for reuse in redistributed versions.
+- `index.html`
+- `style.css`
+- `app.js`
+- `share.js`
+- `manifest.json`
+- `sw.js`
+- `icon-192.png`
+- `icon-512.png`
+- `favicon.png`
