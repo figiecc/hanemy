@@ -1,42 +1,46 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "hanemy-beta-v051-ui-refine-state";
-  const FIRST_RUN_KEY = "hanemy-beta-v051-ui-refine-first-run";
+  const STORAGE_KEY = "hanemy-beta-v060-pastel-state";
+  const FIRST_RUN_KEY = "hanemy-beta-v060-pastel-first-run";
 
   const categories = [
-    { key: "food", name: "食費" },
-    { key: "transport", name: "交通費" },
-    { key: "social", name: "交際費" },
-    { key: "date", name: "デート代" },
-    { key: "hobby", name: "趣味" },
-    { key: "fashion", name: "服・美容" },
-    { key: "study", name: "勉強" },
-    { key: "reserve", name: "予備費" },
-    { key: "saving", name: "貯金" },
+    { key: "food", name: "食費", icon: "🍴" },
+    { key: "transport", name: "交通費", icon: "🚌" },
+    { key: "social", name: "交際費", icon: "🎮" },
+    { key: "date", name: "デート代", icon: "☕" },
+    { key: "hobby", name: "趣味", icon: "🎧" },
+    { key: "fashion", name: "服・美容", icon: "👕" },
+    { key: "study", name: "勉強", icon: "📚" },
+    { key: "reserve", name: "予備費", icon: "🧺" },
+    { key: "saving", name: "貯金", icon: "💎" },
   ];
 
   const templates = {
     home: {
       label: "実家暮らし",
+      icon: "🏠",
       short: "自由費多め",
       dailyMinimumCost: 300,
       rates: { food: 20, transport: 12, social: 15, date: 8, hobby: 12, fashion: 8, study: 5, reserve: 10, saving: 10 },
     },
     alone: {
       label: "一人暮らし",
+      icon: "🛋️",
       short: "生活安全寄り",
       dailyMinimumCost: 900,
       rates: { food: 35, transport: 8, social: 8, date: 6, hobby: 6, fashion: 5, study: 4, reserve: 18, saving: 10 },
     },
     allowance: {
       label: "仕送り＋バイト",
+      icon: "👛",
       short: "親共有向き",
       dailyMinimumCost: 700,
       rates: { food: 30, transport: 10, social: 8, date: 6, hobby: 6, fashion: 5, study: 4, reserve: 21, saving: 10 },
     },
     parttime: {
       label: "バイト中心",
+      icon: "🎒",
       short: "変動に強め",
       dailyMinimumCost: 600,
       rates: { food: 30, transport: 10, social: 7, date: 5, hobby: 6, fashion: 5, study: 4, reserve: 23, saving: 10 },
@@ -276,15 +280,16 @@
       const className = left < 0 ? "danger" : ratio >= 0.8 ? "caution" : "safe";
       const leftLabel = left < 0 ? `${yen(Math.abs(left))}円超過` : `あと${yen(left)}円`;
       return `<div class="cat-row ${className}">
+        <span class="cat-icon" aria-hidden="true">${category.icon || "•"}</span>
         <div class="cat-main">
           <span class="cat-name">${category.name}</span>
           <small>使った ${yen(spent)}円 / 目安 ${yen(budget)}円</small>
+          <span class="cat-track"><span class="cat-bar" style="width:${clamp(percent, 0, 100)}%"></span></span>
         </div>
         <div class="cat-money">
           <strong>${leftLabel}</strong>
           <span>${percent}%</span>
         </div>
-        <span class="cat-track"><span class="cat-bar" style="width:${clamp(percent, 0, 100)}%"></span></span>
       </div>`;
     }).join("");
   }
@@ -295,7 +300,8 @@
     list.innerHTML = quickCategories.map((category) => {
       const count = quickCounts[category.key] || 0;
       return `<div class="quick-item ${count > 0 ? "has-count" : ""}" data-quick-item="${category.key}">
-        <div><strong>${category.name}</strong><small><span id="quickAmount_${category.key}">${yen(count * selectedUnit)}</span>円${quickMode === "subtract" ? "取り消し" : "追加"}</small></div>
+        <span class="quick-icon" aria-hidden="true">${category.icon || "•"}</span>
+        <div class="quick-copy"><strong>${category.name}</strong><small><span id="quickAmount_${category.key}">${yen(count * selectedUnit)}</span>円${quickMode === "subtract" ? "取り消し" : "追加"}</small></div>
         <div class="counter">
           <button type="button" class="secondary" data-minus="${category.key}" aria-label="${category.name}を減らす">−</button>
           <span id="count_${category.key}">${count}</span>
@@ -370,8 +376,8 @@
   }
 
   function renderModeButtons() {
-    const html = Object.entries(templates).map(([key, item]) => `<button type="button" data-mode-select="${key}" class="mode-choice-card ${state.mode === key ? "active" : ""}"><span class="mode-check">✓</span><strong>${item.label}</strong><small>${item.short}</small></button>`).join("") +
-      `<button type="button" data-mode-select="custom" class="mode-choice-card ${state.mode === "custom" ? "active" : ""}"><span class="mode-check">✓</span><strong>${state.customLabel || "カスタム"}</strong><small>自分用設定</small></button>`;
+    const html = Object.entries(templates).map(([key, item]) => `<button type="button" data-mode-select="${key}" class="mode-choice-card ${state.mode === key ? "active" : ""}"><span class="mode-check">✓</span><span class="mode-icon" aria-hidden="true">${item.icon || ""}</span><strong>${item.label}</strong><small>${item.short}</small></button>`).join("") +
+      `<button type="button" data-mode-select="custom" class="mode-choice-card ${state.mode === "custom" ? "active" : ""}"><span class="mode-check">✓</span><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><small>自分用設定</small></button>`;
 
     const mini = el("modeMiniGrid");
     if (mini && mini.dataset.html !== html) {
@@ -383,8 +389,8 @@
 
   function renderModeOverlay() {
     const list = el("modeList");
-    list.innerHTML = Object.entries(templates).map(([key, item]) => `<button type="button" data-overlay-mode="${key}"><strong>${item.label}</strong><span>${item.short}</span></button>`).join("") +
-      `<button type="button" data-overlay-mode="custom"><strong>${state.customLabel || "カスタム"}</strong><span>自分で調整した設定</span></button>`;
+    list.innerHTML = Object.entries(templates).map(([key, item]) => `<button type="button" data-overlay-mode="${key}"><span class="mode-icon" aria-hidden="true">${item.icon || ""}</span><strong>${item.label}</strong><span>${item.short}</span></button>`).join("") +
+      `<button type="button" data-overlay-mode="custom"><span class="mode-icon" aria-hidden="true">⚙️</span><strong>${state.customLabel || "カスタム"}</strong><span>自分で調整した設定</span></button>`;
     list.querySelectorAll("[data-overlay-mode]").forEach((button) => button.addEventListener("click", () => {
       applyMode(button.dataset.overlayMode);
       closeModeOverlay();

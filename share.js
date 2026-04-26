@@ -48,23 +48,23 @@
     const ctx = canvas.getContext("2d");
 
     const colors = {
-      bg: "#f4f1ea",
-      card: "#fffdf8",
-      ink: "#2f2a24",
-      muted: "#6d6254",
-      line: "#e3d8c8",
-      gold: "#c59b61",
-      safe: "#1f7a3a",
-      caution: "#8a5a00",
-      danger: "#b42318",
-      neutral: "#6d6254",
+      bg: "#f4fbf8",
+      card: "#ffffff",
+      ink: "#1f2d34",
+      muted: "#64777d",
+      line: "#d9ece8",
+      gold: "#65c7bd",
+      safe: "#23854d",
+      caution: "#916113",
+      danger: "#bf3d31",
+      neutral: "#64777d",
     };
     const statusColor = colors[state.statusKey] || colors.neutral;
     const badgeBg = state.statusKey === "safe" ? "#e8f5ec" : state.statusKey === "danger" ? "#fdecea" : state.statusKey === "caution" ? "#fff4d6" : "#eeeeee";
 
     ctx.fillStyle = colors.bg;
     ctx.fillRect(0, 0, SIZE, SIZE);
-    ctx.fillStyle = "#fff8ec";
+    ctx.fillStyle = "#e4faf6";
     ctx.beginPath();
     ctx.arc(900, 40, 260, 0, Math.PI * 2);
     ctx.fill();
@@ -82,19 +82,19 @@
     text(ctx, `判定：${state.statusLabel || "未設定"}`, 840, 162, 24, statusColor, 950, "center");
 
     round(ctx, 118, 320, 844, 190, 40, colors.ink, null, 0);
-    text(ctx, "今月あと使えるお金", 158, 382, 32, "#e8dcca", 900);
+    text(ctx, "今月あと使えるお金", 158, 382, 32, "#ecfffc", 900);
     text(ctx, yen(state.left), 158, 470, 72, "#ffffff", 950);
 
-    round(ctx, 118, 548, 407, 138, 32, "#fff8ec", colors.line, 3);
+    round(ctx, 118, 548, 407, 138, 32, "#e4faf6", colors.line, 3);
     text(ctx, "残り日数", 156, 606, 28, colors.muted, 900);
     text(ctx, state.days ? `残り${state.days}日` : "-", 156, 660, 42, colors.ink, 900);
 
-    round(ctx, 555, 548, 407, 138, 32, "#fff8ec", colors.line, 3);
+    round(ctx, 555, 548, 407, 138, 32, "#e4faf6", colors.line, 3);
     text(ctx, "状態", 592, 606, 28, colors.muted, 900);
     text(ctx, state.statusLabel || "未設定", 592, 660, 42, colors.ink, 900);
 
-    round(ctx, 118, 724, 844, 128, 32, "#f3e5c8", null, 0);
-    text(ctx, "生活費ナビ", 156, 778, 28, "#8a5a00", 900);
+    round(ctx, 118, 724, 844, 128, 32, "#dff7f3", null, 0);
+    text(ctx, "生活費ナビ", 156, 778, 28, "#916113", 900);
     text(ctx, statusMessage(state), 156, 830, 34, colors.ink, 900);
 
     text(ctx, "細かい収入・固定費・カテゴリ内訳は表示していません。", 120, 916, 24, colors.muted, 800);

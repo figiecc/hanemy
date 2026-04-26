@@ -1,11 +1,11 @@
 {
-  "name": "ハネミー β v0.5.1｜大学生の生活費ボード",
+  "name": "ハネミー β｜やさしい生活費ボード",
   "short_name": "ハネミー",
-  "description": "大学生の生活費が月末まで持つか分かる、黒ボード中心の支出設計アプリ",
-  "start_url": "./index.html",
+  "description": "大学生が今月あといくら使えるかをやさしく見える化する生活費ボード",
+  "start_url": "./index.html?v=060",
   "display": "standalone",
-  "background_color": "#f4f1ea",
-  "theme_color": "#2f2a24",
+  "background_color": "#f4fbf8",
+  "theme_color": "#65c7bd",
   "orientation": "portrait",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
