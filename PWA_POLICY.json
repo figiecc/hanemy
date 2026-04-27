@@ -1,5 +1,5 @@
 {
-  "version": "Hanemy β / v0.16.1 settings fix",
+  "version": "Hanemy β / v0.28.4 brand footer",
   "policy": "PWA feel with update-safe caching",
   "cached": [
     "manifest.json",
@@ -14,5 +14,206 @@
     "future style.css"
   ],
   "known_limit": "iOS PWA behavior cannot guarantee App Store-like forced updates.",
-  "fix": "Settings buttons were broken because APP_VERSION was undefined in feedbackHref()."
+  "fix": "Settings buttons were broken because APP_VERSION was undefined in feedbackHref().",
+  "wording_update": {
+    "main_remaining": "今月の残り",
+    "daily_guide": "今日の目安",
+    "life_remaining": "生活費の残り",
+    "fun_remaining": "楽しみ用の残り"
+  },
+  "ui_update": "v0.18 UI foundation",
+  "rollback": "Returned to v0.18 UI foundation without extra generated illustration assets.",
+  "ui_structure_cleanup": [
+    "prep card button wording/layout",
+    "quick input auto-select first subcategory",
+    "quick disabled confirm text",
+    "bottom safe spacing",
+    "reduced emoji usage",
+    "no added images"
+  ],
+  "quick_segment_polish": {
+    "labels": [
+      "生活",
+      "楽しみ",
+      "やりたい"
+    ],
+    "style": "three-way segmented control"
+  },
+  "quick_empty_state": {
+    "clearer_empty_ui": true,
+    "sample_button": true,
+    "spacing_adjusted": true
+  },
+  "ui_refine": {
+    "quick_header_spacing": true,
+    "settings_compact": true,
+    "settings_removed": [
+      "管理期間",
+      "今月の準備"
+    ],
+    "review_reorganized": true
+  },
+  "settings_cleanup_confirmed": {
+    "removed": [
+      "管理期間",
+      "今月の準備"
+    ],
+    "kept": [
+      "データ管理",
+      "フィードバック",
+      "保存について"
+    ]
+  },
+  "share_comeback": {
+    "modes": [
+      "しっかり共有",
+      "やわらか共有"
+    ],
+    "format": "canvas-generated PNG",
+    "entry_points": [
+      "home",
+      "review"
+    ]
+  },
+  "soft_share_fix": {
+    "status_summary": true,
+    "balance_text": true,
+    "money_band_labels": true,
+    "keeps_wants": true
+  },
+  "share_purpose_redesign": {
+    "安心共有": "親・家族向け。お金を考えて使っていることを伝える。",
+    "予定相談": "友人・恋人向け。今月どのくらい予定を入れられそうか伝える。"
+  },
+  "share_realistic_cleanup": {
+    "removed": [
+      "予定相談"
+    ],
+    "modes": [
+      "家族に共有",
+      "画像で保存"
+    ],
+    "reason": "予定相談は実際の会話で使われにくいため、自分用保存に置換"
+  },
+  "share_modal_scroll_fix": {
+    "modal_scroll": true,
+    "panel_max_height": true,
+    "preview_max_height": "36dvh on small screens"
+  },
+  "public_beta_cleanup": {
+    "sample_button_removed": true,
+    "settings_as_popup": true,
+    "removed_files": [],
+    "suspicious_files_after_cleanup": []
+  },
+  "layout_fix": {
+    "review_empty_home_button": true,
+    "setup_single_create_choice": true
+  },
+  "home_board_compact": {
+    "removed_from_home": [
+      "管理期間"
+    ],
+    "moved_to_setup": [
+      "管理期間"
+    ],
+    "compact_board": true
+  },
+  "daily_flow_board_polish": {
+    "quick_input_one_board": true,
+    "review_reorganized": true,
+    "settings_debug_sample_button": true
+  },
+  "review_meaning_fix": {
+    "default_view": [
+      "今月のひとこと",
+      "よく使ったところ",
+      "来月への一手"
+    ],
+    "numbers_view": [
+      "今月の残り",
+      "生活費の残り",
+      "楽しみ用の残り",
+      "残せそうな見込み",
+      "絶対支払い",
+      "使った合計"
+    ]
+  },
+  "toast_auto_hide_fix": {
+    "auto_hide_ms": 3500,
+    "hide_on_undo": true,
+    "hide_on_view_change": true
+  },
+  "ux_wording_alignment": {
+    "review_handover": "来月の準備を作る",
+    "quick_description": "細かく記録せず、使った分だけ反映します。",
+    "share_description": "今月のお金の作戦を、家族に見せるか、自分用に画像で残せます。",
+    "debug_sample_label": "確認用デモ"
+  },
+  "summary_flow_redesign": {
+    "removed_bottom_tab": "ふり返り",
+    "bottom_tabs": [
+      "ざっくり",
+      "ホーム"
+    ],
+    "summary_entry": "home card",
+    "summary_name": "今月のまとめ",
+    "next_month_action": "次の月を始める"
+  },
+  "menu_home_board_cleanup": {
+    "bottom_tabs": [
+      "ホーム",
+      "ざっくり入力"
+    ],
+    "removed_home_card": "今月のまとめ",
+    "home_board": [
+      "今月の残り",
+      "今日の目安",
+      "生活費",
+      "楽しみ用",
+      "残せそう",
+      "共有する"
+    ]
+  },
+  "home_board_unification": {
+    "notice_time": true,
+    "home_board_matches_quick_board": true,
+    "main_elements": [
+      "今月の残り",
+      "今日の目安",
+      "生活費",
+      "楽しみ用",
+      "残せそう",
+      "共有する"
+    ]
+  },
+  "notice_time_display_fix": {
+    "display_format": "YYYY-MM-DD HH:MM",
+    "readme_updated": true
+  },
+  "notice_time_policy": {
+    "source": "manual notice.date + notice.time",
+    "meaning": "公開時刻",
+    "display": "YYYY-MM-DD HH:MM 更新 when time exists; date only when time is absent",
+    "old_fake_times_removed": true
+  },
+  "category_detail_list": {
+    "shows_all_items": true,
+    "shows_percent": true,
+    "shows_used_and_budget": true,
+    "over_budget_highlight": true
+  },
+  "public_beta_candidate": {
+    "removed": [
+      "カテゴリ別に見る > 数字をもっと見る"
+    ],
+    "category_detail": "一覧表示と使用率に集約",
+    "readme_updated": true,
+    "release_candidate": true
+  },
+  "brand_footer": {
+    "display": "Hanemy™",
+    "reason": "® is reserved for registered trademarks; registration status not confirmed.",
+    "can_replace_after_registration": "Hanemy®"
+  }
 }

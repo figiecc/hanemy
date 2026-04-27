@@ -1,51 +1,35 @@
 {
-  "basis": "hanemy_beta_v15_release_candidate_cdc462.zip",
-  "old_package": "hanemy_beta_v1_0_4_plus_step2_notify_fix.zip",
-  "kept": [
-    "index.html (v0.15 release beta candidate)",
-    "README.md (v0.15 release notes/checklist)",
-    "assets/logo.png (old logo-horizontal.png renamed)",
+  "version": "Hanemy β / v0.28.4 brand footer",
+  "base_zip": "hanemy_beta_v22_1_share_modal_scroll_fix_flat_f9255a.zip",
+  "expected_files": [
+    "CLEANUP_REPORT.json",
+    "LICENSE",
+    "PWA_POLICY.json",
+    "README.md",
+    "assets/logo.png",
     "favicon.png",
     "icon-192.png",
     "icon-512.png",
-    "manifest.json (rewritten for v0.15)",
-    "LICENSE"
+    "index.html",
+    "manifest.json",
+    "sw.js"
   ],
-  "removed": [
-    "__MACOSX/",
-    "old index.html",
-    "style.css",
-    "app.js",
-    "share.js",
-    "sw.js",
-    "notif-bell.svg",
-    "old README.md",
-    "FEEDBACK_GUIDE.md",
-    "PUBLISH_CHECKLIST.md",
-    "TEST_CASES.md"
-  ],
-  "copied_assets": [
-    [
-      "logo-horizontal.png",
-      "assets/logo.png"
-    ],
-    [
-      "favicon.png",
-      "favicon.png"
-    ],
-    [
-      "icon-192.png",
-      "icon-192.png"
-    ],
-    [
-      "icon-512.png",
-      "icon-512.png"
-    ]
-  ],
+  "suspicious_files_after_cleanup": [],
+  "removed_files": [],
   "notes": [
-    "Old split implementation files were removed because v0.15 is a single-file app.",
-    "Old service worker was removed to avoid caching outdated files.",
-    "Old notification SVG was removed because v0.15 uses inline UI for notification icons.",
-    "Logo and app icons were retained as brand/publication assets."
+    "サンプル金額ボタンを削除しました。",
+    "設定をお知らせと同じポップアップ形式に変更しました。",
+    "zip内の不要候補を確認しました。",
+    "v0.24: ざっくり入力一枚ボード化、ふり返り整理、設定にデバッグ用サンプル追加。",
+    "v0.24.1: ふり返りの通常表示と数字で見るの役割を分離。",
+    "v0.24.2: ざっくり入力後の入力完了トーストを自動非表示化。",
+    "v0.25: UX文言を整理し、世界観と説明のバランスを調整。",
+    "v0.26: ふり返りタブを外し、今月のまとめとしてホームから入る構造へ変更。",
+    "v0.27: メニューをホーム/ざっくり入力に整理し、今月のまとめ常設カードを削除。",
+    "v0.28: お知らせに時刻を追加し、ホームボードをざっくり入力と同じ一枚ボード思想で再構成。",
+    "v0.28.1: お知らせに時刻が表示されない問題を修正。README更新ルールを明記。",
+    "v0.28.2: お知らせ時刻を公開時刻として整理。カテゴリ別に見るを全項目一覧＋使用率表示へ変更。",
+    "v0.28.3: カテゴリ別に見るの『数字をもっと見る』を削除し、公開β候補版として整理。",
+    "v0.28.4: 最下部に Hanemy™ を追加。®は登録後に差し替え方針。"
   ]
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanemy-assets-v016";
+const CACHE_NAME = "hanemy-assets-v0284";
 const ASSET_URLS = [
   "./manifest.json",
   "./favicon.png",
