@@ -55,3 +55,32 @@ const FEEDBACK_EMAIL='example@example.com';
 ## バージョン
 
 Hanemy β / v0.15 release beta candidate
+
+
+## v0.16 PWA stable candidate
+
+この版は、ホーム画面追加によるアプリ感を維持しつつ、更新詰まりを減らすためのPWA安定版です。
+
+### 方針
+
+- `manifest.json` とアイコンは残す
+- `sw.js` は使う
+- ただし `index.html` はキャッシュしない
+- キャッシュするのは画像・アイコンなどの安定素材だけ
+- 古いキャッシュはService Workerのactivate時に削除する
+
+### できること
+
+- スマホのホーム画面に追加できる
+- アプリ風に起動できる
+- アイコンやロゴは安定して表示されやすい
+- 本体HTMLは最新版を取りに行きやすい
+
+### できないこと
+
+- 完全オフライン起動
+- App Storeアプリと同等の強制更新保証
+
+## バージョン
+
+Hanemy β / v0.16 PWA stable candidate

@@ -1,0 +1,17 @@
+{
+  "version": "Hanemy β / v0.16 PWA stable candidate",
+  "policy": "PWA feel with update-safe caching",
+  "cached": [
+    "manifest.json",
+    "favicon.png",
+    "icon-192.png",
+    "icon-512.png",
+    "assets/logo.png"
+  ],
+  "not_cached": [
+    "index.html",
+    "future app.js",
+    "future style.css"
+  ],
+  "known_limit": "iOS PWA behavior cannot guarantee App Store-like forced updates."
+}
