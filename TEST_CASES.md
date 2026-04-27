@@ -1,4 +1,4 @@
-# Hanemy β v0.9.1.1 Public Beta テストケース
+# Hanemy β v0.9 Public Beta テストケース
 
 ## 1. 基本金額ロジック
 

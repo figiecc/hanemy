@@ -6,15 +6,15 @@
   function yen(value) { return Number(value || 0).toLocaleString("ja-JP") + "円"; }
   function shareStatusLabel(state) {
     if (!state || state.budget <= 0) return "まだ準備中";
-    if (state.statusKey === "danger") return "かなり厳しめ";
+    if (state.statusKey === "danger") return "厳しめ";
     if (state.statusKey === "caution") return "少し注意";
-    return "大丈夫そう";
+    return "順調です";
   }
 
   function statusMessage(state) {
     if (!state || state.budget <= 0) return "まずは今月入るお金を入れるだけでOKです";
-    if (state.statusKey === "danger") return "かなり厳しめ。追加支出は控えたい状態です";
-    if (state.statusKey === "caution") return "少し注意。ペースを落とすと安心です";
+    if (state.statusKey === "danger") return "追加支出は慎重にいきたい状態です";
+    if (state.statusKey === "caution") return "今日は少し控えめにすると安心です";
     return "このままなら月末まで持ちそうです";
   }
 
@@ -57,56 +57,79 @@
     const colors = {
       bg: "#f4fbf8",
       card: "#ffffff",
-      ink: "#1f2d34",
-      muted: "#64777d",
+      ink: "#263238",
+      muted: "#6e7f84",
       line: "#d9ece8",
-      gold: "#65c7bd",
-      safe: "#23854d",
-      caution: "#916113",
-      danger: "#bf3d31",
-      neutral: "#64777d",
+      mint: "#65c7bd",
+      mintDark: "#25988f",
+      mintSoft: "#e9faf6",
+      coral: "#f46e68",
+      coralSoft: "#ffe8e4",
     };
+
     const shareStatus = shareStatusLabel(state);
-    const statusColor = colors[state.statusKey] || colors.neutral;
-    const badgeBg = state.statusKey === "safe" ? "#e8f5ec" : state.statusKey === "danger" ? "#fdecea" : state.statusKey === "caution" ? "#fff4d6" : "#eeeeee";
+    const statusColor = state.statusKey === "danger" ? "#bf3d31" : state.statusKey === "caution" ? "#916113" : colors.mintDark;
 
     ctx.fillStyle = colors.bg;
     ctx.fillRect(0, 0, SIZE, SIZE);
     ctx.fillStyle = "#e4faf6";
     ctx.beginPath();
-    ctx.arc(900, 40, 260, 0, Math.PI * 2);
+    ctx.arc(914, 40, 260, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#fff3ef";
+    ctx.beginPath();
+    ctx.arc(120, 980, 230, 0, Math.PI * 2);
     ctx.fill();
 
-    round(ctx, 58, 58, 964, 964, 72, colors.card, colors.line, 4);
+    round(ctx, 58, 58, 964, 964, 78, colors.card, colors.line, 4);
 
-    const logo = await loadImage("icon-192.png");
-    if (logo) ctx.drawImage(logo, 108, 108, 132, 132);
+    const logo = await loadImage("logo-horizontal.png");
+    if (logo) {
+      const ratio = logo.width / logo.height;
+      const w = 240;
+      ctx.drawImage(logo, 108, 96, w, w / ratio);
+    } else {
+      const icon = await loadImage("icon-192.png");
+      if (icon) ctx.drawImage(icon, 108, 92, 120, 120);
+      text(ctx, "ハネミー", 250, 150, 50, colors.ink, 950);
+    }
 
-    text(ctx, "ハネミー", 280, 150, 54, colors.ink, 950);
-    text(ctx, "今月の生活費、こんな感じです", 284, 198, 28, colors.gold, 900);
-    text(ctx, state.modeLabel || "配分準備中", 284, 236, 24, colors.muted, 800);
+    text(ctx, "今月の生活費、", 130, 292, 58, colors.ink, 950);
+    text(ctx, "こんな感じです", 130, 368, 58, colors.ink, 950);
 
-    round(ctx, 742, 124, 196, 58, 29, badgeBg, null, 0);
-    text(ctx, shareStatus, 840, 162, 24, statusColor, 950, "center");
+    const icon = await loadImage("icon-192.png");
+    if (icon) ctx.drawImage(icon, 780, 250, 128, 128);
 
-    round(ctx, 118, 320, 844, 190, 40, colors.ink, null, 0);
-    text(ctx, "今月あと使えるお金", 158, 382, 32, "#ecfffc", 900);
-    text(ctx, yen(state.left), 158, 470, 72, "#ffffff", 950);
+    round(ctx, 126, 430, 828, 370, 48, "#fbfffe", colors.line, 3);
 
-    round(ctx, 118, 548, 407, 138, 32, "#e4faf6", colors.line, 3);
-    text(ctx, "残り日数", 156, 606, 28, colors.muted, 900);
-    text(ctx, state.days ? `残り${state.days}日` : "-", 156, 660, 42, colors.ink, 900);
+    round(ctx, 176, 486, 96, 96, 48, colors.mintSoft, null, 0);
+    text(ctx, "¥", 224, 548, 54, colors.mint, 950, "center");
+    text(ctx, "今月あと使えるお金", 326, 522, 31, colors.ink, 900);
+    text(ctx, yen(state.left), 326, 600, 68, colors.mint, 950);
 
-    round(ctx, 555, 548, 407, 138, 32, "#e4faf6", colors.line, 3);
-    text(ctx, "状態", 592, 606, 28, colors.muted, 900);
-    text(ctx, shareStatus, 592, 660, 42, colors.ink, 900);
+    ctx.strokeStyle = colors.line;
+    ctx.setLineDash([8, 10]);
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(176, 638);
+    ctx.lineTo(904, 638);
+    ctx.stroke();
 
-    round(ctx, 118, 724, 844, 128, 32, "#dff7f3", null, 0);
-    text(ctx, "生活費ナビ", 156, 778, 28, "#916113", 900);
-    text(ctx, statusMessage(state), 156, 830, 34, colors.ink, 900);
+    round(ctx, 176, 674, 96, 96, 48, colors.coralSoft, null, 0);
+    text(ctx, "□", 224, 736, 42, colors.coral, 950, "center");
+    text(ctx, "残り日数", 326, 712, 31, colors.ink, 900);
+    text(ctx, state.days ? `残り${state.days}日` : "-", 326, 768, 48, colors.coral, 950);
 
-    text(ctx, "細かい収入・固定費・カテゴリ内訳は表示していません。", 120, 916, 24, colors.muted, 800);
-    text(ctx, "Hanemy｜生活費が月末まで持つか分かる", 960, 980, 22, colors.muted, 800, "right");
+    round(ctx, 580, 674, 96, 96, 48, colors.mintSoft, null, 0);
+    text(ctx, "☺", 628, 736, 42, colors.mintDark, 900, "center");
+    text(ctx, "状態", 724, 712, 31, colors.ink, 900);
+    text(ctx, shareStatus, 724, 768, 46, statusColor, 950);
+
+    round(ctx, 126, 840, 828, 88, 44, colors.coral, null, 0);
+    text(ctx, statusMessage(state), 540, 895, 30, "#ffffff", 900, "center");
+
+    text(ctx, "細かい収入・固定費・カテゴリ内訳は表示していません。", 120, 966, 24, colors.muted, 800);
+    text(ctx, "Hanemy｜今月あと使えるお金を見るアプリ", 960, 1002, 22, colors.muted, 800, "right");
 
     return canvas;
   }

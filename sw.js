@@ -1,14 +1,16 @@
-const CACHE_NAME = "hanemy-beta-v0-9-1-public-beta-logo";
+const CACHE_NAME = "hanemy-beta-v1-0-4-plus-step2-notify-fix";
 const FILES_TO_CACHE = [
   "./",
-  "./index.html?v=091",
-  "./style.css?v=091",
-  "./app.js?v=091",
-  "./share.js?v=091",
-  "./manifest.json?v=091",
-  "./icon-192.png?v=091",
-  "./icon-512.png?v=091",
-  "./favicon.png?v=091"
+  "./index.html?v=104e",
+  "./style.css?v=104e",
+  "./app.js?v=104e",
+  "./share.js?v=104e",
+  "./manifest.json?v=104e",
+  "./icon-192.png?v=104e",
+  "./icon-512.png?v=104e",
+  "./favicon.png?v=104e",
+  "./logo-horizontal.png?v=104e"
+  "./notif-bell.svg"
 ];
 
 self.addEventListener("install", (event) => {

@@ -3,76 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ハネミー β v0.9.1｜Public Beta</title>
-  <link rel="stylesheet" href="style.css?v=091" />
-  <link rel="manifest" href="manifest.json?v=091" />
+  <title>ハネミー β v1.0.4+｜Step2 Notify Fix</title>
+  <link rel="stylesheet" href="style.css?v=104e" />
+  <link rel="manifest" href="manifest.json?v=104e" />
   <meta name="theme-color" content="#65c7bd" />
-  <link rel="apple-touch-icon" href="icon-192.png?v=091" />
-  <link rel="icon" href="favicon.png?v=091" />
+  <link rel="apple-touch-icon" href="icon-192.png?v=104e" />
+  <link rel="icon" href="favicon.png?v=104e" />
 </head>
 <body>
   <div id="stickyBar" class="sticky-bar" aria-hidden="true">今月あと使えるお金：0円</div>
 
   <main class="app">
-    <header class="brand-header brand-header-logo">
-      <img src="logo-horizontal.png?v=091" alt="ハネミー ロゴ" class="brand-lockup" />
-      <div class="brand-copy-wrap brand-copy-wrap-logo">
-        <p class="brand-kicker">大学生のための生活費ボード</p>
-        <p class="brand-copy">家計簿じゃなくて、今月あといくら使えるかを見るアプリ。</p>
+<section class="hero-card" id="heroCard" aria-label="今月の生活費状況">
+      <div class="hero-utility-row">
+        <button type="button" id="openAnnouncementsButton" class="notify-button" aria-label="お知らせを開く"><img src="notif-bell.svg?v=104e" alt="" /><span id="announcementUnreadDot" class="notify-dot"></span></button>
       </div>
-    </header>
-
-    <section class="hero-card" id="heroCard" aria-label="今月の生活費状況">
-      <div class="hero-sky" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="hero-topline">
-        <span class="mode-pill" id="modeLabel">配分準備中</span>
-        <span id="statusBadge" class="status-badge neutral">準備中</span>
+      <div class="mascot-greeting">
+        <img src="icon-192.png?v=104e" alt="" class="mascot-face" />
+        <div class="speech-bubble"><span id="mascotMessage">まずは今月のお金を整えよう</span></div>
       </div>
 
       <div class="hero-main">
-        <div>
-          <p class="hero-label">今月あと使えるお金</p>
-          <strong class="hero-money"><span id="leftMoney">0</span>円</strong>
-          <p class="hero-subline"><span id="remainingDaysText">-</span> / 月末までの見通し</p>
-          <p class="hero-note">貯蓄分を除いた、生活費として使える残りです。</p>
+        <div class="hero-topline">
+          <span class="mode-pill" id="modeLabel">未来配分</span>
+          <span id="statusBadge" class="status-badge neutral">準備中</span>
         </div>
-        <div class="hero-mascot" aria-hidden="true">¥</div>
+        <p class="hero-label">今月あと使えるお金</p>
+        <strong class="hero-money"><span id="leftMoney">0</span>円</strong>
+        <div class="hero-progress" aria-hidden="true"><span id="heroProgressBar"></span></div>
+        <div class="hero-meta-row">
+          <span id="remainingDaysText">-</span>
+          <span>この中で、今月をやりくりします</span>
+        </div>
+        <p class="hero-note" id="heroNote">家計簿ではなく、月末まで持つかを見るための金額です。</p>
       </div>
 
       <div class="status-message-card">
         <span class="status-face">😊</span>
         <div>
-          <strong id="dangerForecastText">まずは今月入るお金を入力</strong>
-          <small id="dailyAllowanceNote">基本設定と今月のお金を入れると表示されます。</small>
+          <strong id="dangerForecastText">今月入るお金を入力してください</strong>
+          <small id="dailyAllowanceNote">先に消えるお金、やりたいこと、生活と貯蓄の順に整えます。</small>
         </div>
       </div>
 
-      <div class="allowance-box" id="allowanceBox">
-        <span>今日使うならこのくらいまで</span>
-        <strong id="dailyAllowanceText">今月のお金を入力</strong>
-      </div>
+      <div class="mini-card-grid">
+        <div class="allowance-box" id="allowanceBox">
+          <span>今日使うなら<br />このくらいまで</span>
+          <strong id="dailyAllowanceText">今月のお金を入力</strong>
+          <small>1日あたりの目安</small>
+        </div>
 
-      <div class="savings-balance-card" id="savingsBalanceCard" aria-label="貯蓄">
-        <span>貯蓄</span>
-        <strong><span id="savingsTotalText">0</span>円</strong>
-        <small id="savingsMetaText">使わずに残すお金として、月をまたいで積み上がります。</small>
-        <div id="savingsCoverPanel" class="savings-cover-panel" hidden>
-          <p id="savingsCoverText">必要なら貯蓄から補填できます。</p>
-          <button id="coverFromSavingsButton" type="button" class="secondary small">貯蓄から補填する</button>
+        <div class="savings-balance-card" id="savingsBalanceCard" aria-label="貯蓄">
+          <span>貯蓄</span>
+          <strong><span id="savingsTotalText">0</span>円</strong>
+          <small id="savingsMetaText">守るお金です。勝手には削りません。</small>
+          <div id="savingsCoverPanel" class="savings-cover-panel" hidden>
+            <p id="savingsCoverText">必要なら貯蓄から補填できます。</p>
+            <button id="coverFromSavingsButton" type="button" class="secondary small">貯蓄から補填する</button>
+          </div>
         </div>
       </div>
 
-      <details class="category-summary" open>
-        <summary>カテゴリ別の残り金額</summary>
-        <div class="category-strip" id="categoryStrip" aria-label="カテゴリ状況"></div>
-      </details>
+      <section class="want-summary-card" aria-label="今月やりたいこと">
+        <div class="preview-head">
+          <div>
+            <h2>今月やりたいこと</h2>
+            <p>先に残しておきたい予定や楽しみです。</p>
+          </div>
+          <button type="button" id="openQuickButton" class="small">入力する</button>
+        </div>
+        <div id="wantSummaryList" class="want-summary-list"></div>
+      </section>
     </section>
 
     <section id="monthResetCard" class="card month-reset-card" hidden>
       <div>
         <p class="eyebrow">MONTH START</p>
         <h2>新しい月を始めますか？</h2>
-        <p>前の期間の貯蓄分と使わなかった生活費を貯蓄にまわして、今月を始めます。</p>
+        <p>使わなかった生活費とやりたいことの残りを貯蓄にまわして、今月を始めます。</p>
       </div>
       <div class="month-reset-actions">
         <button id="copyLastMonthButton" type="button">先月と同じ設定で始める</button>
@@ -83,22 +91,19 @@
     <section id="setupSuccessCard" class="setup-success-card" hidden>
       <span class="setup-success-icon">✓</span>
       <div>
-        <strong id="setupSuccessTitle">今月はこのペースなら大丈夫そうです。</strong>
-        <p id="setupSuccessText">使った分だけ、あとからざっくり足していきましょう。</p>
+        <strong id="setupSuccessTitle">今月の準備ができました</strong>
+        <p id="setupSuccessText">やりたいことを残しながら、今月あと使えるお金を見られるようになりました。</p>
       </div>
       <button id="dismissSetupSuccess" type="button" class="secondary small">閉じる</button>
     </section>
 
-    <section class="action-strip single-action" aria-label="よく使う操作">
-      <button type="button" id="openQuickButton">＋ 今日使った分を足す</button>
-    </section>
-
     <section class="quick-card card quick-sheet" id="quickCard">
+      <div class="sheet-handle" aria-hidden="true"></div>
       <div class="section-head quick-sheet-head">
         <div>
           <p class="eyebrow">DAILY</p>
-          <h2>かんたん入力</h2>
-          <p>今日使った分だけ、サクッと反映します。</p>
+          <h2>使った金額を足す</h2>
+          <p>生活に使ったか、やりたいことに使ったかだけ選びます。</p>
         </div>
         <div class="quick-head-actions">
           <button id="noSpendButton" type="button" class="secondary small">大きな支出なし</button>
@@ -106,50 +111,63 @@
         </div>
       </div>
 
-      <div class="quick-mode-row" role="group" aria-label="追加または取り消し">
-        <button type="button" class="mode-toggle active" data-quick-mode="add">足す</button>
-        <button type="button" class="mode-toggle" data-quick-mode="subtract">取り消す</button>
+      <div class="quick-mode-row" role="group" aria-label="入力先">
+        <button type="button" class="mode-toggle active" data-spend-target="living">生活に使った</button>
+        <button type="button" class="mode-toggle" data-spend-target="want">やりたいことに使った</button>
+      </div>
+
+      <div id="quickWantTargetArea" class="quick-target-area" hidden>
+        <p class="input-caption">どのやりたいことに使いましたか？</p>
+        <div id="quickWantTargets" class="quick-target-list"></div>
       </div>
 
       <p class="input-caption">金額を選ぶ</p>
       <div class="unit-row" role="group" aria-label="入力単位">
         <button type="button" data-unit="500">500円</button>
-        <button type="button" data-unit="1000" class="active">1000円</button>
-        <button type="button" data-unit="3000">3000円</button>
-        <button type="button" data-unit="5000">5000円</button>
+        <button type="button" data-unit="1000" class="active">1,000円</button>
+        <button type="button" data-unit="3000">3,000円</button>
+        <button type="button" data-unit="5000">5,000円</button>
       </div>
-
-      <p class="input-caption">カテゴリを選ぶ</p>
-      <div class="quick-list" id="quickList"></div>
+      <label class="field compact-field">
+        <span>直接入力</span>
+        <div class="money-input-wrap"><input id="quickAmountInput" type="text" inputmode="numeric" placeholder="例：1200" data-numeric-only="true" /><span>円</span></div>
+      </label>
 
       <div class="quick-total">
         <div>
           <span id="quickTotalLabel">追加予定</span>
-          <strong><span id="quickTotal">0</span>円</strong>
+          <strong><span id="quickTotal">1,000</span>円</strong>
         </div>
-        <button id="applyQuickButton" type="button">反映する</button>
+        <button id="applyQuickButton" type="button">記録する</button>
       </div>
-      
+      <button id="undoQuickButton" type="button" class="secondary wide">直前の記録を取り消す</button>
     </section>
 
     <details class="card setup-card" id="setupCard" open>
-      <summary><span>今月の準備</span><small>4ステップで完了</small></summary>
+      <summary>
+        <span>
+          <b>今月の準備</b>
+          <small>今月のお金を、無理なく使える形に整えましょう。</small>
+        </span>
+      </summary>
       <div class="setup-body">
-        <div class="setup-block compact-block setup-step-card lifestyle-step">
-          <div class="setup-title-row">
-            <div>
-              <p class="setup-step-label">STEP 1</p>
-              <h3>配分設定</h3>
-              <p>基本テンプレートで始めて、必要なら自分用に調整できます。</p>
-            </div>
-            <button type="button" id="openModeButton" class="secondary small">選び直す</button>
+        <div class="setup-intro">
+          <img src="icon-192.png?v=104e" alt="" />
+          <div>
+            <h2>今月の準備</h2>
+            <p>入るお金から、先に消えるお金、やりたいこと、生活と貯蓄の順に整えます。</p>
           </div>
-          <div class="mode-mini-grid" id="modeMiniGrid"></div>
         </div>
 
         <div class="setup-block setup-step-card start-day-card">
-          <p class="setup-step-label">STEP 2</p>
-          <h3>生活費のスタート日</h3>
+          <div class="setup-title-row">
+            <div class="setup-step-icon">0</div>
+            <div>
+              <p class="setup-step-label">PERIOD</p>
+              <h3>生活費のスタート日</h3>
+              <p>今月の生活費の開始日を設定しましょう。</p>
+            </div>
+          </div>
           <label class="field">
             <span>毎月の開始日</span>
             <select id="periodStartDay"></select>
@@ -157,133 +175,148 @@
         </div>
 
         <div class="setup-block setup-step-card money-section-card">
-          <p class="setup-step-label">STEP 3</p>
-          <h3>今月入るお金</h3>
-          <p class="setup-step-help">予定額をカードで調整します。直接入力もできます。</p>
-          <div class="money-adjust-grid income-grid">
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="incomeJob">バイト代</label>
-              <span class="money-hint">今月入る予定</span>
-              <div class="money-input-wrap"><input id="incomeJob" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="incomeJob" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="incomeJob" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="incomeJob" data-step="5000">+5000</button>
-              </div>
-            </div>
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="incomeAllowance">仕送り</label>
-              <span class="money-hint">毎月の仕送り</span>
-              <div class="money-input-wrap"><input id="incomeAllowance" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="incomeAllowance" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="incomeAllowance" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="incomeAllowance" data-step="5000">+5000</button>
-              </div>
-            </div>
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="incomeOther">その他</label>
-              <span class="money-hint">臨時収入など</span>
-              <div class="money-input-wrap"><input id="incomeOther" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="incomeOther" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="incomeOther" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="incomeOther" data-step="5000">+5000</button>
-              </div>
+          <div class="setup-title-row">
+            <div class="setup-step-icon">1</div>
+            <div>
+              <p class="setup-step-label">STEP 1</p>
+              <h3>今月入るお金</h3>
+              <p>仕送り・バイト代・奨学金など、今月使える元になるお金です。</p>
             </div>
           </div>
+          <label class="money-adjust-card full-card">
+            <span class="money-card-label">今月入るお金</span>
+            <span class="money-hint">細かく分けず、合計で大丈夫です。</span>
+            <div class="money-input-wrap"><input id="incomeTotal" type="text" inputmode="numeric" placeholder="例：80000" data-numeric-only="true" /><span>円</span></div>
+          </label>
         </div>
 
         <div class="setup-block setup-step-card money-section-card">
-          <p class="setup-step-label">STEP 4</p>
-          <h3>先に消えるお金</h3>
-          <p class="setup-step-help">すでに支払いが決まっているお金を先に引きます。</p>
-          <div class="money-adjust-grid fixed-grid">
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="fixedPhone">スマホ代</label>
-              <span class="money-hint">通信費</span>
-              <div class="money-input-wrap"><input id="fixedPhone" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="fixedPhone" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="fixedPhone" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="fixedPhone" data-step="5000">+5000</button>
-              </div>
-            </div>
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="fixedSubscription">サブスク</label>
-              <span class="money-hint">月額サービス</span>
-              <div class="money-input-wrap"><input id="fixedSubscription" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="fixedSubscription" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="fixedSubscription" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="fixedSubscription" data-step="5000">+5000</button>
-              </div>
-            </div>
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="fixedPass">定期券</label>
-              <span class="money-hint">通学・通勤</span>
-              <div class="money-input-wrap"><input id="fixedPass" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="fixedPass" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="fixedPass" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="fixedPass" data-step="5000">+5000</button>
-              </div>
-            </div>
-            <div class="money-adjust-card">
-              <label class="money-card-label" for="fixedOther">その他</label>
-              <span class="money-hint">その他の確定支払い</span>
-              <div class="money-input-wrap"><input id="fixedOther" type="text" min="0" inputmode="numeric" placeholder="0"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" /><span>円</span></div>
-              <div class="money-chip-row">
-                <button type="button" class="money-chip soft" data-money-step="fixedOther" data-step="-1000">−1000</button>
-                <button type="button" class="money-chip" data-money-step="fixedOther" data-step="1000">+1000</button>
-                <button type="button" class="money-chip strong" data-money-step="fixedOther" data-step="5000">+5000</button>
-              </div>
+          <div class="setup-title-row">
+            <div class="setup-step-icon">2</div>
+            <div>
+              <p class="setup-step-label">STEP 2</p>
+              <h3>先に消えるお金</h3>
+              <p>家賃や通信費など、今月ほぼ使い道を変えられないお金です。</p>
             </div>
           </div>
+          <div class="fixed-toggle-panel compact-step2">
+            <div class="fixed-toggle-head compact">
+              <strong>自分で選ぶ</strong>
+              <span>必要な項目だけチェックすると、下に入力欄が出ます</span>
+            </div>
+            <div id="fixedItemToggles" class="fixed-toggle-grid compact" aria-label="先に消えるお金の表示項目"></div>
+          </div>
+          <div class="money-adjust-grid fixed-grid">
+            <label class="money-adjust-card" data-fixed-row="homeMoney"><span class="money-card-label">家に入れるお金</span><div class="money-input-wrap"><input id="fixedHomeMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="rent"><span class="money-card-label">家賃</span><div class="money-input-wrap"><input id="fixedRent" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="utility"><span class="money-card-label">光熱費</span><div class="money-input-wrap"><input id="fixedUtility" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="phone"><span class="money-card-label">通信費</span><div class="money-input-wrap"><input id="fixedPhone" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="pass"><span class="money-card-label">定期・通学</span><div class="money-input-wrap"><input id="fixedPass" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="tuition"><span class="money-card-label">学費</span><div class="money-input-wrap"><input id="fixedTuition" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="subscription"><span class="money-card-label">サブスク</span><div class="money-input-wrap"><input id="fixedSubscription" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card" data-fixed-row="other"><span class="money-card-label">その他</span><div class="money-input-wrap"><input id="fixedOther" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+          </div>
+          <p class="help-text" id="fixedHelpText">必要な項目だけ入力します。チェックしていない項目は計算に入れません。</p>
+        </div>
+
+        <div class="setup-block setup-step-card money-section-card">
+          <div class="setup-title-row">
+            <div class="setup-step-icon">3</div>
+            <div>
+              <p class="setup-step-label">STEP 3</p>
+              <h3>今月やりたいこと</h3>
+              <p>今月ちゃんと残しておきたい予定や楽しみを、先に入れておきます。</p>
+            </div>
+          </div>
+          <div id="wantSetupList" class="want-setup-list"></div>
+          <p class="help-text">今月やりたいことは3つまで。未入力なら0円で計算します。</p>
+        </div>
+
+        <div class="setup-block setup-step-card money-section-card">
+          <div class="setup-title-row">
+            <div class="setup-step-icon">4</div>
+            <div>
+              <p class="setup-step-label">STEP 4</p>
+              <h3>生活に必要なお金と貯蓄</h3>
+              <p>生活を3つに分けて、残った分を守るお金に回します。</p>
+            </div>
+          </div>
+          <div class="money-adjust-grid living-grid">
+            <label class="money-adjust-card"><span class="money-card-label">食べる・日用品</span><span class="money-hint">食費、飲み物、洗剤など</span><div class="money-input-wrap"><input id="livingFoodMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card"><span class="money-card-label">移動・学校まわり</span><span class="money-hint">交通、教材、大学での出費など</span><div class="money-input-wrap"><input id="livingSchoolMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card"><span class="money-card-label">その他生活</span><span class="money-hint">どこにも入れにくい生活費</span><div class="money-input-wrap"><input id="livingOtherMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+            <label class="money-adjust-card"><span class="money-card-label">貯蓄に回すお金</span><span class="money-hint" id="savingAutoHint">未入力ならおすすめ額を入れます</span><div class="money-input-wrap"><input id="savingMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
+          </div>
+          <div class="allocation-result" id="allocationResult">おすすめで入れておきました。</div>
         </div>
 
         <div class="free-box setup-result-box">
-          <span>生活費として使えるお金</span>
+          <span>今月あと使えるお金</span>
           <strong><span id="freeMoney">0</span>円</strong>
-          <small>貯蓄分を除いて、ホームに自動反映されます。</small>
+          <small id="setupResultNote">ホームに反映されます。</small>
         </div>
 
-        <details class="customize-card" id="customizeCard">
-          <summary>配分を自分用に調整する</summary>
-          <div class="customize-body">
-            <p class="help-text no-margin">基本テンプレートが合わない場合だけ触ります。保存すると配分設定が「カスタム」になります。</p>
-            <label class="field custom-name-field">
-              <span>名前</span>
-              <input id="customModeName" type="text" maxlength="16" placeholder="例：節約寄り" />
-            </label>
-            <label class="field custom-name-field">
-              <span>1日の最低生活費</span>
-              <input id="customDailyMinimum" type="text" min="0" step="100" inputmode="numeric" placeholder="700"  pattern="[0-9]*"  autocomplete="off"  data-numeric-only="true" />
-            </label>
-            <div class="rate-headline">
-              <strong>カテゴリ配分</strong>
-              <span>合計 <b id="rateTotal">100</b>%</span>
-            </div>
-            <div id="customRateGrid" class="custom-rate-grid"></div>
-            <button id="saveCustomModeButton" type="button" class="wide">この設定をカスタム配分として使う</button>
+        <div class="reset-zone">
+          <div>
+            <strong>最初からやり直す</strong>
+            <p>入力した金額、やりたいこと、記録をすべて消して初期状態に戻します。</p>
           </div>
-        </details>
+          <button id="resetAllButton" type="button" class="secondary danger-button">すべてリセット</button>
+        </div>
       </div>
     </details>
 
-    <section class="card plus-plan-card" id="plusPlanSection">
-      <p class="eyebrow">COMING SOON</p>
-      <h2>Hanemy Plus 予定</h2>
-      <p>月次レポート、共有カードデザイン追加、テーマ変更、過去月の見返しを検討中です。いまは無料版の使いやすさを優先します。</p>
-    </section>
-
     <section class="card share-card" id="shareSection">
-      <h2>今月の生活費、こんな感じです</h2>
-      <p>収入・固定費・カテゴリ内訳は見せず、残額・残り日数・安全判定だけを共有します。</p>
-      <button id="shareParentButton" type="button" class="wide">親に送るカードを作る</button>
+      <div class="share-heading">
+        <span>⌯</span>
+        <div>
+          <h2>共有</h2>
+          <p>作ったカードを親に送るだけで、お金の状況をやさしく共有できます。</p>
+        </div>
+      </div>
+      <div class="share-preview">
+        <div class="share-preview-head">
+          <h3>今月の生活費、<br />こんな感じです</h3>
+          <img src="icon-192.png?v=104e" alt="" />
+        </div>
+        <div class="share-preview-row"><span>今月あと使えるお金</span><strong><span id="sharePreviewLeft">--</span>円</strong></div>
+        <div class="share-preview-row"><span>残り日数</span><strong id="sharePreviewDays">--</strong></div>
+        <div class="share-preview-row"><span>状態</span><strong id="sharePreviewStatus">準備中</strong></div>
+      </div>
+      <button id="shareParentButton" type="button" class="wide coral-button">親に送るカードを作る</button>
     </section>
 
-    <footer class="footer">β v0.9.1 Public Beta｜新ロゴ適用版</footer>
+
+    <section id="announcementsModal" class="announcements-modal" hidden aria-label="お知らせ一覧">
+      <div class="announcements-sheet">
+        <div class="announcements-head">
+          <div>
+            <p class="eyebrow">NEWS</p>
+            <h2>お知らせ</h2>
+          </div>
+          <button id="closeAnnouncementsButton" type="button" class="secondary small">閉じる</button>
+        </div>
+        <div class="announcements-list">
+          <article class="announcement-item">
+            <strong>お知らせ機能を追加しました</strong>
+            <p>右上のベルから、ハネミーの更新情報を確認できます。</p>
+            <small>最新</small>
+          </article>
+          <article class="announcement-item">
+            <strong>入力はざっくりでOK</strong>
+            <p>家計簿のように細かくなく、使った分だけ足す設計のままです。</p>
+            <small>案内</small>
+          </article>
+          <article class="announcement-item">
+            <strong>親共有カードを改善中</strong>
+            <p>残額と残り日数だけで、安心感が伝わる見せ方を調整しています。</p>
+            <small>開発中</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">β v1.0.4+ Spacing Tuned｜大学生向け生活費ボード</footer>
   </main>
 
   <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
@@ -291,24 +324,14 @@
   <nav class="mobile-bottom-nav" aria-label="下部ナビ">
     <button type="button" class="mobile-nav-button is-active" data-mobile-target="home"><span class="mobile-nav-icon">🏠</span><span>ホーム</span></button>
     <button type="button" class="mobile-nav-button mobile-nav-primary" data-mobile-target="quick"><span class="mobile-nav-plus">＋</span><span>入力</span></button>
-    <button type="button" class="mobile-nav-button" data-mobile-target="share"><span class="mobile-nav-icon">🖼️</span><span>共有</span></button>
+    <button type="button" class="mobile-nav-button" data-mobile-target="share"><span class="mobile-nav-icon">👥</span><span>共有</span></button>
   </nav>
 
-  <div id="modeOverlay" class="overlay" hidden>
-    <section class="mode-card" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
-      <p class="eyebrow">FIRST SETUP</p>
-      <h2 id="modeTitle">まず基本テンプレートで始めます</h2>
-      <p class="mode-lead">細かい設定は後からで大丈夫です。今月入るお金を入れるだけで見通しが出ます。</p>
-      <div class="mode-list" id="modeList"></div>
-      <button id="skipModeButton" type="button" class="secondary wide">このまま始める</button>
-    </section>
-  </div>
-
-  <script src="app.js?v=091"></script>
-  <script src="share.js?v=091"></script>
+  <script src="app.js?v=104e"></script>
+  <script src="share.js?v=104e"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=091"));
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=104d"));
     }
   </script>
 </body>
