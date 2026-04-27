@@ -84,3 +84,20 @@ Hanemy β / v0.15 release beta candidate
 ## バージョン
 
 Hanemy β / v0.16 PWA stable candidate
+
+
+## v0.16.1 settings fix
+
+設定画面のボタンが動かない問題を修正しました。
+
+原因：
+`feedbackHref()` が参照する `APP_VERSION` が未定義で、設定画面のイベント登録が途中で止まっていました。
+
+修正：
+- `APP_VERSION` 定数を追加
+- 設定画面のボタン登録を安全化
+- フィードバックリンク、開始日変更、今月の準備、リセット、全削除、ホームへ戻るを再確認
+
+## バージョン
+
+Hanemy β / v0.16.1 settings fix

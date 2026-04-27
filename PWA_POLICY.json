@@ -1,5 +1,5 @@
 {
-  "version": "Hanemy β / v0.16 PWA stable candidate",
+  "version": "Hanemy β / v0.16.1 settings fix",
   "policy": "PWA feel with update-safe caching",
   "cached": [
     "manifest.json",
@@ -13,5 +13,6 @@
     "future app.js",
     "future style.css"
   ],
-  "known_limit": "iOS PWA behavior cannot guarantee App Store-like forced updates."
+  "known_limit": "iOS PWA behavior cannot guarantee App Store-like forced updates.",
+  "fix": "Settings buttons were broken because APP_VERSION was undefined in feedbackHref()."
 }
