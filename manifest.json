@@ -1,23 +1,23 @@
 {
-  "name": "ハネミー β v1.0.2｜Lifestyle Setup",
+  "name": "ハネミー β",
   "short_name": "ハネミー",
-  "description": "大学生が今月あといくら使えるかを、軽く見える化する生活費ボード",
-  "start_url": "./index.html?v=101",
+  "description": "家計簿みたいに細かく記録するのではなく、今月あといくら安心して使えるかをざっくり見られるアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4fbf8",
-  "theme_color": "#65c7bd",
+  "background_color": "#fff7ea",
+  "theme_color": "#e58a32",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png?v=101",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png?v=101",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "id": "./?v=101"
+  ]
 }

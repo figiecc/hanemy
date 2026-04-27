@@ -1,338 +1,818 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ハネミー β v1.0.4+｜Step2 Notify Fix</title>
-  <link rel="stylesheet" href="style.css?v=104e" />
-  <link rel="manifest" href="manifest.json?v=104e" />
-  <meta name="theme-color" content="#65c7bd" />
-  <link rel="apple-touch-icon" href="icon-192.png?v=104e" />
-  <link rel="icon" href="favicon.png?v=104e" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ハネミー β</title>
+<style>
+:root{--bg:#fff7ea;--ink:#302319;--muted:#7b6859;--line:rgba(93,63,38,.14);--panel:rgba(255,255,255,.84);--accent:#e58a32;--soft:#ffe4bd;--danger:#9a4a2b;--shadow:0 18px 48px rgba(98,67,35,.13)}
+*{box-sizing:border-box}html{min-height:100%;background:radial-gradient(circle at 0 0,#ffe0af 0,transparent 36%),radial-gradient(circle at 100% 0,#ffd8c4 0,transparent 30%),var(--bg)}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;background:transparent}button,input,select{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app{width:min(100%,560px);min-height:100vh;margin:auto;padding:14px 14px 96px}.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px;backdrop-filter:blur(12px)}.logo{max-width:136px;max-height:44px;object-fit:contain}.logoText{display:inline-flex;align-items:center;min-height:42px;padding:9px 15px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(219,125,39,.18);box-shadow:0 10px 25px rgba(80,50,25,.08);font-weight:950;letter-spacing:.05em}
+main{display:grid;gap:14px}.hero,.card{border:1px solid var(--line);background:var(--panel);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}.hero{position:relative;padding:20px;background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(255,239,214,.9))}.hero:after{content:"ハ";position:absolute;right:-8px;bottom:-36px;font-size:88px;font-weight:950;color:rgba(219,125,39,.16)}.hero>*{position:relative;z-index:1}.card{padding:18px}.eyebrow{margin:0 0 8px;color:var(--accent);font-size:.78rem;font-weight:950;letter-spacing:.1em}h1,h2,h3,p{margin:0}h1{font-size:clamp(1.55rem,7vw,2.32rem);line-height:1.25;letter-spacing:-.04em}h2{font-size:1.2rem;line-height:1.35}h3{font-size:1rem}.lead{margin-top:10px;color:var(--muted);line-height:1.7;font-weight:650}.muted{color:var(--muted)}.small{font-size:.86rem}.grid{display:grid;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary{display:grid;grid-template-columns:1fr;gap:10px}.box{display:grid;gap:5px;padding:15px;border-radius:22px;background:rgba(255,255,255,.72);border:1px solid rgba(93,63,38,.12)}.box.hl{background:linear-gradient(135deg,#ffe7c5,#fffaf1);border-color:rgba(219,125,39,.2)}.label{color:var(--muted);font-size:.82rem;font-weight:850}.money{font-variant-numeric:tabular-nums;font-size:1.35rem;font-weight:950;letter-spacing:-.03em}.big{font-size:clamp(2rem,11vw,3.2rem)}.negative{color:var(--danger)}.field{display:grid;gap:7px}.field label{font-size:.9rem;color:var(--muted);font-weight:850}.input{width:100%;min-height:52px;border:1px solid rgba(93,63,38,.16);border-radius:17px;background:rgba(255,255,255,.9);padding:0 14px;outline:none;font-weight:850}.input:focus{border-color:rgba(219,125,39,.62);box-shadow:0 0 0 4px rgba(243,166,74,.16)}
+.checks,.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check,.choice{min-height:47px;border:1px solid rgba(93,63,38,.13);border-radius:17px;background:rgba(255,255,255,.64);display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;font-weight:850;text-align:center}.check{justify-content:flex-start}.check input{width:18px;height:18px;accent-color:var(--accent)}.check:has(input:checked),.choice.active{background:var(--soft);border-color:rgba(219,125,39,.42)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.wrap{flex-wrap:wrap}.actions{display:flex;gap:10px;margin-top:16px}.primary,.secondary,.pill,.danger{min-height:48px;border-radius:999px;padding:0 16px;border:0;font-weight:900}.primary{flex:1;background:linear-gradient(135deg,#f6b35d,#e58a32);color:white;box-shadow:0 12px 26px rgba(219,125,39,.24)}.secondary{flex:1;background:rgba(255,255,255,.76);color:var(--ink);border:1px solid var(--line)}.pill{background:rgba(255,255,255,.62);color:var(--muted);border:1px solid var(--line)}.danger{width:100%;background:rgba(154,74,43,.08);color:#8c4328;border:1px solid rgba(154,74,43,.18)}.mini{min-height:38px;padding:0 12px;font-size:.86rem}.link{border:0;background:transparent;color:var(--accent);font-weight:900;text-decoration:underline;text-underline-offset:3px;padding:0}
+.progress{margin-top:14px}.progressTop{display:flex;justify-content:space-between;color:var(--muted);font-size:.84rem;font-weight:850}.track{height:9px;background:rgba(93,63,38,.1);border-radius:999px;overflow:hidden;margin-top:8px}.bar{height:100%;background:linear-gradient(90deg,#f6b35d,#e58a32);border-radius:inherit}.notice{padding:12px 14px;border-radius:18px;background:rgba(255,228,189,.64);border:1px solid rgba(219,125,39,.14);color:#6a4c2e;line-height:1.6}.soft{padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.56);border:1px solid rgba(93,63,38,.1);color:var(--muted);line-height:1.55}.divider{height:1px;background:var(--line);margin:14px 0}.detail{display:grid;gap:10px}.line{padding:9px 0;border-top:1px solid rgba(93,63,38,.09)}.line:first-child{border-top:0}.usage{height:10px;background:rgba(93,63,38,.1);border-radius:999px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#4b8b63,#f3a64a);border-radius:inherit}
+.tabs{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 24px),520px);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:7px;border:1px solid var(--line);background:rgba(255,253,248,.92);box-shadow:0 18px 44px rgba(98,67,35,.18);border-radius:999px;backdrop-filter:blur(18px);z-index:20}.tab{min-height:46px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-weight:900}.tab.active{background:var(--soft);color:var(--accent)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(47,36,27,.32);display:grid;align-items:end;padding:12px}.modal[hidden]{display:none!important}.panel{width:min(100%,560px);margin:0 auto;background:#fffdf8;border-radius:30px;padding:18px;box-shadow:0 24px 70px rgba(37,28,20,.32)}.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.amounts button{min-height:58px;border-radius:18px}
+.appFooter{margin:26px 0 4px;text-align:center;color:rgba(123,104,89,.78);font-size:.78rem;font-weight:800;letter-spacing:.03em}.noticeList{display:grid;gap:12px;margin-top:12px}.noticeItem{padding:14px;border-radius:20px;background:rgba(255,255,255,.66);border:1px solid rgba(93,63,38,.1)}.noticeItem h3{margin-bottom:6px}.panelHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.closeX{width:40px;height:40px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.7);font-weight:950;color:var(--muted)}.debugBadge{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;background:rgba(255,228,189,.7);border:1px solid rgba(219,125,39,.16);color:var(--accent);font-size:.78rem;font-weight:900}.noticeBubbleOverlay{position:fixed;inset:0;z-index:70;background:rgba(47,36,27,.10);backdrop-filter:blur(2px)}.noticeBubble{position:fixed;right:12px;top:64px;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 92px);overflow:auto;border-radius:28px;background:rgba(255,253,248,.96);border:1px solid rgba(93,63,38,.13);box-shadow:0 24px 70px rgba(37,28,20,.24);padding:16px}.noticeBubble:before{content:"";position:absolute;right:20px;top:-9px;width:18px;height:18px;background:rgba(255,253,248,.96);border-left:1px solid rgba(93,63,38,.13);border-top:1px solid rgba(93,63,38,.13);transform:rotate(45deg)}.lightDetail{display:grid;gap:10px}.lightRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-top:1px solid rgba(93,63,38,.09)}.lightRow:first-child{border-top:0}.statusPill{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;background:rgba(255,228,189,.7);color:var(--accent);font-size:.78rem;font-weight:950}.quietDetails{margin-top:12px}.reviewHeroCard{display:grid;gap:10px;padding:16px;border-radius:24px;background:linear-gradient(135deg,#fffaf1,#ffe7c5);border:1px solid rgba(219,125,39,.16)}.trendChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.trendChip{padding:9px 11px;border-radius:999px;background:rgba(255,255,255,.66);border:1px solid rgba(93,63,38,.1);font-weight:900;color:var(--muted)}.wantEditor{display:grid;gap:10px;margin-top:12px}.wantEditRow{display:grid;grid-template-columns:1fr 96px auto;gap:8px;align-items:end}.undoToast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;width:min(calc(100% - 24px),520px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:22px;background:rgba(255,253,248,.96);border:1px solid rgba(93,63,38,.13);box-shadow:0 18px 44px rgba(98,67,35,.22)}.undoToast[hidden]{display:none!important}.warningNote{padding:12px 14px;border-radius:20px;background:rgba(255,228,189,.64);border:1px solid rgba(219,125,39,.14);line-height:1.6;color:#6a4c2e}.prepChoiceGrid{display:grid;gap:10px;margin-top:14px}.prepChoice{min-height:48px;border-radius:18px;border:1px solid rgba(93,63,38,.12);background:rgba(255,255,255,.68);font-weight:900;color:var(--ink);text-align:left;padding:12px 14px}@media(max-width:430px){.wantEditRow{grid-template-columns:1fr}.undoToast{bottom:calc(86px + env(safe-area-inset-bottom,0px));}}.pendingBox{display:grid;gap:8px;padding:15px;border-radius:22px;background:linear-gradient(135deg,#fffaf1,#ffe7c5);border:1px solid rgba(219,125,39,.16);margin-top:12px}.pendingAmount{font-size:clamp(1.8rem,9vw,2.8rem);font-weight:950;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.signToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.signBtn{min-height:44px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.68);font-weight:950;color:var(--muted)}.signBtn.active{background:var(--soft);border-color:rgba(219,125,39,.38);color:var(--accent)}.clearBtn{min-height:44px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.68);font-weight:900;color:var(--muted)}.primary[disabled]{opacity:.45;box-shadow:none;cursor:not-allowed}.quickTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.quickTab{min-height:44px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.68);font-weight:950;color:var(--muted)}.quickTab.active{background:var(--soft);border-color:rgba(219,125,39,.38);color:var(--accent)}.quickChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.quickChip{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid rgba(93,63,38,.12);background:rgba(255,255,255,.68);font-weight:900;color:var(--ink)}.quickChip.active{background:linear-gradient(135deg,#fff4df,#ffe2b6);border-color:rgba(219,125,39,.4)}.feedbackBox{display:grid;gap:10px}.feedbackButton{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:48px;border-radius:999px;padding:0 16px;background:linear-gradient(135deg,#f6b35d,#e58a32);color:white;font-weight:900;box-shadow:0 12px 26px rgba(219,125,39,.24)}.dailyTabs{grid-template-columns:repeat(3,1fr)}.settingsBtn{position:relative;width:42px;height:42px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.72);box-shadow:0 10px 25px rgba(80,50,25,.08);display:grid;place-items:center;font-size:1.05rem}.topActions{display:flex;align-items:center;gap:8px}.noticeCount{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:.72rem;font-weight:950}.noticeStack{display:grid;gap:10px}.prepCard{border-style:dashed}.fourTabs{grid-template-columns:repeat(4,1fr)}.quickGrid{display:grid;gap:10px}.quickTarget{min-height:52px;border-radius:18px;border:1px solid rgba(93,63,38,.12);background:rgba(255,255,255,.68);padding:12px;text-align:left;font-weight:900}.quickTarget.active{background:var(--soft);border-color:rgba(219,125,39,.4)}.historyList{display:grid;gap:8px;margin-top:12px}.historyItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:18px;background:rgba(255,255,255,.66);border:1px solid rgba(93,63,38,.1)}.tinyDanger{min-height:34px;border-radius:999px;border:1px solid rgba(154,74,43,.18);background:rgba(154,74,43,.08);color:#8c4328;font-weight:900;padding:0 10px}.noticePage{position:fixed;inset:0;z-index:60;background:rgba(255,247,234,.96);overflow:auto;padding:14px}.noticePageInner{width:min(100%,560px);margin:0 auto;padding-bottom:24px}.topClose{position:sticky;top:8px;z-index:2;display:flex;justify-content:flex-end;margin-bottom:8px}.strategyBoard{position:relative;display:grid;gap:14px;padding:20px;border-radius:30px;background:linear-gradient(135deg,#fffaf1 0%,#ffe4bd 64%,#ffdca8 100%);border:1px solid rgba(219,125,39,.22);box-shadow:0 20px 48px rgba(98,67,35,.15);overflow:hidden}.strategyBoard:after{content:"";position:absolute;right:-44px;top:-34px;width:150px;height:150px;border-radius:48%;background:rgba(255,255,255,.32)}.strategyBoard>*{position:relative;z-index:1}.boardMain{display:grid;gap:4px}.boardMain .money{font-size:clamp(2.7rem,16vw,4.3rem);line-height:1}.boardToday{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:22px;background:rgba(255,255,255,.62);border:1px solid rgba(93,63,38,.09)}.boardToday strong{font-size:1.2rem;font-variant-numeric:tabular-nums}.boardMiniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.boardMini{display:grid;gap:4px;padding:11px 10px;border-radius:18px;background:rgba(255,255,255,.56);border:1px solid rgba(93,63,38,.08)}.boardMini strong{font-size:.98rem;font-variant-numeric:tabular-nums}.boardMascot{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:20px;background:rgba(255,255,255,.52);border:1px solid rgba(93,63,38,.08)}@media(max-width:430px){.boardMiniGrid{grid-template-columns:1fr}.boardToday{align-items:flex-start;flex-direction:column}.strategyBoard{padding:18px}.boardMain .money{font-size:clamp(2.55rem,15vw,3.8rem)}}.mainAmountCard{position:relative;display:grid;gap:10px;padding:20px;border-radius:28px;background:linear-gradient(135deg,#fffaf1,#ffe3ba);border:1px solid rgba(219,125,39,.2);box-shadow:0 18px 42px rgba(98,67,35,.12);overflow:hidden}.mainAmountCard:after{content:"";position:absolute;right:-34px;bottom:-46px;width:140px;height:140px;border-radius:48%;background:rgba(255,255,255,.38)}.mainAmountCard>*{position:relative;z-index:1}.todayCard{display:grid;gap:8px;padding:16px;border-radius:24px;background:rgba(255,255,255,.72);border:1px solid rgba(93,63,38,.1)}.mascotTalk{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:24px;background:rgba(255,255,255,.76);border:1px solid rgba(93,63,38,.1)}.mascotFace{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe4bd,#fff6e8);color:var(--accent);font-weight:950;font-size:1.25rem;border:1px solid rgba(219,125,39,.14)}.wantList{display:grid;gap:9px;margin-top:12px}.wantItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.66);border:1px solid rgba(93,63,38,.1)}.wantName{font-weight:900}.priority{font-size:.75rem;font-weight:950;border-radius:999px;padding:5px 8px;background:rgba(255,228,189,.72);color:var(--accent);white-space:nowrap}.compactGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:374px){.compactGrid{grid-template-columns:1fr}}.directionGrid{display:grid;gap:10px;margin-top:12px}.directionChoice{min-height:58px;border-radius:20px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.66);padding:12px 14px;text-align:left;font-weight:900;color:var(--ink)}.directionChoice.active{background:linear-gradient(135deg,#fff4df,#ffe2b6);border-color:rgba(219,125,39,.38)}.directionLabel{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:rgba(255,228,189,.74);border:1px solid rgba(219,125,39,.16);color:var(--accent);font-size:.84rem;font-weight:950}.homeFocus{display:grid;gap:8px;padding:16px;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(255,236,206,.86));border:1px solid rgba(219,125,39,.15)}.notifyBtn{position:relative;width:42px;height:42px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.72);box-shadow:0 10px 25px rgba(80,50,25,.08);display:grid;place-items:center}.bell{font-size:1.08rem;line-height:1}.notifyDot{position:absolute;right:8px;top:8px;width:9px;height:9px;border-radius:50%;background:#e4573d;border:2px solid #fffdf8}.tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.tag{min-height:38px;padding:0 12px;border-radius:999px;border:1px solid rgba(93,63,38,.13);background:rgba(255,255,255,.66);font-weight:850;color:var(--muted)}.tag.active{background:var(--soft);border-color:rgba(219,125,39,.42);color:var(--accent)}.strategy-card{display:grid;gap:12px;padding:16px;border-radius:24px;background:linear-gradient(135deg,#fffaf1,#ffe7c5);border:1px solid rgba(219,125,39,.18)}.strategy-line{display:grid;gap:4px;padding:11px 0;border-top:1px solid rgba(93,63,38,.09)}.strategy-line:first-child{border-top:0}.mascot-note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:20px;background:rgba(255,255,255,.62);border:1px solid rgba(93,63,38,.1);line-height:1.6;color:var(--muted)}.mascot-dot{flex:0 0 34px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-weight:950}@media(min-width:640px){.summary{grid-template-columns:1fr 1fr}.box.hl{grid-column:span 2}}@media(max-width:374px){.app{padding-inline:10px}.hero,.card{padding:16px}.checks,.choices{grid-template-columns:1fr}.actions{flex-direction:column}}
+</style>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./favicon.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <meta name="theme-color" content="#e58a32">
 </head>
 <body>
-  <div id="stickyBar" class="sticky-bar" aria-hidden="true">今月あと使えるお金：0円</div>
+<div class="app">
+<header class="top">
+  <div>
+    <img class="logo" src="./assets/logo.png" alt="ハネミー" onerror="this.style.display='none';document.querySelector('.logoText').style.display='inline-flex'">
+    <div class="logoText" style="display:none">ハネミー</div>
+  </div>
+  <div class="topActions"><button id="settingsTopBtn" class="settingsBtn" aria-label="設定">⚙️</button><button id="dataBtn" class="notifyBtn" aria-label="お知らせ"><span class="bell">🔔</span><span class="notifyDot" aria-hidden="true"></span></button></div>
+</header>
+<main id="root"></main>
+<nav class="tabs dailyTabs">
+  <button class="tab" data-view="quick">ざっくり</button>
+  <button class="tab active" data-view="home">ホーム</button>
+  <button class="tab" data-view="review">ふり返り</button>
+</nav>
+</div>
+<div id="modal" class="modal" hidden></div>
+<div id="undoHost" class="undoToast" hidden></div>
 
-  <main class="app">
-<section class="hero-card" id="heroCard" aria-label="今月の生活費状況">
-      <div class="hero-utility-row">
-        <button type="button" id="openAnnouncementsButton" class="notify-button" aria-label="お知らせを開く"><img src="notif-bell.svg?v=104e" alt="" /><span id="announcementUnreadDot" class="notify-dot"></span></button>
+<script>
+(() => {
+'use strict';
+const KEY='hanemy_beta_release_beta_v015';
+const FEEDBACK_EMAIL='example@example.com';
+const root=document.getElementById('root'), modal=document.getElementById('modal'), dataBtn=document.getElementById('dataBtn');
+const yen=new Intl.NumberFormat('ja-JP');
+const income=[['salary','給料'],['allowance','仕送り'],['scholarship','奨学金'],['other','その他収入']];
+const fixed=[['rent','家賃'],['utilities','光熱費'],['phone','通信費'],['commute','定期代'],['tuition','学費'],['loan','ローン・分割'],['subscription','サブスク'],['other','その他']];
+const fun=[['hobby','趣味'],['social','交際費'],['otherFun','その他楽しみ']];
+const life=[['foodLiving','食べる・暮らす'],['transport','移動'],['otherLife','その他生活']];
+const enjoyTags=['友達・恋人と出かける','趣味・ゲーム','カフェ・外食','服・美容','推し活','旅行・イベント','その他'];
+const directionChoices=[['steady','生活を安定させたい'],['fun','楽しみをちゃんと残したい'],['save','少しでも残したい'],['busy','予定が多いので調整したい']];
+let state=load(), view='home', step=0, draft=null, setupMode='landing', details=false, detailNumbers=false, reviewNumbers=false, quickGroup='life', quickPending=0, quickSign=1, quickSelected=null, lastUndo=null, quick={stage:'main',main:null,sub:null};
+const notices=[
+  {id:'v0.15-release-beta',date:'2026-04-27',title:'リリースβ候補版に整えました',body:'サンプルデータを外し、初回導線と公開前の文言を整えました。'},
+  {id:'v0.14-feature-polish',date:'2026-04-27',title:'やりたいこと編集と取り消しを追加しました',body:'今月やりたいことを月途中で編集でき、ざっくり入力直後に取り消せるようにしました。'},
+  {id:'v0.13-safe-quick',date:'2026-04-27',title:'ざっくり入力を確定式にしました',body:'金額ボタンを押しても即追加されず、入力予定額を確認してから追加できるようにしました。'},
+  {id:'v0.12-compact-quick',date:'2026-04-27',title:'ざっくり入力をコンパクトにしました',body:'生活・楽しみ・やりたいことをタブで切り替えられるようにしました。'},
+  {id:'v0.11-daily-flow',date:'2026-04-27',title:'日常メニューを整理しました',body:'下メニューを、ざっくり・ホーム・ふり返りに絞りました。'},
+  {id:'v0.10-light-detail',date:'2026-04-27',title:'数字の見せ方を軽くしました',body:'カテゴリ詳細とふり返りは、必要な数字だけ先に見せる形にしました。'},
+  {id:'v0.9-quick-input',date:'2026-04-27',title:'ざっくり入力を追加しました',body:'下メニューから、使った金額をすぐ入力できるようになりました。'},
+  {id:'v0.8-board',date:'2026-04-27',title:'作戦ボードを追加しました',body:'ホーム上部で、今月あと使えるお金と今日の目安をまとめて見られます。'}
+];
+const NOTICE_VERSION=notices.length;
+
+function blank(){return{settings:{startDay:1,lastReadNoticeVersion:0},active:null,periods:[]};}
+function id(){return'p_'+Date.now()+'_'+Math.random().toString(16).slice(2);}
+function num(v){const x=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(x)?Math.max(0,Math.floor(x)):0;}
+function money(v){v=Number(v)||0;return(v<0?'-':'')+yen.format(Math.abs(Math.round(v)))+'円';}
+function sum(o){return Object.values(o||{}).reduce((a,b)=>a+num(b),0);}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function bounds(day,base=new Date()){day=Math.max(1,Math.min(28,Number(day)||1));let s=new Date(base.getFullYear(),base.getMonth(),day);if(base.getDate()<day)s=new Date(base.getFullYear(),base.getMonth()-1,day);let n=new Date(s.getFullYear(),s.getMonth()+1,day);let e=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1);return{startDate:ymd(s),endDate:ymd(e)}}
+function seed(){const b=bounds(state?.settings?.startDay||1);return{id:id(),createdAt:new Date().toISOString(),startDate:b.startDate,endDate:b.endDate,income:{salary:0,allowance:0,scholarship:0,other:0},fixed:{selected:{},amounts:{}},funPlan:{hobby:0,social:0,otherFun:0},lifePlan:{total:0},spent:{life:{foodLiving:0,transport:0,otherLife:0},fun:{hobby:0,social:0,otherFun:0},want:{}},quickHistory:[],enjoyTags:[],direction:'fun',wantItems:[]};}
+
+function sampleState(){
+  const s=blank();
+  s.settings.startDay=25;
+  s.settings.lastReadNoticeVersion=0;
+  const b=bounds(25);
+  const p=norm({
+    id:'sample_period',
+    createdAt:new Date().toISOString(),
+    startDate:b.startDate,
+    endDate:b.endDate,
+    income:{salary:80000,allowance:30000,scholarship:0,other:0},
+    fixed:{selected:{phone:true,commute:true,subscription:true},amounts:{phone:4000,commute:8000,subscription:2000}},
+    funPlan:{hobby:10000,social:15000,otherFun:5000},
+    lifePlan:{total:40000},
+    spent:{life:{foodLiving:12000,transport:2000,otherLife:0},fun:{hobby:3000,social:5000,otherFun:0},want:{'水族館':2000}},quickHistory:[{id:'h_sample_1',type:'life',key:'foodLiving',label:'食べる・暮らす',amount:1000,createdAt:new Date().toISOString()},{id:'h_sample_2',type:'want',key:'水族館',label:'水族館',amount:2000,createdAt:new Date().toISOString()}],
+    enjoyTags:['友達・恋人と出かける','趣味・ゲーム','カフェ・外食'],direction:'fun',wantItems:[{name:'水族館',amount:8000,priority:'ぜったい'},{name:'友達とご飯',amount:5000,priority:'できれば'},{name:'カフェ',amount:3000,priority:'余裕があれば'}]
+  });
+  s.periods=[p];
+  s.active=p.id;
+  return s;
+}
+function norm(p={}){const s=seed();return{...s,...p,income:{...s.income,...(p.income||{})},fixed:{selected:{...(p.fixed?.selected||{})},amounts:{...(p.fixed?.amounts||{})}},funPlan:{...s.funPlan,...(p.funPlan||{})},lifePlan:{...s.lifePlan,...(p.lifePlan||{})},spent:{life:{...s.spent.life,...(p.spent?.life||{})},fun:{...s.spent.fun,...(p.spent?.fun||{})},want:{...((p.spent&&p.spent.want)||{})}},quickHistory:Array.isArray(p.quickHistory)?p.quickHistory:[],enjoyTags:Array.isArray(p.enjoyTags)?p.enjoyTags:[],direction:p.direction||'fun',wantItems:Array.isArray(p.wantItems)?p.wantItems:[]};}
+function load(){try{
+  const stored=localStorage.getItem(KEY);
+  if(!stored)return blank();
+  const raw=JSON.parse(stored)||blank();
+  const s={...blank(),...raw,settings:{...blank().settings,...(raw.settings||{})}};
+  s.periods=(raw.periods||[]).map(norm);
+  if(!s.active && s.periods.length)s.active=s.periods[s.periods.length-1].id;
+  return s;
+}catch{return blank();}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function active(){return state.periods.find(p=>p.id===state.active)||null;}
+function totals(p){if(!p)return{};const inc=sum(p.income), fix=fixed.reduce((a,[k])=>a+(p.fixed.selected[k]?num(p.fixed.amounts[k]):0),0), fa=sum(p.funPlan), la=num(p.lifePlan.total), fs=sum(p.spent.fun)+sum(p.spent.want||{}), ls=sum(p.spent.life), planned=inc-fix-fa-la, fr=fa-fs, lr=la-ls, adjusted=planned+Math.min(0,fr)+Math.min(0,lr), actual=inc-fix-fs-ls;return{inc,fix,fa,la,fs,ls,planned,fr,lr,adjusted,actual};}
+function cumulative(){return state.periods.reduce((a,p)=>{const t=totals(p);return a+(p.id===state.active?t.adjusted:t.actual)},0);}function pastCumulative(){return state.periods.reduce((a,p)=>p.id===state.active?a:a+totals(p).actual,0);}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function periodText(p){const s=new Date(p.startDate+'T00:00:00'), e=new Date(p.endDate+'T00:00:00');return`${s.getMonth()+1}月${s.getDate()}日〜${e.getMonth()+1}月${e.getDate()}日`;}
+function hero(e,t,l){return`<section class="hero"><p class="eyebrow">${e}</p><h1>${t}</h1><p class="lead">${l}</p></section>`}
+function setView(v){view=v;
+
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
+function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活に使えるを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残せそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
+function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));dataBtn.hidden=false;render();}
+
+
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
+function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活に使えるを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残せそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
+function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+dataBtn.onclick=renderNotice;document.getElementById('settingsTopBtn').onclick=renderSettings;
+
+function startDraft(src){step=0;if(src==='new'||!src){draft=seed();return;}draft=norm(JSON.parse(JSON.stringify(src)));const b=bounds(state.settings.startDay);draft.id=id();draft.startDate=b.startDate;draft.endDate=b.endDate;draft.spent={life:{foodLiving:0,transport:0,otherLife:0},fun:{hobby:0,social:0,otherFun:0}};}
+function input(path,label,value){return`<div class="field"><label>${label}</label><input class="input jsInput" inputmode="numeric" data-path="${path}" value="${num(value)||''}" placeholder="0"></div>`}
+function bindInputs(){document.querySelectorAll('.jsInput').forEach(el=>{el.oninput=()=>{const[g,k]=el.dataset.path.split('.');if(g==='income')draft.income[k]=num(el.value);if(g==='fixed')draft.fixed.amounts[k]=num(el.value);if(g==='fun')draft.funPlan[k]=num(el.value);if(g==='life')draft.lifePlan[k]=num(el.value)};el.onblur=()=>el.value=num(el.value)||'';});}
+function renderSetup(){
+  dataBtn.hidden=false;
+  if(setupMode!=='wizard'){
+    const p=active();
+    root.innerHTML=`${hero('今月の準備','今月のお金を整えます。','今月のお金の作戦を作る場所です。普段見るのはホーム、月初に使うのは整理です。')}
+    <section class="card">
+      <h2>今月のお金の作戦を整えます</h2>
+      <p class="lead">生活・楽しみ・残せそうな見込みを、月初にまとめて整えます。</p>
+      <div class="grid" style="margin-top:16px">
+        <button class="primary" id="createPlan">作戦を作る</button>
+        ${state.periods.length?'<button class="secondary" id="carryPlan">前回の内容をもとに作る</button>':''}
+        ${p?'<button class="pill" id="adjustPlan">今月の準備を開く</button>':''}
       </div>
-      <div class="mascot-greeting">
-        <img src="icon-192.png?v=104e" alt="" class="mascot-face" />
-        <div class="speech-bubble"><span id="mascotMessage">まずは今月のお金を整えよう</span></div>
-      </div>
-
-      <div class="hero-main">
-        <div class="hero-topline">
-          <span class="mode-pill" id="modeLabel">未来配分</span>
-          <span id="statusBadge" class="status-badge neutral">準備中</span>
-        </div>
-        <p class="hero-label">今月あと使えるお金</p>
-        <strong class="hero-money"><span id="leftMoney">0</span>円</strong>
-        <div class="hero-progress" aria-hidden="true"><span id="heroProgressBar"></span></div>
-        <div class="hero-meta-row">
-          <span id="remainingDaysText">-</span>
-          <span>この中で、今月をやりくりします</span>
-        </div>
-        <p class="hero-note" id="heroNote">家計簿ではなく、月末まで持つかを見るための金額です。</p>
-      </div>
-
-      <div class="status-message-card">
-        <span class="status-face">😊</span>
-        <div>
-          <strong id="dangerForecastText">今月入るお金を入力してください</strong>
-          <small id="dailyAllowanceNote">先に消えるお金、やりたいこと、生活と貯蓄の順に整えます。</small>
-        </div>
-      </div>
-
-      <div class="mini-card-grid">
-        <div class="allowance-box" id="allowanceBox">
-          <span>今日使うなら<br />このくらいまで</span>
-          <strong id="dailyAllowanceText">今月のお金を入力</strong>
-          <small>1日あたりの目安</small>
-        </div>
-
-        <div class="savings-balance-card" id="savingsBalanceCard" aria-label="貯蓄">
-          <span>貯蓄</span>
-          <strong><span id="savingsTotalText">0</span>円</strong>
-          <small id="savingsMetaText">守るお金です。勝手には削りません。</small>
-          <div id="savingsCoverPanel" class="savings-cover-panel" hidden>
-            <p id="savingsCoverText">必要なら貯蓄から補填できます。</p>
-            <button id="coverFromSavingsButton" type="button" class="secondary small">貯蓄から補填する</button>
-          </div>
-        </div>
-      </div>
-
-      <section class="want-summary-card" aria-label="今月やりたいこと">
-        <div class="preview-head">
-          <div>
-            <h2>今月やりたいこと</h2>
-            <p>先に残しておきたい予定や楽しみです。</p>
-          </div>
-          <button type="button" id="openQuickButton" class="small">入力する</button>
-        </div>
-        <div id="wantSummaryList" class="want-summary-list"></div>
-      </section>
     </section>
+    <section class="card">
+      <h2>今月の準備でやること</h2>
+      <div class="detail">
+        <div class="row line"><span class="muted">1</span><strong>入ってくるお金を確認</strong></div>
+        <div class="row line"><span class="muted">2</span><strong>必ず出ていくお金を避ける</strong></div>
+        <div class="row line"><span class="muted">3</span><strong>楽しみを先に守る</strong></div>
+        <div class="row line"><span class="muted">4</span><strong>生活に使えるを決める</strong></div>
+      </div>
+      <div class="notice" style="margin-top:14px">準備ができたら、毎日はホームで現在地を見るだけです。</div>
+    </section>${appFooter()}`;
+    document.getElementById('createPlan')?.addEventListener('click',()=>{startDraft('new');setupMode='wizard';renderSetup();});
+    document.getElementById('carryPlan')?.addEventListener('click',()=>{startDraft(active()||state.periods[state.periods.length-1]||'new');setupMode='wizard';renderSetup();});
+    document.getElementById('adjustPlan')?.addEventListener('click',()=>{const p=active();if(!p)return;draft=norm(JSON.parse(JSON.stringify(p)));state.periods=state.periods.filter(x=>x.id!==p.id);state.active=state.periods.length?state.periods[state.periods.length-1].id:null;save();setupMode='wizard';step=0;renderSetup();});
+    return;
+  }
 
-    <section id="monthResetCard" class="card month-reset-card" hidden>
+  if(!draft)startDraft(active()||'new');
+  const titles=['今月はどんな月にしたいですか？','今月、守りたい楽しみはありますか？','今月入ってくるお金を入れましょう。','先に、必ず出ていくお金を整理しましょう。','生活に使えるを決めましょう。','楽しみに使えるを決めましょう。','今月の作戦ができました。'];
+  const leads=['まず方針を決めます。金額入力はその後で大丈夫です。','楽しみを削る対象ではなく、先に守る対象として置きます。','給料・仕送り・奨学金など、今月使えるお金です。','家賃や通信費など、今月ほぼ動かせない支払いです。','食べる・暮らす・移動など、日々に必要なお金です。','守りたい楽しみに、安心して使える枠をつけます。','今月どう過ごすかを確認しましょう。'];
+  root.innerHTML=`${hero('今月の作戦',titles[step],leads[step])}<section class="card"><div class="progress"><div class="progressTop"><span>${step+1} / 7</span><span>${['方針','楽しみ','入ってくるお金','絶対支払い','生活','楽しみに使える','作戦カード'][step]}</span></div><div class="track"><div class="bar" style="width:${((step+1)/7)*100}%"></div></div></div><div class="divider"></div>${setupBody()}<div class="actions">${step?'<button class="secondary" id="back">戻る</button>':'<button class="secondary" id="cancelSetup">整理へ戻る</button>'}<button class="primary" id="next">${step===0?'作戦を作る':step===6?'この作戦で始める':'次へ'}</button></div></section>${appFooter()}`;
+  bindInputs();
+  document.querySelectorAll('.jsCheck').forEach(ch=>ch.onchange=()=>{draft.fixed.selected[ch.dataset.key]=ch.checked;if(!ch.checked)draft.fixed.amounts[ch.dataset.key]=0;renderSetup();});
+  document.querySelectorAll('.jsDirection').forEach(btn=>btn.onclick=()=>{draft.direction=btn.dataset.direction;renderSetup();});document.querySelectorAll('.jsEnjoyTag').forEach(btn=>btn.onclick=()=>{const tag=btn.dataset.tag;draft.enjoyTags=draft.enjoyTags||[];draft.enjoyTags=draft.enjoyTags.includes(tag)?draft.enjoyTags.filter(x=>x!==tag):[...draft.enjoyTags,tag];renderSetup();});document.querySelectorAll('.jsWantName').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),name:inp.value,priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});document.querySelectorAll('.jsWantAmount').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),amount:num(inp.value),priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});
+  document.getElementById('back')?.addEventListener('click',()=>{step--;renderSetup();});
+  document.getElementById('cancelSetup')?.addEventListener('click',()=>{setupMode='landing';draft=null;step=0;renderSetup();});
+  document.getElementById('next').onclick=()=>{if(step<6){step++;renderSetup()}else finishSetup()};
+}
+function setupBody(){
+  if(step===0)return`<h3>今月の方針</h3><p class="muted small" style="margin-top:6px">この選択は、ホームの見せ方とひとことに使います。</p><div class="directionGrid">${directionChoices.map(([k,l])=>`<button type="button" class="directionChoice jsDirection ${draft.direction===k?'active':''}" data-direction="${k}">${l}<br><span class="muted small">${directionChoiceHelp(k)}</span></button>`).join('')}</div>`;
+  if(step===1)return`<h3>今月、守りたい楽しみ</h3><p class="muted small" style="margin-top:6px">まずは種類を選び、余裕があれば具体的に3つまで置きます。</p><div class="tagrow">${enjoyTags.map(tag=>`<button type="button" class="tag jsEnjoyTag ${draft.enjoyTags?.includes(tag)?'active':''}" data-tag="${tag}">${tag}</button>`).join('')}</div><div class="divider"></div><h3>今月やりたいこと</h3><p class="muted small" style="margin-top:6px">未入力でも進めます。入れるとホームに表示されます。</p><div class="grid" style="margin-top:10px">${[0,1,2].map(i=>`<div class="grid2"><div class="field"><label>やりたいこと ${i+1}</label><input class="input jsWantName" data-want-index="${i}" value="${esc(draft.wantItems?.[i]?.name||'')}" placeholder="例：水族館"></div><div class="field"><label>目安金額</label><input class="input jsWantAmount" inputmode="numeric" data-want-index="${i}" value="${num(draft.wantItems?.[i]?.amount)||''}" placeholder="0"></div></div>`).join('')}</div><div class="mascot-note" style="margin-top:12px"><span class="mascot-dot">ハ</span><span>楽しみは、あとで削るものではなく、先に守るものとして扱います。</span></div>`;
+  if(step===2)return`<div class="grid">${income.map(([k,l])=>input('income.'+k,l,draft.income[k])).join('')}</div>`;
+  if(step===3)return`<div class="grid"><div class="checks">${fixed.map(([k,l])=>`<label class="check"><input class="jsCheck" data-key="${k}" type="checkbox" ${draft.fixed.selected[k]?'checked':''}>${l}</label>`).join('')}</div><div class="divider"></div><div class="grid">${fixed.filter(([k])=>draft.fixed.selected[k]).map(([k,l])=>input('fixed.'+k,l,draft.fixed.amounts[k])).join('')||'<p class="muted">必要な項目にチェックを入れると、入力欄が出ます。</p>'}</div></div>`;
+  if(step===4)return`${input('life.total','生活に使える',draft.lifePlan.total)}<div class="soft" style="margin-top:12px">食べる・暮らす・移動など、今月を崩さないためのお金です。</div>`;
+  if(step===5)return`<div class="grid">${fun.map(([k,l])=>input('fun.'+k,l,draft.funPlan[k])).join('')}</div><div class="soft" style="margin-top:12px">${draft.enjoyTags?.length?`今月守りたい楽しみ：${draft.enjoyTags.map(esc).join('、')}`:'選んだ楽しみに合わせて、ざっくり決めれば大丈夫です。'}</div>`;
+  const t=totals(draft);return`<div class="homeFocus"><span class="directionLabel">${directionShort(draft.direction)}</span><h2>${directionComment(draft.direction,t)}</h2>${draft.enjoyTags?.length?`<p class="muted small">守りたい楽しみ：${draft.enjoyTags.map(esc).join('、')}</p>`:''}${draft.wantItems?.filter(x=>x.name||num(x.amount)>0).length?`<p class="muted small">今月やりたいこと：${draft.wantItems.filter(x=>x.name||num(x.amount)>0).map(x=>esc(x.name||'未入力')).join('、')}</p>`:''}</div><div class="strategy-card" style="margin-top:12px"><div class="strategy-line"><span class="label">生活に使える</span><span class="money">${money(t.la)}</span></div><div class="strategy-line"><span class="label">楽しみに使える</span><span class="money">${money(t.fa)}</span></div><div class="strategy-line"><span class="label">残せそうな見込み</span><span class="money ${t.planned<0?'negative':''}">${money(t.planned)}</span></div></div><div class="notice" style="margin-top:14px">${strategyComment(t)}</div>`;
+}
+
+function remainingUsable(t){return t.lr+t.fr;}
+function daysLeftInPeriod(p){const end=new Date(p.endDate+'T00:00:00');const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(1,Math.ceil((end-today)/(1000*60*60*24))+1);}
+function dailyGuide(p,t){return Math.max(0,Math.floor(remainingUsable(t)/daysLeftInPeriod(p)));}
+function mascotMessage(p,t){
+  if(t.adjusted<0)return '少し調整しよう。今月の準備から今月の作戦を見直せます。';
+  if(t.lr<0)return '生活に使えるが少し足りません。今日は生活側を整えると安心です。';
+  if(t.fr<0)return '楽しみに使えるを少し使い切っています。次の予定を見ながら調整しましょう。';
+  if(dailyGuide(p,t)>=3000)return 'いい感じ。今日もこのくらいまでなら安心して動けそうです。';
+  return '大丈夫。今日は少し控えめにすると、今月の作戦が守りやすいです。';
+}
+function wantItemsTotal(p){return (p.wantItems||[]).reduce((a,x)=>a+num(x.amount),0);}
+
+function directionChoiceHelp(k){return {steady:'生活費を少し厚めに見たい月',fun:'予定や楽しみをちゃんと残したい月',save:'残せそうな見込みを意識したい月',busy:'外出や予定が多くなりそうな月'}[k]||'';}
+function strategyComment(t){if(t.planned<0)return'少し足りません。生活か楽しみのどちらを調整するか決めましょう。';if(t.planned===0)return'ぴったりの作戦です。日々は生活と楽しみの現在地を軽く見ていきましょう。';return'楽しみを確保しつつ、生活も崩しにくい配分です。';}
+function box(label,value,hl=false){return`<div class="box ${hl?'hl':''}"><span class="label">${label}</span><span class="money ${value<0?'negative':''}">${money(value)}</span></div>`}
+function finishSetup(){draft.wantItems=(draft.wantItems||[]).filter(x=>(x.name&&x.name.trim())||num(x.amount)>0);const p=norm(draft);state.periods.push(p);state.active=p.id;save();draft=null;setupMode='landing';view='home';
+
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
+function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活に使えるを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残せそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
+function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view==='home'));renderHome();}
+
+function renderHome(){
+  dataBtn.hidden=false;
+  const p=active();
+  if(!p){
+    root.innerHTML=`${hero('ホーム','まだ今月の準備がありません。','まずは今月の準備で、今月の作戦を作りましょう。')}
+    <section class="strategyBoard">
+      <div class="boardMain">
+        <span class="label">ここに表示されるもの</span>
+        <h2>今月あと使えるお金</h2>
+        <p class="muted">作戦を作ると、日々見る金額がここに出ます。</p>
+      </div>
+      <div class="actions"><button class="primary" id="goSetup">作戦を作る</button></div>
+    </section>${appFooter()}`;
+    document.getElementById('goSetup').onclick=()=>{setupMode='landing';setView('setup');};
+    
+    return;
+  }
+
+  const t=totals(p);
+  const usable=remainingUsable(t);
+  const guide=dailyGuide(p,t);
+  const msg=t.adjusted<0?'少し調整が必要です。':(t.fr<0||t.lr<0?'少し整えると安心です。':'今日も見通しがあります。');
+
+  root.innerHTML=`${hero('ホーム',msg,'まずは、今月あとどれくらい安心して使えるかを見ます。')}
+  <section class="strategyBoard" aria-label="今月の作戦ボード">
+    <div class="row wrap">
+      <span class="directionLabel">${directionShort(p.direction)}</span>
+      
+    </div>
+
+    <div class="boardMain">
+      <span class="label">今月あと使えるお金</span>
+      <span class="money ${usable<0?'negative':''}">${money(usable)}</span>
+      <p class="muted small">生活に使えると楽しみに使えるを合わせた、今月の現在地です。</p>
+    </div>
+
+    <div class="boardToday">
       <div>
-        <p class="eyebrow">MONTH START</p>
-        <h2>新しい月を始めますか？</h2>
-        <p>使わなかった生活費とやりたいことの残りを貯蓄にまわして、今月を始めます。</p>
+        <span class="label">今日使うならこのくらいまで</span>
+        <p class="muted small">残り期間でならした目安</p>
       </div>
-      <div class="month-reset-actions">
-        <button id="copyLastMonthButton" type="button">先月と同じ設定で始める</button>
-        <button id="startFreshMonthButton" type="button" class="secondary">新しく設定する</button>
-      </div>
-    </section>
+      <strong class="${guide<=0?'negative':''}">${money(guide)}</strong>
+    </div>
 
-    <section id="setupSuccessCard" class="setup-success-card" hidden>
-      <span class="setup-success-icon">✓</span>
+    <div class="boardMiniGrid">
+      <div class="boardMini">
+        <span class="label">生活に使える</span>
+        <strong class="${t.lr<0?'negative':''}">${money(t.lr)}</strong>
+      </div>
+      <div class="boardMini">
+        <span class="label">楽しみに使える</span>
+        <strong class="${t.fr<0?'negative':''}">${money(t.fr)}</strong>
+      </div>
+      <div class="boardMini">
+        <span class="label">残せそうな見込み</span>
+        <strong class="${t.adjusted<0?'negative':''}">${money(t.adjusted)}</strong>
+      </div>
+    </div>
+    ${balanceWarning(t)?`<div class="warningNote">${balanceWarning(t)}</div>`:''}
+    ${periodNearEnd(p)?`<div class="warningNote">${periodNearEnd(p)}</div>`:''}
+
+    <div class="boardMascot">
+      <div class="mascotFace">ハ</div>
       <div>
-        <strong id="setupSuccessTitle">今月の準備ができました</strong>
-        <p id="setupSuccessText">やりたいことを残しながら、今月あと使えるお金を見られるようになりました。</p>
+        <strong>${mascotMessage(p,t)}</strong>
+        <p class="muted small" style="margin-top:4px">管理期間：${periodText(p)} <button class="link" id="startDay">開始日を変更</button></p>
       </div>
-      <button id="dismissSetupSuccess" type="button" class="secondary small">閉じる</button>
-    </section>
+    </div>
+  </section>
 
-    <section class="quick-card card quick-sheet" id="quickCard">
-      <div class="sheet-handle" aria-hidden="true"></div>
-      <div class="section-head quick-sheet-head">
+  ${(p.wantItems||[]).filter(x=>x.name||num(x.amount)>0).length?`<section class="card"><div class="row"><h2>今月やりたいこと</h2><button class="link" id="editWants">編集</button></div><div class="wantList">${(p.wantItems||[]).filter(x=>x.name||num(x.amount)>0).slice(0,3).map(x=>`<div class="wantItem"><div><div class="wantName">${esc(x.name||'未入力')}</div><div class="muted small">入力済み ${money(num((p.spent.want||{})[x.name]||0))}</div></div><span class="priority">${esc(x.priority||'メモ')}</span></div>`).join('')}</div></section>`:''}
+  <section class="card">
+    <div class="actions"><button class="secondary" id="detailBtn">${details?'カテゴリを閉じる':'カテゴリ別に見る'}</button></div>
+    ${details?detailHtml(p,t):''}
+  </section>
+
+  <section class="card prepCard">
+    <h2>今月の準備</h2>
+    <p class="lead">月初や、収入・予定が変わった時だけ使います。</p>
+    <div class="actions"><button class="secondary" id="goSetup2">今月の準備を開く</button></div>
+  </section>${appFooter()}`;
+
+  document.getElementById('detailBtn').onclick=()=>{details=!details;if(!details)detailNumbers=false;renderHome()};document.getElementById('numbersToggle')?.addEventListener('click',()=>{detailNumbers=!detailNumbers;renderHome();});
+  
+  document.getElementById('startDay').onclick=openStartDay;
+  document.getElementById('goSetup2').onclick=()=>{setupMode='landing';setView('setup');};document.getElementById('editWants')?.addEventListener('click',openWantEditor);
+  
+}
+function detailHtml(p,t){
+  return `<div class="divider"></div>
+  <div class="lightDetail">
+    <div class="lightRow">
+      <div>
+        <h3>生活に使える</h3>
+        <p class="muted small">食べる・暮らす・移動の現在地</p>
+      </div>
+      <div style="text-align:right">
+        <strong class="${t.lr<0?'negative':''}">${money(t.lr)}</strong><br>
+        <span class="statusPill">${lightStatus(t.lr)}</span>
+      </div>
+    </div>
+    <div class="lightRow">
+      <div>
+        <h3>楽しみに使える</h3>
+        <p class="muted small">趣味・交際費・やりたいことの現在地</p>
+      </div>
+      <div style="text-align:right">
+        <strong class="${t.fr<0?'negative':''}">${money(t.fr)}</strong><br>
+        <span class="statusPill">${lightStatus(t.fr)}</span>
+      </div>
+    </div>
+    <div class="lightRow">
+      <div>
+        <h3>残せそうな見込み</h3>
+        <p class="muted small">今月の見通し</p>
+      </div>
+      <div style="text-align:right">
+        <strong class="${t.adjusted<0?'negative':''}">${money(t.adjusted)}</strong>
+      </div>
+    </div>
+  </div>
+  <div class="actions"><button class="secondary" id="numbersToggle">${detailNumbers?'数字を閉じる':'数字で見る'}</button></div>
+  ${detailNumbers?`<div class="quietDetails">${cat('生活に使える',t.la,t.ls,t.lr,life,p.spent.life)}${cat('楽しみに使える',t.fa,t.fs,t.fr,fun,{...p.spent.fun,...(p.spent.want||{})})}<div class="line"><h3>絶対支払い</h3><div class="row"><span class="muted">合計</span><strong>${money(t.fix)}</strong></div></div></div>`:''}`;
+}
+function cat(title,avail,spent,remain,items,obj){const rate=avail?Math.round(spent/avail*100):0;return`<div class="line"><div class="row"><h3>${title}</h3><span class="small muted">使用率 ${rate}%</span></div><div class="usage"><div class="fill" style="width:${Math.max(0,Math.min(100,rate))}%"></div></div><div class="row"><span class="muted">使った</span><strong>${money(spent)} / 使える ${money(avail)}</strong></div><div class="row"><span class="muted">あと</span><strong class="${remain<0?'negative':''}">${money(remain)}</strong></div>${items.map(([k,l])=>`<div class="row"><span class="muted">${l}</span><strong>${money(obj[k])}</strong></div>`).join('')}</div>`;}
+
+function openQuick(){quick={stage:'main',main:null,sub:null};quickRender();}
+function quickRender(){modal.hidden=false;let body='';if(quick.stage==='main')body=`<h2>どちらに反映しますか？</h2><div class="choices" style="margin-top:12px"><button class="choice" data-main="life">生活に必要</button><button class="choice" data-main="fun">楽しみに使う</button></div>`;if(quick.stage==='sub'){const arr=quick.main==='life'?life:fun;body=`<h2>何に使いましたか？</h2><div class="choices" style="margin-top:12px">${arr.map(([k,l])=>`<button class="choice" data-sub="${k}">${l}</button>`).join('')}</div>`;}if(quick.stage==='amount')body=`<h2>いくら反映しますか？</h2><div class="amounts" style="margin-top:12px">${[500,1000,3000].map(v=>`<button class="primary" data-amt="${v}">+${yen.format(v)}円</button>`).join('')}</div><button class="secondary" id="custom" style="width:100%;margin-top:10px">直接入力</button>`;if(quick.stage==='custom')body=`<h2>金額を入力</h2><div class="field" style="margin-top:12px"><label>反映する金額</label><input id="customAmt" class="input" inputmode="numeric" placeholder="0"></div><button class="primary" id="applyCustom" style="width:100%;margin-top:14px">反映する</button>`;modal.innerHTML=`<div class="panel">${body}<div class="actions">${quick.stage!=='main'?'<button class="secondary" id="quickBack">戻る</button>':''}<button class="pill" id="quickClose">閉じる</button></div></div>`;modal.querySelectorAll('[data-main]').forEach(b=>b.onclick=()=>{quick.main=b.dataset.main;quick.stage='sub';quickRender()});modal.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{quick.sub=b.dataset.sub;quick.stage='amount';quickRender()});modal.querySelectorAll('[data-amt]').forEach(b=>b.onclick=()=>applyQuick(num(b.dataset.amt)));document.getElementById('custom')?.addEventListener('click',()=>{quick.stage='custom';quickRender();document.getElementById('customAmt')?.focus()});document.getElementById('applyCustom')?.addEventListener('click',()=>{const v=num(document.getElementById('customAmt').value);if(v>0)applyQuick(v)});document.getElementById('quickBack')?.addEventListener('click',()=>{quick.stage=quick.stage==='custom'?'amount':quick.stage==='amount'?'sub':'main';quickRender()});document.getElementById('quickClose').onclick=closeModal;}
+function applyQuick(v){const p=active();if(!p)return;if(quick.main==='life')p.spent.life[quick.sub]=num(p.spent.life[quick.sub])+v;else p.spent.fun[quick.sub]=num(p.spent.fun[quick.sub])+v;save();details=true;closeModal();renderHome();}
+function closeModal(){modal.hidden=true;modal.innerHTML='';}
+
+function renderReview(){
+  dataBtn.hidden=false;
+  const p=active();
+  if(!p){
+    root.innerHTML=`${hero('ふり返り','まだふり返る作戦がありません。','まずはホームから今月の準備へ進みましょう。')}<section class="card"><button class="primary" id="reviewGoHome">ホームへ戻る</button></section>${appFooter()}`;
+    document.getElementById('reviewGoHome').onclick=()=>setView('home');
+    return;
+  }
+  const t=totals(p), trends=topTrendItems(p);
+  root.innerHTML=`${hero('ふり返り','来月に活かすメモを作ります。','数字を細かく並べるより、次にどう整えるかを見ます。')}
+  <section class="card">
+    <div class="reviewHeroCard">
+      <span class="directionLabel">${directionShort(p.direction)}</span>
+      <h2>${monthlyNote(p,t)}</h2>
+      <p class="muted small">反省ではなく、来月の作戦を少し楽にするためのメモです。</p>
+    </div>
+  </section>
+  <section class="card">
+    <h2>今月よく使ったところ</h2>
+    ${trends.length?`<div class="trendChips">${trends.map(x=>`<span class="trendChip">${esc(x.label)}</span>`).join('')}</div>`:'<p class="lead">まだ傾向は出ていません。</p>'}
+  </section>
+  <section class="card">
+    <h2>来月へのメモ</h2>
+    <div class="lightDetail">
+      <div class="lightRow"><span class="muted">増やすなら</span><strong>${t.fr<3000?'楽しみに使える':'生活に使える'}</strong></div>
+      <div class="lightRow"><span class="muted">気をつけるなら</span><strong>${trends[0]?esc(trends[0].label):'まだなし'}</strong></div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="actions"><button class="secondary" id="reviewNumbersToggle">${reviewNumbers?'数字を閉じる':'数字で見る'}</button></div>
+    ${reviewNumbers?`<div class="quietDetails"><div class="row line"><span class="muted">生活に使える</span><strong>あと ${money(t.lr)}</strong></div><div class="row line"><span class="muted">楽しみに使える</span><strong>あと ${money(t.fr)}</strong></div><div class="row line"><span class="muted">残せそうな見込み</span><strong>${money(t.adjusted)}</strong></div><div class="row line"><span class="muted">絶対支払い</span><strong>${money(t.fix)}</strong></div></div>`:''}
+  </section>
+  <section class="card">
+    <h2>来月に引き継ぐ</h2>
+    <p class="lead">前回の内容をもとに作りますか？</p>
+    <div class="grid" style="margin-top:14px"><button class="primary" id="same">そのまま引き継ぐ</button><button class="secondary" id="adjust">金額だけ調整する</button><button class="pill" id="scratch">最初から作る</button></div>
+  </section>${appFooter()}`;
+  document.getElementById('reviewNumbersToggle').onclick=()=>{reviewNumbers=!reviewNumbers;renderReview();};
+  document.getElementById('same').onclick=carrySame;
+  document.getElementById('adjust').onclick=()=>{startDraft(active()||'new');setupMode='wizard';setView('setup');};
+  document.getElementById('scratch').onclick=()=>{startDraft('new');setupMode='wizard';setView('setup')};
+}
+function topSpends(p){return[...life.map(([k,l])=>({label:l,amount:num(p.spent.life[k])})),...fun.map(([k,l])=>({label:l,amount:num(p.spent.fun[k])}))].filter(x=>x.amount>0).sort((a,b)=>b.amount-a.amount).slice(0,3);}
+function note(top,t){if(!top.length)return'まだ傾向は出ていません。来月も、ざっくり反映から始めれば十分です。';if(top[0].label==='交際費')return'今月は交際費が少し多めでした。来月も予定が多いなら、楽しみに使う枠を少し増やしてもよさそうです。';if(top[0].label==='食べる・暮らす')return'今月は食べる・暮らすへの反映が多めです。生活に必要な枠を少し厚くすると、日々の不安が減りそうです。';if(t.adjusted<0)return'今月は配分の見直し余地があります。来月は絶対支払いを先に確認してから、生活と楽しみを整えると進めやすいです。';return`今月は${top[0].label}が一番大きめでした。来月も同じ使い方になりそうなら、その枠を少し意識して調整するとよさそうです。`;}
+function carrySame(){const p=active();const copy=norm(JSON.parse(JSON.stringify(p)));copy.id=id();const base=new Date(p.startDate+'T00:00:00');const b=bounds(state.settings.startDay,new Date(base.getFullYear(),base.getMonth()+1,base.getDate()+2));copy.startDate=b.startDate;copy.endDate=b.endDate;copy.spent={life:{foodLiving:0,transport:0,otherLife:0},fun:{hobby:0,social:0,otherFun:0}};state.periods.push(copy);state.active=copy.id;save();view='home';
+
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+
+function feedbackHref(){
+  const subject=encodeURIComponent('ハネミーへのフィードバック');
+  const body=encodeURIComponent(`使っていて気になったこと：
+
+分かりにくかったところ：
+
+欲しい機能：
+
+使っている端末：
+
+バージョン：` + APP_VERSION);
+  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function appFooter(){return `<footer class="appFooter">Hanemy β / v0.15 release beta candidate</footer>`;}
+function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
+function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活に使えるを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残せそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
+function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view==='home'));renderHome();}
+
+function openStartDay(){modal.hidden=false;modal.innerHTML=`<div class="panel"><h2>開始日を変更</h2><p class="lead">給料日や仕送り日に合わせられます。</p><select id="day" class="input" style="margin-top:12px">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${state.settings.startDay===d?'selected':''}>毎月${d}日</option>`).join('')}</select><div class="actions"><button class="secondary" id="closeStart">閉じる</button><button class="primary" id="saveStart">保存</button></div></div>`;document.getElementById('closeStart').onclick=closeModal;document.getElementById('saveStart').onclick=()=>{state.settings.startDay=Number(document.getElementById('day').value);const p=active();if(p){const b=bounds(state.settings.startDay);p.startDate=b.startDate;p.endDate=b.endDate}save();closeModal();renderHome();};}
+
+function renderNotice(){
+  state.settings.lastReadNoticeVersion=NOTICE_VERSION;
+  save();
+  updateNoticeDot();
+  modal.hidden=false;
+  modal.innerHTML=`<div class="noticeBubbleOverlay">
+    <div class="noticeBubble" role="dialog" aria-modal="true">
+      <div class="panelHead">
         <div>
-          <p class="eyebrow">DAILY</p>
-          <h2>使った金額を足す</h2>
-          <p>生活に使ったか、やりたいことに使ったかだけ選びます。</p>
+          <p class="eyebrow">お知らせ</p>
+          <h2>ハネミーからのお知らせ</h2>
         </div>
-        <div class="quick-head-actions">
-          <button id="noSpendButton" type="button" class="secondary small">大きな支出なし</button>
-          <button id="closeQuickSheetButton" type="button" class="secondary small sheet-close-button">閉じる</button>
-        </div>
+        <button class="closeX" id="closeNotice" aria-label="閉じる">×</button>
       </div>
-
-      <div class="quick-mode-row" role="group" aria-label="入力先">
-        <button type="button" class="mode-toggle active" data-spend-target="living">生活に使った</button>
-        <button type="button" class="mode-toggle" data-spend-target="want">やりたいことに使った</button>
+      <div class="noticeStack">
+        ${notices.map((n,i)=>`<div class="noticeItem"><div class="row"><h3>${esc(n.title)}</h3>${i===0?'<span class="noticeCount">NEW</span>':''}</div><p class="muted small">${esc(n.date)}</p><p class="muted small" style="margin-top:6px">${esc(n.body)}</p></div>`).join('')}
       </div>
-
-      <div id="quickWantTargetArea" class="quick-target-area" hidden>
-        <p class="input-caption">どのやりたいことに使いましたか？</p>
-        <div id="quickWantTargets" class="quick-target-list"></div>
-      </div>
-
-      <p class="input-caption">金額を選ぶ</p>
-      <div class="unit-row" role="group" aria-label="入力単位">
-        <button type="button" data-unit="500">500円</button>
-        <button type="button" data-unit="1000" class="active">1,000円</button>
-        <button type="button" data-unit="3000">3,000円</button>
-        <button type="button" data-unit="5000">5,000円</button>
-      </div>
-      <label class="field compact-field">
-        <span>直接入力</span>
-        <div class="money-input-wrap"><input id="quickAmountInput" type="text" inputmode="numeric" placeholder="例：1200" data-numeric-only="true" /><span>円</span></div>
-      </label>
-
-      <div class="quick-total">
-        <div>
-          <span id="quickTotalLabel">追加予定</span>
-          <strong><span id="quickTotal">1,000</span>円</strong>
-        </div>
-        <button id="applyQuickButton" type="button">記録する</button>
-      </div>
-      <button id="undoQuickButton" type="button" class="secondary wide">直前の記録を取り消す</button>
-    </section>
-
-    <details class="card setup-card" id="setupCard" open>
-      <summary>
-        <span>
-          <b>今月の準備</b>
-          <small>今月のお金を、無理なく使える形に整えましょう。</small>
-        </span>
-      </summary>
-      <div class="setup-body">
-        <div class="setup-intro">
-          <img src="icon-192.png?v=104e" alt="" />
-          <div>
-            <h2>今月の準備</h2>
-            <p>入るお金から、先に消えるお金、やりたいこと、生活と貯蓄の順に整えます。</p>
-          </div>
-        </div>
-
-        <div class="setup-block setup-step-card start-day-card">
-          <div class="setup-title-row">
-            <div class="setup-step-icon">0</div>
-            <div>
-              <p class="setup-step-label">PERIOD</p>
-              <h3>生活費のスタート日</h3>
-              <p>今月の生活費の開始日を設定しましょう。</p>
-            </div>
-          </div>
-          <label class="field">
-            <span>毎月の開始日</span>
-            <select id="periodStartDay"></select>
-          </label>
-        </div>
-
-        <div class="setup-block setup-step-card money-section-card">
-          <div class="setup-title-row">
-            <div class="setup-step-icon">1</div>
-            <div>
-              <p class="setup-step-label">STEP 1</p>
-              <h3>今月入るお金</h3>
-              <p>仕送り・バイト代・奨学金など、今月使える元になるお金です。</p>
-            </div>
-          </div>
-          <label class="money-adjust-card full-card">
-            <span class="money-card-label">今月入るお金</span>
-            <span class="money-hint">細かく分けず、合計で大丈夫です。</span>
-            <div class="money-input-wrap"><input id="incomeTotal" type="text" inputmode="numeric" placeholder="例：80000" data-numeric-only="true" /><span>円</span></div>
-          </label>
-        </div>
-
-        <div class="setup-block setup-step-card money-section-card">
-          <div class="setup-title-row">
-            <div class="setup-step-icon">2</div>
-            <div>
-              <p class="setup-step-label">STEP 2</p>
-              <h3>先に消えるお金</h3>
-              <p>家賃や通信費など、今月ほぼ使い道を変えられないお金です。</p>
-            </div>
-          </div>
-          <div class="fixed-toggle-panel compact-step2">
-            <div class="fixed-toggle-head compact">
-              <strong>自分で選ぶ</strong>
-              <span>必要な項目だけチェックすると、下に入力欄が出ます</span>
-            </div>
-            <div id="fixedItemToggles" class="fixed-toggle-grid compact" aria-label="先に消えるお金の表示項目"></div>
-          </div>
-          <div class="money-adjust-grid fixed-grid">
-            <label class="money-adjust-card" data-fixed-row="homeMoney"><span class="money-card-label">家に入れるお金</span><div class="money-input-wrap"><input id="fixedHomeMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="rent"><span class="money-card-label">家賃</span><div class="money-input-wrap"><input id="fixedRent" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="utility"><span class="money-card-label">光熱費</span><div class="money-input-wrap"><input id="fixedUtility" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="phone"><span class="money-card-label">通信費</span><div class="money-input-wrap"><input id="fixedPhone" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="pass"><span class="money-card-label">定期・通学</span><div class="money-input-wrap"><input id="fixedPass" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="tuition"><span class="money-card-label">学費</span><div class="money-input-wrap"><input id="fixedTuition" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="subscription"><span class="money-card-label">サブスク</span><div class="money-input-wrap"><input id="fixedSubscription" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card" data-fixed-row="other"><span class="money-card-label">その他</span><div class="money-input-wrap"><input id="fixedOther" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-          </div>
-          <p class="help-text" id="fixedHelpText">必要な項目だけ入力します。チェックしていない項目は計算に入れません。</p>
-        </div>
-
-        <div class="setup-block setup-step-card money-section-card">
-          <div class="setup-title-row">
-            <div class="setup-step-icon">3</div>
-            <div>
-              <p class="setup-step-label">STEP 3</p>
-              <h3>今月やりたいこと</h3>
-              <p>今月ちゃんと残しておきたい予定や楽しみを、先に入れておきます。</p>
-            </div>
-          </div>
-          <div id="wantSetupList" class="want-setup-list"></div>
-          <p class="help-text">今月やりたいことは3つまで。未入力なら0円で計算します。</p>
-        </div>
-
-        <div class="setup-block setup-step-card money-section-card">
-          <div class="setup-title-row">
-            <div class="setup-step-icon">4</div>
-            <div>
-              <p class="setup-step-label">STEP 4</p>
-              <h3>生活に必要なお金と貯蓄</h3>
-              <p>生活を3つに分けて、残った分を守るお金に回します。</p>
-            </div>
-          </div>
-          <div class="money-adjust-grid living-grid">
-            <label class="money-adjust-card"><span class="money-card-label">食べる・日用品</span><span class="money-hint">食費、飲み物、洗剤など</span><div class="money-input-wrap"><input id="livingFoodMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card"><span class="money-card-label">移動・学校まわり</span><span class="money-hint">交通、教材、大学での出費など</span><div class="money-input-wrap"><input id="livingSchoolMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card"><span class="money-card-label">その他生活</span><span class="money-hint">どこにも入れにくい生活費</span><div class="money-input-wrap"><input id="livingOtherMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-            <label class="money-adjust-card"><span class="money-card-label">貯蓄に回すお金</span><span class="money-hint" id="savingAutoHint">未入力ならおすすめ額を入れます</span><div class="money-input-wrap"><input id="savingMoney" type="text" inputmode="numeric" placeholder="0" data-numeric-only="true" /><span>円</span></div></label>
-          </div>
-          <div class="allocation-result" id="allocationResult">おすすめで入れておきました。</div>
-        </div>
-
-        <div class="free-box setup-result-box">
-          <span>今月あと使えるお金</span>
-          <strong><span id="freeMoney">0</span>円</strong>
-          <small id="setupResultNote">ホームに反映されます。</small>
-        </div>
-
-        <div class="reset-zone">
-          <div>
-            <strong>最初からやり直す</strong>
-            <p>入力した金額、やりたいこと、記録をすべて消して初期状態に戻します。</p>
-          </div>
-          <button id="resetAllButton" type="button" class="secondary danger-button">すべてリセット</button>
-        </div>
-      </div>
-    </details>
-
-    <section class="card share-card" id="shareSection">
-      <div class="share-heading">
-        <span>⌯</span>
-        <div>
-          <h2>共有</h2>
-          <p>作ったカードを親に送るだけで、お金の状況をやさしく共有できます。</p>
-        </div>
-      </div>
-      <div class="share-preview">
-        <div class="share-preview-head">
-          <h3>今月の生活費、<br />こんな感じです</h3>
-          <img src="icon-192.png?v=104e" alt="" />
-        </div>
-        <div class="share-preview-row"><span>今月あと使えるお金</span><strong><span id="sharePreviewLeft">--</span>円</strong></div>
-        <div class="share-preview-row"><span>残り日数</span><strong id="sharePreviewDays">--</strong></div>
-        <div class="share-preview-row"><span>状態</span><strong id="sharePreviewStatus">準備中</strong></div>
-      </div>
-      <button id="shareParentButton" type="button" class="wide coral-button">親に送るカードを作る</button>
-    </section>
+    </div>
+  </div>`;
+  document.getElementById('closeNotice').onclick=closeModal;
+}
+function renderSettings(){
+  dataBtn.hidden=false;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  const p=active();
+  root.innerHTML=`${hero('設定','管理期間やデータの扱いを変更できます。','期間やデータの扱いを変更できます。')}
+  <section class="card">
+    <h2>管理期間</h2>
+    <p class="lead">給料日や仕送り日に合わせて、月の開始日を変更できます。</p>
+    <div class="actions"><button class="secondary" id="settingStartDay">開始日を変更</button></div>
+  </section>
+  <section class="card">
+    <h2>今月の準備</h2>
+    <p class="lead">収入や予定が変わったときに開きます。</p>
+    <div class="actions"><button class="secondary" id="edit">今月の準備を開く</button></div>
+  </section>
+  <section class="card">
+    <h2>データ管理</h2>
+    <div class="grid" style="margin-top:12px">
+      <button class="danger" id="resetPeriod">今の期間だけリセット</button>
+      <button class="danger" id="resetAll">すべてのデータを削除</button>
+    </div>
+    <p class="muted small" style="margin-top:10px">削除操作は確認後に実行します。</p>
+  </section>
+  
+  <section class="card">
+    <h2>フィードバック</h2>
+    <div class="feedbackBox">
+      <p class="lead">使いにくいところ、分かりにくいところ、欲しい機能を送れます。</p>
+      <a class="feedbackButton" id="feedbackLink" href="#">フィードバックを送る</a>
+      <p class="muted small">β版ではメールアプリを開く方式です。送信先はあとで差し替えできます。</p>
+    </div>
+  </section>
+  <section class="card">
+    <h2>保存について</h2>
+    <p class="lead">データはこの端末のブラウザに保存されます。ブラウザのデータを消すと失われる場合があります。</p>
+  </section>
+  <section class="card"><button class="pill" id="backHome">ホームへ戻る</button></section>${appFooter()}`;
+  document.getElementById('feedbackLink')?.setAttribute('href', feedbackHref());
+  document.getElementById('settingStartDay').onclick=openStartDay;
+  document.getElementById('edit').onclick=()=>{const p=active();if(!p)return;draft=norm(JSON.parse(JSON.stringify(p)));state.periods=state.periods.filter(x=>x.id!==p.id);state.active=state.periods.length?state.periods[state.periods.length-1].id:null;save();setupMode='wizard';step=0;setView('setup')};
+  document.getElementById('resetPeriod').onclick=()=>{const p=active();if(p&&confirm('この操作は取り消せません。実行してもよろしいですか？')){state.periods=state.periods.filter(x=>x.id!==p.id);state.active=state.periods.length?state.periods[state.periods.length-1].id:null;save();draft=null;setupMode='landing';setView('home');}};
+  document.getElementById('resetAll').onclick=()=>{if(confirm('この操作は取り消せません。実行してもよろしいですか？')){state=blank();save();draft=null;setupMode='landing';setView('home');}};
+  document.getElementById('backHome').onclick=()=>setView('home');
+}
 
 
-    <section id="announcementsModal" class="announcements-modal" hidden aria-label="お知らせ一覧">
-      <div class="announcements-sheet">
-        <div class="announcements-head">
-          <div>
-            <p class="eyebrow">NEWS</p>
-            <h2>お知らせ</h2>
-          </div>
-          <button id="closeAnnouncementsButton" type="button" class="secondary small">閉じる</button>
-        </div>
-        <div class="announcements-list">
-          <article class="announcement-item">
-            <strong>お知らせ機能を追加しました</strong>
-            <p>右上のベルから、ハネミーの更新情報を確認できます。</p>
-            <small>最新</small>
-          </article>
-          <article class="announcement-item">
-            <strong>入力はざっくりでOK</strong>
-            <p>家計簿のように細かくなく、使った分だけ足す設計のままです。</p>
-            <small>案内</small>
-          </article>
-          <article class="announcement-item">
-            <strong>親共有カードを改善中</strong>
-            <p>残額と残り日数だけで、安心感が伝わる見せ方を調整しています。</p>
-            <small>開発中</small>
-          </article>
-        </div>
-      </div>
-    </section>
 
-    <footer class="footer">β v1.0.4+ Spacing Tuned｜大学生向け生活費ボード</footer>
-  </main>
+function lightStatus(remaining){
+  if(remaining < 0) return '調整しよう';
+  if(remaining < 3000) return '少し控えめ';
+  return 'まだ大丈夫';
+}
+function topTrendItems(p){
+  return [
+    ...life.map(([k,l])=>({label:l,amount:num(p.spent.life[k])})),
+    ...fun.map(([k,l])=>({label:l,amount:num(p.spent.fun[k])})),
+    ...(p.wantItems||[]).filter(x=>x.name).map(x=>({label:x.name,amount:num((p.spent.want||{})[x.name])}))
+  ].filter(x=>x.amount>0).sort((a,b)=>b.amount-a.amount).slice(0,2);
+}
+function monthlyNote(p,t){
+  if(t.adjusted<0)return '来月は、生活に使えるか楽しみに使えるを少し見直すと安心です。';
+  if(t.fr<0)return '楽しみをしっかり使った月です。予定が多いなら、来月も楽しみに使えるを厚めにしてよさそうです。';
+  if(t.lr<0)return '生活側が少し多めでした。来月は生活に使えるを少し厚くすると安定しそうです。';
+  return '大きく崩れずに進められています。来月もこの作戦をもとに整えられそうです。';
+}
 
-  <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
+function periodNearEnd(p){
+  const d=daysLeftInPeriod(p);
+  if(d<=3)return `今月の期間はあと${d}日です。今日は少し控えめだと安心です。`;
+  if(d<=7)return `今月の期間はあと${d}日です。今の見通しを軽く確認しておきましょう。`;
+  return '';
+}
+function balanceWarning(t){
+  if(t.lr<0 && t.fr>0)return '生活側が少し足りません。楽しみに使える分とのバランスを見直せます。';
+  if(t.fr<0 && t.lr>0)return '楽しみ側を少し多めに使っています。予定が続くなら今月の準備で整え直せます。';
+  if(t.adjusted<0)return '少し調整が必要です。今月の準備から見直せます。';
+  return '';
+}
+function renderUndoToast(){
+  const host=document.getElementById('undoHost');
+  if(!host)return;
+  if(!lastUndo){host.hidden=true;host.innerHTML='';return;}
+  host.hidden=false;
+  host.innerHTML=`<span>${esc(lastUndo.label)} ${money(Number(lastUndo.amount)||0)} を入力しました</span><button class="link" id="undoLast">取り消す</button>`;
+  document.getElementById('undoLast').onclick=()=>undoLastEntry();
+}
+function undoLastEntry(){
+  if(!lastUndo)return;
+  const p=active(); if(!p)return;
+  reverseHistoryEntry(p,lastUndo);
+  p.quickHistory=(p.quickHistory||[]).filter(x=>x.id!==lastUndo.id);
+  save();
+  lastUndo=null;
+  render();
+}
+function reverseHistoryEntry(p,h){
+  const reverse=-(Number(h.amount)||0);
+  if(h.type==='life')p.spent.life[h.key]=Math.max(0,num(p.spent.life[h.key])+reverse);
+  if(h.type==='fun')p.spent.fun[h.key]=Math.max(0,num(p.spent.fun[h.key])+reverse);
+  if(h.type==='want')p.spent.want[h.key]=Math.max(0,num(p.spent.want[h.key])+reverse);
+}
 
-  <nav class="mobile-bottom-nav" aria-label="下部ナビ">
-    <button type="button" class="mobile-nav-button is-active" data-mobile-target="home"><span class="mobile-nav-icon">🏠</span><span>ホーム</span></button>
-    <button type="button" class="mobile-nav-button mobile-nav-primary" data-mobile-target="quick"><span class="mobile-nav-plus">＋</span><span>入力</span></button>
-    <button type="button" class="mobile-nav-button" data-mobile-target="share"><span class="mobile-nav-icon">👥</span><span>共有</span></button>
-  </nav>
+function openWantEditor(){
+  const p=active(); if(!p)return;
+  const rows=[0,1,2].map(i=>{
+    const item=(p.wantItems||[])[i]||{};
+    return `<div class="wantEditRow"><div class="field"><label>やりたいこと ${i+1}</label><input class="input wantNameEdit" data-i="${i}" value="${esc(item.name||'')}" placeholder="例：水族館"></div><div class="field"><label>目安</label><input class="input wantAmountEdit" data-i="${i}" inputmode="numeric" value="${num(item.amount)||''}" placeholder="0"></div><button class="tinyDanger removeWant" data-i="${i}">削除</button></div>`;
+  }).join('');
+  modal.hidden=false;
+  modal.innerHTML=`<div class="noticeBubbleOverlay"><div class="noticeBubble" role="dialog" aria-modal="true"><div class="panelHead"><div><p class="eyebrow">今月やりたいこと</p><h2>追加・編集</h2></div><button class="closeX" id="closeWantEditor">×</button></div><p class="muted small">やりたいことは最大3つまで。個別に管理しすぎず、楽しみの具体として使います。</p><div class="wantEditor">${rows}</div><div class="actions"><button class="secondary" id="saveWantEditor">保存</button></div></div></div>`;
+  document.getElementById('closeWantEditor').onclick=closeModal;
+  document.querySelectorAll('.removeWant').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.i);
+    p.wantItems[i]={name:'',amount:0,priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};
+    openWantEditor();
+  });
+  document.getElementById('saveWantEditor').onclick=()=>{
+    p.wantItems=[0,1,2].map(i=>({
+      name:document.querySelector(`.wantNameEdit[data-i="${i}"]`)?.value||'',
+      amount:num(document.querySelector(`.wantAmountEdit[data-i="${i}"]`)?.value||0),
+      priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'
+    })).filter(x=>x.name||num(x.amount)>0);
+    save();
+    closeModal();
+    renderHome();
+  };
+}
 
-  <script src="app.js?v=104e"></script>
-  <script src="share.js?v=104e"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js?v=104d"));
+function renderQuickPage(){
+  dataBtn.hidden=false;
+  const p=active();
+  if(!p){
+    root.innerHTML=`${hero('ざっくり入力','まだ今月の準備がありません。','まずは今月の準備を始めましょう。')}<section class="card"><button class="primary" id="quickGoSetup">作戦を作る</button></section>${appFooter()}`;
+    document.getElementById('quickGoSetup').onclick=()=>{setupMode='landing';setView('setup');};
+    return;
+  }
+
+  const wants=(p.wantItems||[]).filter(x=>x.name||num(x.amount)>0);
+  const groupLabel={life:'生活',fun:'楽しみ',want:'やりたいこと'}[quickGroup]||'生活';
+  const groupItems = quickGroup==='life'
+    ? life.map(([key,label])=>({type:'life',key,label}))
+    : quickGroup==='fun'
+      ? fun.map(([key,label])=>({type:'fun',key,label}))
+      : wants.map(x=>({type:'want',key:x.name||'未入力',label:x.name||'未入力'}));
+
+  root.innerHTML=`${hero('ざっくり入力','何に使いましたか？','金額を選んでから、最後に入力します。')}
+  <section class="card">
+    <h2>何に使いましたか？</h2>
+    <div class="quickTabs" aria-label="入力先の種類">
+      <button class="quickTab ${quickGroup==='life'?'active':''}" data-qgroup="life">生活</button>
+      <button class="quickTab ${quickGroup==='fun'?'active':''}" data-qgroup="fun">楽しみ</button>
+      <button class="quickTab ${quickGroup==='want'?'active':''}" data-qgroup="want">やりたいこと</button>
+    </div>
+    <div class="quickChips">
+      ${groupItems.length?groupItems.map(x=>`<button class="quickChip ${quickSelected&&quickSelected.type===x.type&&quickSelected.key===x.key?'active':''}" data-qtype="${x.type}" data-qkey="${esc(x.key)}" data-qlabel="${esc(x.label)}">${esc(x.label)}</button>`).join(''):'<span class="muted small">やりたいことは、今月の準備で追加できます。</span>'}
+    </div>
+  </section>
+
+  <section class="card" id="quickAmountCard" ${quickSelected?'':'hidden'}>
+    <h2 id="quickSelectedTitle">${quickSelected?esc(quickSelected.label)+' に入力':'入力先を選んでください'}</h2>
+
+    <div class="signToggle" aria-label="入力の種類">
+      <button class="signBtn ${quickSign===1?'active':''}" data-sign="1">＋ 使った</button>
+      <button class="signBtn ${quickSign===-1?'active':''}" data-sign="-1">− 取り消し</button>
+    </div>
+
+    <div class="pendingBox">
+      <span class="label">入力予定額</span>
+      <span class="pendingAmount ${quickSign===-1&&quickPending>0?'negative':''}">${quickSign===-1&&quickPending>0?'-':''}${money(quickPending)}</span>
+      <p class="muted small">金額ボタンを押して予定額を作り、最後に「ざっくり入力する」を押します。</p>
+    </div>
+
+    <div class="amounts" style="margin-top:12px">
+      ${[500,1000,3000].map(v=>`<button class="primary" data-add-pending="${v}">+${yen.format(v)}円</button>`).join('')}
+    </div>
+
+    <div class="actions">
+      <button class="clearBtn" id="clearPending">クリア</button>
+      <button class="primary" id="confirmQuick" ${quickPending>0?'':'disabled'}>ざっくり入力する</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>最近のざっくり入力</h2>
+    <p class="muted small">間違えた入力だけ削除できます。履歴は確認用に少しだけ表示します。</p>
+    ${renderQuickHistory(p)}
+  </section>${appFooter()}`;
+
+  document.querySelectorAll('[data-qgroup]').forEach(btn=>btn.onclick=()=>{
+    quickGroup=btn.dataset.qgroup;
+    quickSelected=null;
+    quickPending=0;
+    quickSign=1;
+    renderQuickPage();
+  });
+
+  document.querySelectorAll('.quickChip').forEach(btn=>btn.onclick=()=>{
+    quickSelected={type:btn.dataset.qtype,key:btn.dataset.qkey,label:btn.dataset.qlabel};
+    quickPending=0;
+    quickSign=1;
+    renderQuickPage();
+  });
+
+  document.querySelectorAll('[data-sign]').forEach(btn=>btn.onclick=()=>{
+    quickSign=Number(btn.dataset.sign);
+    renderQuickPage();
+  });
+
+  document.querySelectorAll('[data-add-pending]').forEach(btn=>btn.onclick=()=>{
+    quickPending += num(btn.dataset.addPending);
+    renderQuickPage();
+  });
+
+  document.getElementById('clearPending')?.addEventListener('click',()=>{
+    quickPending=0;
+    renderQuickPage();
+  });
+
+  document.getElementById('confirmQuick')?.addEventListener('click',()=>{
+    if(quickSelected && quickPending>0){
+      applyQuickEntry(quickSelected, quickPending * quickSign);
+      quickPending=0;
+      quickSign=1;
+      quickSelected=null;
     }
-  </script>
+  });
+
+  bindHistoryDelete();
+}
+
+function renderQuickHistory(p){
+  const items=(p.quickHistory||[]).slice().reverse().slice(0,5);
+  if(!items.length)return '<p class="muted" style="margin-top:12px">まだ入力はありません。</p>';
+  return `<div class="historyList">${items.map(h=>`<div class="historyItem"><div><strong>${esc(h.label)}</strong><div class="muted small">${money(Number(h.amount)||0)}</div></div><button class="tinyDanger" data-delete-history="${esc(h.id)}">削除</button></div>`).join('')}</div>`;
+}
+
+function applyQuickEntry(target,amount){
+  const p=active(); if(!p||!amount)return;
+  const delta=Number(amount)||0;
+  if(target.type==='life')p.spent.life[target.key]=Math.max(0,num(p.spent.life[target.key])+delta);
+  if(target.type==='fun')p.spent.fun[target.key]=Math.max(0,num(p.spent.fun[target.key])+delta);
+  if(target.type==='want')p.spent.want[target.key]=Math.max(0,num(p.spent.want[target.key])+delta);
+  p.quickHistory=p.quickHistory||[];
+  const entry={id:'h_'+Date.now()+'_'+Math.random().toString(16).slice(2),type:target.type,key:target.key,label:target.label,amount:delta,createdAt:new Date().toISOString()};
+  p.quickHistory.push(entry);
+  lastUndo=entry;
+  save();
+  renderQuickPage();
+  renderUndoToast();
+}
+
+function bindHistoryDelete(){
+  document.querySelectorAll('[data-delete-history]').forEach(btn=>btn.onclick=()=>{
+    const p=active(); if(!p)return;
+    const id=btn.dataset.deleteHistory;
+    const h=(p.quickHistory||[]).find(x=>x.id===id);
+    if(!h)return;
+    reverseHistoryEntry(p,h);
+    p.quickHistory=(p.quickHistory||[]).filter(x=>x.id!==id);
+    if(lastUndo&&lastUndo.id===id)lastUndo=null;
+    save();
+    renderQuickPage();
+    renderUndoToast();
+  });
+}
+
+function render(){if(view==='setup')renderSetup();else if(view==='quick')renderQuickPage();else if(view==='review')renderReview();else renderHome();}
+render();updateNoticeDot();
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,51 @@
+{
+  "basis": "hanemy_beta_v15_release_candidate_cdc462.zip",
+  "old_package": "hanemy_beta_v1_0_4_plus_step2_notify_fix.zip",
+  "kept": [
+    "index.html (v0.15 release beta candidate)",
+    "README.md (v0.15 release notes/checklist)",
+    "assets/logo.png (old logo-horizontal.png renamed)",
+    "favicon.png",
+    "icon-192.png",
+    "icon-512.png",
+    "manifest.json (rewritten for v0.15)",
+    "LICENSE"
+  ],
+  "removed": [
+    "__MACOSX/",
+    "old index.html",
+    "style.css",
+    "app.js",
+    "share.js",
+    "sw.js",
+    "notif-bell.svg",
+    "old README.md",
+    "FEEDBACK_GUIDE.md",
+    "PUBLISH_CHECKLIST.md",
+    "TEST_CASES.md"
+  ],
+  "copied_assets": [
+    [
+      "logo-horizontal.png",
+      "assets/logo.png"
+    ],
+    [
+      "favicon.png",
+      "favicon.png"
+    ],
+    [
+      "icon-192.png",
+      "icon-192.png"
+    ],
+    [
+      "icon-512.png",
+      "icon-512.png"
+    ]
+  ],
+  "notes": [
+    "Old split implementation files were removed because v0.15 is a single-file app.",
+    "Old service worker was removed to avoid caching outdated files.",
+    "Old notification SVG was removed because v0.15 uses inline UI for notification icons.",
+    "Logo and app icons were retained as brand/publication assets."
+  ]
+}
