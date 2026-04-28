@@ -13,7 +13,7 @@
 
 ## 公開βバージョン
 
-**Hanemy β / v0.29.2.1 brand assets hotfix**
+**Hanemy β / v0.29.3.1 notice date fix**
 
 ---
 
@@ -464,3 +464,28 @@ README更新ルール：今回も変更内容を追記しています。
 - `assets/logo-icon-transparent.png` を修正版へ差し替え
 - `assets/mascot-transparent.png` を修正版へ差し替え
 - 既存互換用の `assets/logo.png` も修正版へ差し替え
+
+
+## v0.29.3 mailto contact
+
+README更新ルール：今回も変更内容を追記しています。
+
+### 目的
+
+Googleフォームを使わず、ハネミーらしい軽い問い合わせ・フィードバック導線を追加しました。
+
+### 変更内容
+
+- 設定内のフィードバック文言を更新
+- `mailto:` でメールアプリを開く方式に整理
+- メール本文テンプレートを追加
+- お知らせに v0.29.3 の更新情報を追加
+- Service Worker のキャッシュ名を `hanemy-assets-v0293-mailto-contact` に更新
+
+### 公開前に必ず変更すること
+
+`index.html` 内の以下を、実際の受信用メールアドレスへ変更してください。
+
+```js
+const FEEDBACK_EMAIL='your-email@example.com';
+```
