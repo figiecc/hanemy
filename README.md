@@ -13,7 +13,7 @@
 
 ## 公開βバージョン
 
-**Hanemy β / v0.29.6.2 storage fallback**
+**Hanemy β / v0.29.6.3 contact email set**
 
 ---
 
