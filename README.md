@@ -13,7 +13,7 @@
 
 ## 公開βバージョン
 
-**Hanemy β / v0.29.7 stronger autosave**
+**Hanemy β / v0.29.6 wording cleanup**
 
 ---
 
