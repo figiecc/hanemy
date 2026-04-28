@@ -13,7 +13,7 @@
 
 ## 公開βバージョン
 
-**Hanemy β / v0.29.3.1 notice date fix**
+**Hanemy β / v0.29.4 cache reset and install guide**
 
 ---
 
