@@ -1931,7 +1931,7 @@ const DRAFT_KEY=KEY+'_setup_draft';
 const DB_NAME='hanemy-persistent-store';
 const DB_STORE='hanemy-data';
 const DB_STATE_ID='state';
-const APP_VERSION='Hanemy β / v0.29.6.3 contact email set';
+const APP_VERSION='Hanemy β / v0.29.6.4 direction choices cleanup';
 const FEEDBACK_EMAIL='figie.cc@gmail.com';
 const root=document.getElementById('root'), modal=document.getElementById('modal'), dataBtn=document.getElementById('dataBtn');
 const yen=new Intl.NumberFormat('ja-JP');
@@ -1940,9 +1940,10 @@ const fixed=[['rent','家賃'],['utilities','光熱費'],['phone','通信費'],[
 const fun=[['hobby','趣味'],['social','交際費'],['otherFun','その他楽しみ']];
 const life=[['foodLiving','食べる・暮らす'],['transport','移動'],['otherLife','その他生活']];
 const enjoyTags=['友達・恋人と出かける','趣味・ゲーム','カフェ・外食','服・美容','推し活','旅行・イベント','その他'];
-const directionChoices=[['steady','生活を安定させたい'],['fun','楽しみをちゃんと残したい'],['save','少しでも残したい'],['busy','予定が多いので調整したい']];
+const directionChoices=[['steady','生活重視'],['fun','楽しみ重視'],['save','貯金重視']];
 let state=load(), view='home', step=0, draft=null, setupMode='landing', details=false, detailNumbers=false, reviewNumbers=false, quickGroup='life', quickPending=0, quickSign=1, quickSelected=null, lastUndo=null, undoToastTimer=null, quick={stage:'main',main:null,sub:null};
 const notices=[
+  {id:'v0.29.6.4-direction-choices-cleanup',date:'2026-04-28',title:'今月の方針を選びやすくしました',body:'今月の準備ステップ1の選択肢を、生活重視・楽しみ重視・貯金重視の3つに整理しました。'},
   {id:'v0.29.6.3-contact-email-set',date:'2026-04-28',title:'問い合わせ先メールを設定しました',body:'フィードバックの送信先メールアドレスを公開用に設定しました。'},
   {id:'v0.29.6.2-storage-fallback',date:'2026-04-28',title:'保存の復元を強化しました',body:'タスク終了後に内容が戻らない場合に備え、localStorageに加えてIndexedDBにも保存するようにしました。'},
   {id:'v0.29.6.1-minimal-save-fix',date:'2026-04-28',title:'入力途中の保存を補強しました',body:'今月の準備中に選んだ内容や、やりたいことの入力がタスク終了後も残りやすいよう、保存タイミングを追加しました。'},
@@ -2115,8 +2116,8 @@ function setView(v){view=v;
 
 
 function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
-function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
-function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活費の残りを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残りそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function directionShort(key){return {steady:'生活重視',fun:'楽しみ重視',save:'貯金重視'}[key]||'楽しみ重視';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活費・楽しみ用・貯金のバランスを見直しましょう。';return {steady:'生活費をしっかり確保して、安心して過ごす方針です。',fun:'楽しみ用のお金を先に守って、無理なく使う方針です。',save:'残りそうなお金を意識して、少しでも残す方針です。'}[key]||'楽しみ用のお金を守りながら整える方針です。';}
 
 function feedbackHref(){
   const subject=encodeURIComponent('Hanemy お問い合わせ・フィードバック');
@@ -2139,7 +2140,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.3 contact email set</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.4 direction choices cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2156,8 +2157,8 @@ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.datas
 
 
 function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
-function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
-function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活費の残りを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残りそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function directionShort(key){return {steady:'生活重視',fun:'楽しみ重視',save:'貯金重視'}[key]||'楽しみ重視';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活費・楽しみ用・貯金のバランスを見直しましょう。';return {steady:'生活費をしっかり確保して、安心して過ごす方針です。',fun:'楽しみ用のお金を先に守って、無理なく使う方針です。',save:'残りそうなお金を意識して、少しでも残す方針です。'}[key]||'楽しみ用のお金を守りながら整える方針です。';}
 
 function feedbackHref(){
   const subject=encodeURIComponent('Hanemy お問い合わせ・フィードバック');
@@ -2180,7 +2181,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.3 contact email set</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.4 direction choices cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2247,8 +2248,8 @@ function renderSetup(){
   }
 
   if(!draft)startDraft(active()||'new');
-  const titles=['今月はどんな月にしたいですか？','今月、大事にしたい楽しみはありますか？','今月入ってくるお金を入れましょう。','先に、必ず出ていくお金を整理しましょう。','生活費の残りを決めましょう。','楽しみ用の残りを決めましょう。','今月の準備ができました。'];
-  const leads=['まず方針を決めます。金額入力はその後で大丈夫です。','楽しみを削る対象ではなく、先に守る対象として置きます。','給料・仕送り・奨学金など、今月使えるお金です。','家賃や通信費など、今月ほぼ動かせない支払いです。','食べる・暮らす・移動など、日々に必要なお金です。','守りたい楽しみに、安心して使える枠をつけます。','今月どう過ごすかを確認しましょう。'];
+  const titles=['今月は何を重視しますか？','今月、大事にしたい楽しみはありますか？','今月入ってくるお金を入れましょう。','先に、必ず出ていくお金を整理しましょう。','生活費の残りを決めましょう。','楽しみ用の残りを決めましょう。','今月の準備ができました。'];
+  const leads=['生活・楽しみ・貯金のどれを優先するか選びます。','楽しみを削る対象ではなく、先に守る対象として置きます。','給料・仕送り・奨学金など、今月使えるお金です。','家賃や通信費など、今月ほぼ動かせない支払いです。','食べる・暮らす・移動など、日々に必要なお金です。','守りたい楽しみに、安心して使える枠をつけます。','今月どう過ごすかを確認しましょう。'];
   root.innerHTML=`
   <section class="setupHeroLabel">
     <div class="logoText" style="display:inline-flex;margin:auto">ハネミー</div>
@@ -2279,7 +2280,7 @@ function renderSetup(){
 }
 
 function setupBody(){
-  if(step===0)return`<h3>今月の方針</h3><p class="muted small" style="margin-top:6px">今月のお金の使い方を選びます。</p><div class="directionGrid">${directionChoices.map(([k,l])=>`<button type="button" class="directionChoice jsDirection ${draft.direction===k?'active':''}" data-direction="${k}">${l}<br><span class="muted small">${directionChoiceHelp(k)}</span></button>`).join('')}</div>`;
+  if(step===0)return`<h3>今月の方針</h3><p class="muted small" style="margin-top:6px">今月のお金の優先順位を選びます。</p><div class="directionGrid">${directionChoices.map(([k,l])=>`<button type="button" class="directionChoice jsDirection ${draft.direction===k?'active':''}" data-direction="${k}">${l}<br><span class="muted small">${directionChoiceHelp(k)}</span></button>`).join('')}</div>`;
   if(step===1)return`<h3>今月、大事にしたい楽しみ</h3><p class="muted small" style="margin-top:6px">まず種類を選びます。具体的な予定は3つまで入れられます。</p><div class="tagrow">${enjoyTags.map(tag=>`<button type="button" class="tag jsEnjoyTag ${draft.enjoyTags?.includes(tag)?'active':''}" data-tag="${tag}">${tag}</button>`).join('')}</div><div class="divider"></div><h3>今月やりたいこと</h3><p class="muted small" style="margin-top:6px">未入力でも進めます。入れるとホームに表示されます。</p><div class="grid" style="margin-top:10px">${[0,1,2].map(i=>`<div class="grid2"><div class="field"><label>やりたいこと ${i+1}</label><input class="input jsWantName" data-want-index="${i}" value="${esc(draft.wantItems?.[i]?.name||'')}" placeholder="例：水族館"></div><div class="field"><label>目安額金額</label><input class="input jsWantAmount" inputmode="numeric" data-want-index="${i}" value="${num(draft.wantItems?.[i]?.amount)||''}" placeholder="0"></div></div>`).join('')}</div><div class="mascot-note" style="margin-top:12px"><span class="mascot-dot">ハ</span><span>楽しみは、あとで削るものではなく、先に守るものとして扱います。</span></div>`;
   if(step===2)return`<div class="grid">${income.map(([k,l])=>input('income.'+k,l,draft.income[k])).join('')}</div>`;
   if(step===3)return`<div class="grid"><div class="checks">${fixed.map(([k,l])=>`<label class="check"><input class="jsCheck" data-key="${k}" type="checkbox" ${draft.fixed.selected[k]?'checked':''}>${l}</label>`).join('')}</div><div class="divider"></div><div class="grid">${fixed.filter(([k])=>draft.fixed.selected[k]).map(([k,l])=>input('fixed.'+k,l,draft.fixed.amounts[k])).join('')||'<p class="muted">必要な項目にチェックを入れると、入力欄が出ます。</p>'}</div></div>`;
@@ -2310,8 +2311,8 @@ function finishSetup(){draft.wantItems=(draft.wantItems||[]).filter(x=>(x.name&&
 
 
 function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
-function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
-function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活費の残りを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残りそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function directionShort(key){return {steady:'生活重視',fun:'楽しみ重視',save:'貯金重視'}[key]||'楽しみ重視';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活費・楽しみ用・貯金のバランスを見直しましょう。';return {steady:'生活費をしっかり確保して、安心して過ごす方針です。',fun:'楽しみ用のお金を先に守って、無理なく使う方針です。',save:'残りそうなお金を意識して、少しでも残す方針です。'}[key]||'楽しみ用のお金を守りながら整える方針です。';}
 
 function feedbackHref(){
   const subject=encodeURIComponent('Hanemy お問い合わせ・フィードバック');
@@ -2334,7 +2335,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.3 contact email set</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.4 direction choices cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2607,8 +2608,8 @@ function carrySame(){const p=active();const copy=norm(JSON.parse(JSON.stringify(
 
 
 function directionText(key){return (directionChoices.find(x=>x[0]===key)||directionChoices[1])[1];}
-function directionShort(key){return {steady:'生活を安定させる月',fun:'楽しみを守る月',save:'少し残す月',busy:'予定を調整する月'}[key]||'楽しみを守る月';}
-function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活か楽しみのどちらを整えるか見直しましょう。';return {steady:'生活費の残りを崩さず、安心して過ごす方針です。',fun:'楽しみを悪者にせず、先に使える形で守る方針です。',save:'残りそうな見込みを意識しながら、無理なく整える方針です。',busy:'予定が多い月として、使い方を先に見える化する方針です。'}[key]||'楽しみを守りながら整える方針です。';}
+function directionShort(key){return {steady:'生活重視',fun:'楽しみ重視',save:'貯金重視'}[key]||'楽しみ重視';}
+function directionComment(key,t){if(t&&t.adjusted<0)return '今月は少し調整が必要です。生活費・楽しみ用・貯金のバランスを見直しましょう。';return {steady:'生活費をしっかり確保して、安心して過ごす方針です。',fun:'楽しみ用のお金を先に守って、無理なく使う方針です。',save:'残りそうなお金を意識して、少しでも残す方針です。'}[key]||'楽しみ用のお金を守りながら整える方針です。';}
 
 function feedbackHref(){
   const subject=encodeURIComponent('Hanemy お問い合わせ・フィードバック');
@@ -2631,7 +2632,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.3 contact email set</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.4 direction choices cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
