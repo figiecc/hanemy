@@ -1,8 +1,10 @@
 # Hanemy Brand Assets License
 
-The source code of Hanemy is licensed under the MIT License.
+Hanemy / ハネミー and its related brand assets are proprietary.
 
-However, the following assets are not licensed under the MIT License:
+The following assets may not be used, copied, modified, redistributed,
+published, commercially used, or used in derivative services without explicit
+permission from figiecc:
 
 - The name "Hanemy"
 - The Japanese name "ハネミー"
@@ -12,12 +14,10 @@ However, the following assets are not licensed under the MIT License:
 - Icons specifically created for Hanemy
 - Share card designs
 - Promotional images
+- UI designs and screenshots used to identify Hanemy
 - Other branding assets associated with Hanemy
 
-These brand assets may not be used, copied, modified, redistributed,
-published, or used commercially without explicit permission from figiecc.
-
-You may not use these assets to present a modified or redistributed version
-as an official Hanemy product.
+You may not use these assets to present a modified, redistributed, or competing
+service as an official Hanemy product.
 
 For permission requests, please contact figiecc.
