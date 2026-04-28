@@ -1,10 +1,13 @@
-const CACHE_NAME = "hanemy-assets-v0284";
+const CACHE_NAME = "hanemy-assets-v0292-1-brand-assets-hotfix";
 const ASSET_URLS = [
   "./manifest.json",
   "./favicon.png",
   "./icon-192.png",
   "./icon-512.png",
-  "./assets/logo.png"
+  "./assets/logo.png",
+  "./assets/logo-horizontal-transparent.png",
+  "./assets/logo-icon-transparent.png",
+  "./assets/mascot-transparent.png"
 ];
 
 self.addEventListener("install", (event) => {
