@@ -1928,7 +1928,10 @@ button,
 'use strict';
 const KEY='hanemy_beta_release_beta_v015';
 const DRAFT_KEY=KEY+'_setup_draft';
-const APP_VERSION='Hanemy β / v0.29.6 wording cleanup';
+const DB_NAME='hanemy-persistent-store';
+const DB_STORE='hanemy-data';
+const DB_STATE_ID='state';
+const APP_VERSION='Hanemy β / v0.29.6.2 storage fallback';
 const FEEDBACK_EMAIL='your-email@example.com';
 const root=document.getElementById('root'), modal=document.getElementById('modal'), dataBtn=document.getElementById('dataBtn');
 const yen=new Intl.NumberFormat('ja-JP');
@@ -1940,6 +1943,8 @@ const enjoyTags=['友達・恋人と出かける','趣味・ゲーム','カフ�
 const directionChoices=[['steady','生活を安定させたい'],['fun','楽しみをちゃんと残したい'],['save','少しでも残したい'],['busy','予定が多いので調整したい']];
 let state=load(), view='home', step=0, draft=null, setupMode='landing', details=false, detailNumbers=false, reviewNumbers=false, quickGroup='life', quickPending=0, quickSign=1, quickSelected=null, lastUndo=null, undoToastTimer=null, quick={stage:'main',main:null,sub:null};
 const notices=[
+  {id:'v0.29.6.2-storage-fallback',date:'2026-04-28',title:'保存の復元を強化しました',body:'タスク終了後に内容が戻らない場合に備え、localStorageに加えてIndexedDBにも保存するようにしました。'},
+  {id:'v0.29.6.1-minimal-save-fix',date:'2026-04-28',title:'入力途中の保存を補強しました',body:'今月の準備中に選んだ内容や、やりたいことの入力がタスク終了後も残りやすいよう、保存タイミングを追加しました。'},
   {id:'v0.29.6-wording-cleanup',date:'2026-04-28',title:'画面の言葉をわかりやすくしました',body:'ホーム、ざっくり入力、設定、共有まわりの説明を短くし、初めてでも意味が伝わりやすい表現に整えました。'},
   {id:'v0.29.5-persistence-fix',date:'2026-04-28',title:'タスク終了時の保存を強化しました',body:'アプリを閉じたりタスクを終了した時にも、入力途中の今月の準備が残りやすいよう保存処理を強化しました。'},
   {id:'v0.29.4.1-settings-scroll-fix',date:'2026-04-28',title:'設定画面のスクロールを修正しました',body:'設定を下まで見たあとにスクロールできなくなることがある問題を修正しました。'},
@@ -2017,16 +2022,53 @@ function sampleState(){
   return s;
 }
 function norm(p={}){const s=seed();return{...s,...p,income:{...s.income,...(p.income||{})},fixed:{selected:{...(p.fixed?.selected||{})},amounts:{...(p.fixed?.amounts||{})}},funPlan:{...s.funPlan,...(p.funPlan||{})},lifePlan:{...s.lifePlan,...(p.lifePlan||{})},spent:{life:{...s.spent.life,...(p.spent?.life||{})},fun:{...s.spent.fun,...(p.spent?.fun||{})},want:{...((p.spent&&p.spent.want)||{})}},quickHistory:Array.isArray(p.quickHistory)?p.quickHistory:[],enjoyTags:Array.isArray(p.enjoyTags)?p.enjoyTags:[],direction:p.direction||'fun',wantItems:Array.isArray(p.wantItems)?p.wantItems:[]};}
-function load(){try{
-  const stored=localStorage.getItem(KEY);
-  if(!stored)return blank();
-  const raw=JSON.parse(stored)||blank();
+function load(){try{const stored=localStorage.getItem(KEY);if(!stored)return blank();return normalizeState(JSON.parse(stored)||blank());}catch{return blank();}}
+function openHanemyDb(){
+  return new Promise((resolve,reject)=>{
+    if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return;}
+    const req=indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded=()=>{req.result.createObjectStore(DB_STORE,{keyPath:'id'});};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error('IndexedDB open failed'));
+  });
+}
+async function saveStateToIdb(value){
+  const db=await openHanemyDb();
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    tx.objectStore(DB_STORE).put({id:DB_STATE_ID,value,updatedAt:new Date().toISOString()});
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error||new Error('IndexedDB save failed'));
+  });
+  db.close();
+}
+async function loadStateFromIdb(){
+  const db=await openHanemyDb();
+  const result=await new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readonly');
+    const req=tx.objectStore(DB_STORE).get(DB_STATE_ID);
+    req.onsuccess=()=>resolve(req.result?.value||null);
+    req.onerror=()=>reject(req.error||new Error('IndexedDB load failed'));
+  });
+  db.close();
+  return result;
+}
+function normalizeState(raw){
   const s={...blank(),...raw,settings:{...blank().settings,...(raw.settings||{})}};
   s.periods=(raw.periods||[]).map(norm);
   if(!s.active && s.periods.length)s.active=s.periods[s.periods.length-1].id;
   return s;
-}catch{return blank();}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+}
+function save(){
+  const payload=JSON.stringify(state);
+  try{
+    localStorage.setItem(KEY,payload);
+    if(localStorage.getItem(KEY)!==payload) throw new Error('localStorage verify failed');
+  }catch(error){
+    console.warn('Hanemy localStorage save failed', error);
+  }
+  saveStateToIdb(state).catch((error)=>console.warn('Hanemy IndexedDB save failed', error));
+}
 function saveDraft(){
   try{
     if(draft && setupMode==='wizard'){
@@ -2096,7 +2138,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.2 storage fallback</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2137,7 +2179,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.2 storage fallback</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2198,7 +2240,7 @@ function renderSetup(){
     </section>${appFooter()}`;
     document.getElementById('createPlan')?.addEventListener('click',()=>{startDraft('new');setupMode='wizard';renderSetup();});
     document.getElementById('carryPlan')?.addEventListener('click',()=>{startDraft(active()||state.periods[state.periods.length-1]||'new');setupMode='wizard';renderSetup();});
-    document.getElementById('adjustPlan')?.addEventListener('click',()=>{const p=active();if(!p)return;draft=norm(JSON.parse(JSON.stringify(p)));state.periods=state.periods.filter(x=>x.id!==p.id);state.active=state.periods.length?state.periods[state.periods.length-1].id:null;save();setupMode='wizard';step=0;renderSetup();});
+    document.getElementById('adjustPlan')?.addEventListener('click',()=>{const p=active();if(!p)return;draft=norm(JSON.parse(JSON.stringify(p)));state.periods=state.periods.filter(x=>x.id!==p.id);state.active=state.periods.length?state.periods[state.periods.length-1].id:null;save();setupMode='wizard';step=0;saveDraft();renderSetup();});
     document.getElementById('setupStartDay')?.addEventListener('click',openStartDay);
     return;
   }
@@ -2225,11 +2267,11 @@ function renderSetup(){
     <div class="actions">${step?'<button class="secondary" id="back">戻る</button>':'<button class="secondary" id="cancelSetup">準備へ戻る</button>'}<button class="primary" id="next">${step===0?'作りはじめる':step===6?'この内容で始める':'次へ'}</button></div>
   </section>${appFooter()}`;
   bindInputs();
-  document.querySelectorAll('.jsCheck').forEach(ch=>ch.onchange=()=>{draft.fixed.selected[ch.dataset.key]=ch.checked;if(!ch.checked)draft.fixed.amounts[ch.dataset.key]=0;renderSetup();});
-  document.querySelectorAll('.jsDirection').forEach(btn=>btn.onclick=()=>{draft.direction=btn.dataset.direction;renderSetup();});
-  document.querySelectorAll('.jsEnjoyTag').forEach(btn=>btn.onclick=()=>{const tag=btn.dataset.tag;draft.enjoyTags=draft.enjoyTags||[];draft.enjoyTags=draft.enjoyTags.includes(tag)?draft.enjoyTags.filter(x=>x!==tag):[...draft.enjoyTags,tag];renderSetup();});
-  document.querySelectorAll('.jsWantName').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),name:inp.value,priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});
-  document.querySelectorAll('.jsWantAmount').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),amount:num(inp.value),priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});
+  document.querySelectorAll('.jsCheck').forEach(ch=>ch.onchange=()=>{draft.fixed.selected[ch.dataset.key]=ch.checked;if(!ch.checked)draft.fixed.amounts[ch.dataset.key]=0;saveDraft();renderSetup();});
+  document.querySelectorAll('.jsDirection').forEach(btn=>btn.onclick=()=>{draft.direction=btn.dataset.direction;saveDraft();renderSetup();});
+  document.querySelectorAll('.jsEnjoyTag').forEach(btn=>btn.onclick=()=>{const tag=btn.dataset.tag;draft.enjoyTags=draft.enjoyTags||[];draft.enjoyTags=draft.enjoyTags.includes(tag)?draft.enjoyTags.filter(x=>x!==tag):[...draft.enjoyTags,tag];saveDraft();renderSetup();});
+  document.querySelectorAll('.jsWantName').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),name:inp.value,priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};saveDraft();});
+  document.querySelectorAll('.jsWantAmount').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),amount:num(inp.value),priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};saveDraft();});
   document.getElementById('back')?.addEventListener('click',()=>{step--;saveDraft();renderSetup();});
   document.getElementById('cancelSetup')?.addEventListener('click',()=>{setupMode='landing';draft=null;step=0;clearDraftSave();renderSetup();});
   document.getElementById('next').onclick=()=>{if(step<6){step++;saveDraft();renderSetup()}else finishSetup()};
@@ -2291,7 +2333,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.2 storage fallback</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2588,7 +2630,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6.2 storage fallback</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -3002,6 +3044,7 @@ function renderSettings(){
       quickSign=1;
       quickSelected=null;
       save();
+      saveStateToIdb(state).catch(()=>{});
       closeModal();
       setView('home');
     }
@@ -3307,12 +3350,28 @@ function bindHistoryDelete(){
   });
 }
 
+
+async function restoreStateFromPersistentStore(){
+  if(state && state.periods && state.periods.length)return;
+  try{
+    const raw=await loadStateFromIdb();
+    if(raw && raw.periods && raw.periods.length){
+      state=normalizeState(raw);
+      try{localStorage.setItem(KEY,JSON.stringify(state));}catch(error){}
+      render();
+      updateNoticeDot();
+    }
+  }catch(error){
+    console.warn('Hanemy persistent restore skipped', error);
+  }
+}
+
 function render(){if(view==='setup')renderSetup();else if(view==='quick')renderQuickPage();else if(view==='review')renderReview();else renderHome();}
 window.addEventListener('pagehide', persistAll);
 window.addEventListener('beforeunload', persistAll);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistAll();});
 restoreDraft();
-render();updateNoticeDot();
+render();updateNoticeDot();restoreStateFromPersistentStore();
 })();
 </script>
 

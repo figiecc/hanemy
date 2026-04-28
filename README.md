@@ -13,7 +13,7 @@
 
 ## 公開βバージョン
 
-**Hanemy β / v0.29.6 wording cleanup**
+**Hanemy β / v0.29.6.2 storage fallback**
 
 ---
 

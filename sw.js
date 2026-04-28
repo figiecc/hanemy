@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanemy-assets-v0296-wording-cleanup";
+const CACHE_NAME = "hanemy-assets-v0296-2-storage-fallback";
 const ASSET_URLS = [
   "./manifest.json",
   "./favicon.png",
