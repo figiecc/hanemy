@@ -1927,8 +1927,10 @@ button,
 (() => {
 'use strict';
 const KEY='hanemy_beta_release_beta_v015';
+const BACKUP_KEY=KEY+'_backup';
 const DRAFT_KEY=KEY+'_setup_draft';
-const APP_VERSION='Hanemy β / v0.29.6 wording cleanup';
+const DRAFT_BACKUP_KEY=DRAFT_KEY+'_backup';
+const APP_VERSION='Hanemy β / v0.29.7 stronger autosave';
 const FEEDBACK_EMAIL='your-email@example.com';
 const root=document.getElementById('root'), modal=document.getElementById('modal'), dataBtn=document.getElementById('dataBtn');
 const yen=new Intl.NumberFormat('ja-JP');
@@ -1940,6 +1942,7 @@ const enjoyTags=['友達・恋人と出かける','趣味・ゲーム','カフ�
 const directionChoices=[['steady','生活を安定させたい'],['fun','楽しみをちゃんと残したい'],['save','少しでも残したい'],['busy','予定が多いので調整したい']];
 let state=load(), view='home', step=0, draft=null, setupMode='landing', details=false, detailNumbers=false, reviewNumbers=false, quickGroup='life', quickPending=0, quickSign=1, quickSelected=null, lastUndo=null, undoToastTimer=null, quick={stage:'main',main:null,sub:null};
 const notices=[
+  {id:'v0.29.7-stronger-autosave',date:'2026-04-28',title:'保存処理をさらに強化しました',body:'タスク終了や画面切り替えの直前でも内容が残りやすいよう、保存のタイミングとバックアップを増やしました。'},
   {id:'v0.29.6-wording-cleanup',date:'2026-04-28',title:'画面の言葉をわかりやすくしました',body:'ホーム、ざっくり入力、設定、共有まわりの説明を短くし、初めてでも意味が伝わりやすい表現に整えました。'},
   {id:'v0.29.5-persistence-fix',date:'2026-04-28',title:'タスク終了時の保存を強化しました',body:'アプリを閉じたりタスクを終了した時にも、入力途中の今月の準備が残りやすいよう保存処理を強化しました。'},
   {id:'v0.29.4.1-settings-scroll-fix',date:'2026-04-28',title:'設定画面のスクロールを修正しました',body:'設定を下まで見たあとにスクロールできなくなることがある問題を修正しました。'},
@@ -2017,33 +2020,56 @@ function sampleState(){
   return s;
 }
 function norm(p={}){const s=seed();return{...s,...p,income:{...s.income,...(p.income||{})},fixed:{selected:{...(p.fixed?.selected||{})},amounts:{...(p.fixed?.amounts||{})}},funPlan:{...s.funPlan,...(p.funPlan||{})},lifePlan:{...s.lifePlan,...(p.lifePlan||{})},spent:{life:{...s.spent.life,...(p.spent?.life||{})},fun:{...s.spent.fun,...(p.spent?.fun||{})},want:{...((p.spent&&p.spent.want)||{})}},quickHistory:Array.isArray(p.quickHistory)?p.quickHistory:[],enjoyTags:Array.isArray(p.enjoyTags)?p.enjoyTags:[],direction:p.direction||'fun',wantItems:Array.isArray(p.wantItems)?p.wantItems:[]};}
-function load(){try{
-  const stored=localStorage.getItem(KEY);
-  if(!stored)return blank();
-  const raw=JSON.parse(stored)||blank();
-  const s={...blank(),...raw,settings:{...blank().settings,...(raw.settings||{})}};
-  s.periods=(raw.periods||[]).map(norm);
-  if(!s.active && s.periods.length)s.active=s.periods[s.periods.length-1].id;
-  return s;
-}catch{return blank();}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function safeReadStorage(key){
+  try{
+    const stored=localStorage.getItem(key);
+    if(!stored)return null;
+    return JSON.parse(stored);
+  }catch(error){
+    return null;
+  }
+}
+function load(){
+  try{
+    const raw=safeReadStorage(KEY) || safeReadStorage(BACKUP_KEY);
+    if(!raw)return blank();
+    const s={...blank(),...raw,settings:{...blank().settings,...(raw.settings||{})}};
+    s.periods=(raw.periods||[]).map(norm);
+    if(!s.active && s.periods.length)s.active=s.periods[s.periods.length-1].id;
+    return s;
+  }catch{
+    return blank();
+  }
+}
+function save(){
+  try{
+    const payload=JSON.stringify(state);
+    localStorage.setItem(KEY,payload);
+    localStorage.setItem(BACKUP_KEY,payload);
+    localStorage.setItem(KEY+'_saved_at',new Date().toISOString());
+  }catch(error){}
+}
 function saveDraft(){
   try{
     if(draft && setupMode==='wizard'){
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({draft,step,setupMode,updatedAt:new Date().toISOString()}));
+      const payload=JSON.stringify({draft,step,setupMode,updatedAt:new Date().toISOString()});
+      localStorage.setItem(DRAFT_KEY,payload);
+      localStorage.setItem(DRAFT_BACKUP_KEY,payload);
     }else{
       localStorage.removeItem(DRAFT_KEY);
+      localStorage.removeItem(DRAFT_BACKUP_KEY);
     }
   }catch(error){}
 }
 function clearDraftSave(){
-  try{localStorage.removeItem(DRAFT_KEY);}catch(error){}
+  try{
+    localStorage.removeItem(DRAFT_KEY);
+    localStorage.removeItem(DRAFT_BACKUP_KEY);
+  }catch(error){}
 }
 function restoreDraft(){
   try{
-    const stored=localStorage.getItem(DRAFT_KEY);
-    if(!stored)return false;
-    const raw=JSON.parse(stored);
+    const raw=safeReadStorage(DRAFT_KEY) || safeReadStorage(DRAFT_BACKUP_KEY);
     if(!raw || !raw.draft)return false;
     draft=norm(raw.draft);
     step=Math.max(0,Math.min(6,Number(raw.step)||0));
@@ -2057,6 +2083,16 @@ function restoreDraft(){
 }
 function persistAll(){
   try{save();}catch(error){}
+  try{saveDraft();}catch(error){}
+}
+let persistTimer=null;
+function queuePersist(){
+  if(persistTimer)clearTimeout(persistTimer);
+  persistTimer=setTimeout(()=>{
+    persistTimer=null;
+    persistAll();
+  },80);
+}catch(error){}
   try{saveDraft();}catch(error){}
 }
 function active(){return state.periods.find(p=>p.id===state.active)||null;}
@@ -2096,7 +2132,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.7 stronger autosave</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2137,7 +2173,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.7 stronger autosave</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2149,6 +2185,7 @@ function startDraft(src){
   if(src==='new'||!src){
     draft=seed();
     saveDraft();
+persistAll();
     return;
   }
   draft=norm(JSON.parse(JSON.stringify(src)));
@@ -2160,7 +2197,7 @@ function startDraft(src){
   saveDraft();
 }
 function input(path,label,value){return`<div class="field"><label>${label}</label><input class="input jsInput" inputmode="numeric" data-path="${path}" value="${num(value)||''}" placeholder="0"></div>`}
-function bindInputs(){document.querySelectorAll('.jsInput').forEach(el=>{el.oninput=()=>{const[g,k]=el.dataset.path.split('.');if(g==='income')draft.income[k]=num(el.value);if(g==='fixed')draft.fixed.amounts[k]=num(el.value);if(g==='fun')draft.funPlan[k]=num(el.value);if(g==='life')draft.lifePlan[k]=num(el.value);saveDraft();};el.onblur=()=>{el.value=num(el.value)||'';saveDraft();};});}
+function bindInputs(){document.querySelectorAll('.jsInput').forEach(el=>{el.oninput=()=>{const[g,k]=el.dataset.path.split('.');if(g==='income')draft.income[k]=num(el.value);if(g==='fixed')draft.fixed.amounts[k]=num(el.value);if(g==='fun')draft.funPlan[k]=num(el.value);if(g==='life')draft.lifePlan[k]=num(el.value);saveDraft();queuePersist();};el.onchange=()=>{saveDraft();queuePersist();};el.onblur=()=>{el.value=num(el.value)||'';saveDraft();persistAll();};});}
 function renderSetup(){
   dataBtn.hidden=false;
   if(setupMode!=='wizard'){
@@ -2230,9 +2267,9 @@ function renderSetup(){
   document.querySelectorAll('.jsEnjoyTag').forEach(btn=>btn.onclick=()=>{const tag=btn.dataset.tag;draft.enjoyTags=draft.enjoyTags||[];draft.enjoyTags=draft.enjoyTags.includes(tag)?draft.enjoyTags.filter(x=>x!==tag):[...draft.enjoyTags,tag];renderSetup();});
   document.querySelectorAll('.jsWantName').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),name:inp.value,priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});
   document.querySelectorAll('.jsWantAmount').forEach(inp=>inp.oninput=()=>{const i=Number(inp.dataset.wantIndex);draft.wantItems=draft.wantItems||[];draft.wantItems[i]={...(draft.wantItems[i]||{}),amount:num(inp.value),priority:i===0?'ぜったい':i===1?'できれば':'余裕があれば'};});
-  document.getElementById('back')?.addEventListener('click',()=>{step--;saveDraft();renderSetup();});
+  document.getElementById('back')?.addEventListener('click',()=>{step--;saveDraft();persistAll();renderSetup();});
   document.getElementById('cancelSetup')?.addEventListener('click',()=>{setupMode='landing';draft=null;step=0;clearDraftSave();renderSetup();});
-  document.getElementById('next').onclick=()=>{if(step<6){step++;saveDraft();renderSetup()}else finishSetup()};
+  document.getElementById('next').onclick=()=>{if(step<6){step++;saveDraft();persistAll();renderSetup()}else finishSetup()};
 }
 
 function setupBody(){
@@ -2260,7 +2297,7 @@ function wantItemsTotal(p){return (p.wantItems||[]).reduce((a,x)=>a+num(x.amount
 function directionChoiceHelp(k){return {steady:'生活費を少し厚めに見たい月',fun:'予定や楽しみをちゃんと残したい月',save:'残りそうな見込みを意識したい月',busy:'外出や予定が多くなりそうな月'}[k]||'';}
 function strategyComment(t){if(t.planned<0)return'少し足りません。生活か楽しみのどちらを調整するか決めましょう。';if(t.planned===0)return'ぴったりの作戦です。日々は生活と楽しみの現在地を軽く見ていきましょう。';return'楽しみを確保しつつ、生活も崩しにくい配分です。';}
 function box(label,value,hl=false){return`<div class="box ${hl?'hl':''}"><span class="label">${label}</span><span class="money ${value<0?'negative':''}">${money(value)}</span></div>`}
-function finishSetup(){draft.wantItems=(draft.wantItems||[]).filter(x=>(x.name&&x.name.trim())||num(x.amount)>0);const p=norm(draft);state.periods.push(p);state.active=p.id;save();draft=null;setupMode='landing';clearDraftSave();view='home';
+function finishSetup(){draft.wantItems=(draft.wantItems||[]).filter(x=>(x.name&&x.name.trim())||num(x.amount)>0);const p=norm(draft);state.periods.push(p);state.active=p.id;save();persistAll();draft=null;setupMode='landing';clearDraftSave();view='home';
 
 
 
@@ -2291,7 +2328,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.7 stronger autosave</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -2588,7 +2625,7 @@ function feedbackHref(){
   ].join('\n'));
   return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
 }
-function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.6 wording cleanup</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
+function appFooter(){return `<footer class="appFooter"><span>Hanemy β / v0.29.7 stronger autosave</span><strong class="brandFooter">Hanemy™</strong></footer>`;}
 
 function hasUnreadNotice(){return num(state.settings.lastReadNoticeVersion)<NOTICE_VERSION;}
 function updateNoticeDot(){const dot=document.querySelector('.notifyDot');if(dot)dot.hidden=!hasUnreadNotice();}
@@ -3310,7 +3347,12 @@ function bindHistoryDelete(){
 function render(){if(view==='setup')renderSetup();else if(view==='quick')renderQuickPage();else if(view==='review')renderReview();else renderHome();}
 window.addEventListener('pagehide', persistAll);
 window.addEventListener('beforeunload', persistAll);
+window.addEventListener('blur', persistAll);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistAll();});
+document.addEventListener('input',()=>queuePersist(),true);
+document.addEventListener('change',()=>queuePersist(),true);
+document.addEventListener('click',()=>setTimeout(queuePersist,0),true);
+setInterval(persistAll,2000);
 restoreDraft();
 render();updateNoticeDot();
 })();
